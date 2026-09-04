@@ -1,0 +1,190 @@
+---
+import { render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Base from "../../layouts/Base.astro";
+import CompareTable from "../../components/CompareTable.astro";
+import {
+  getProducts,
+  getCategoryById,
+  peersFor,
+  appPath,
+  categoryPath,
+  cpuLabel,
+  formatRam,
+  lastReviewed,
+  archLabel,
+} from "../../lib/catalog";
+
+export const getStaticPaths = (async () => {
+  const products = await getProducts();
+  return products.map((p) => ({
+    params: { slug: p.id },
+    props: { product: p },
+  }));
+}) satisfies GetStaticPaths;
+
+const { product } = Astro.props;
+const { data } = product;
+const { Content } = await render(product);
+
+const category = await getCategoryById(data.category);
+const peers = await peersFor(product, 5);
+const all = await getProducts();
+const sameCategory = all.filter(
+  (p) => p.data.category === data.category && p.id !== product.id,
+);
+
+const specRows: { label: string; value: string; kind?: "yes" | "no" | "text" }[] = [
+  { label: "Category", value: category?.data.title ?? data.category },
+  { label: "License", value: data.license },
+  { label: "Language", value: data.language },
+  { label: "Typical RAM", value: `~${formatRam(data.ramMb)}` },
+  { label: "CPU footprint", value: cpuLabel(data.cpu) },
+  {
+    label: "Database",
+    value: data.databases.length > 0 ? data.databases.join(" / ") : "Self-contained",
+  },
+  {
+    label: "Architectures",
+    value: data.arch.map((a) => archLabel(a)).join(" / "),
+  },
+  { label: "SSO (OIDC/SAML/LDAP)", value: data.sso ? "Yes" : "No", kind: data.sso ? "yes" : "no" },
+  { label: "Docker image", value: data.docker ? "Yes" : "No", kind: data.docker ? "yes" : "no" },
+  { label: "Kubernetes", value: data.kubernetes ? "Yes" : "No", kind: data.kubernetes ? "yes" : "no" },
+];
+
+const links = [
+  { href: data.website, label: "Website" },
+  { href: data.source, label: "Source" },
+  { href: data.docs, label: "Docs" },
+  { href: data.demo, label: "Demo" },
+].filter((l): l is { href: string; label: string } => Boolean(l.href));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: data.title,
+  url: `https://kokoapi.space${appPath(product.id)}`,
+  description: data.tagline,
+  applicationCategory: "WebApplication",
+  operatingSystem: "Linux",
+  softwareHelp: data.docs ? { "@type": "WebPage", url: data.docs } : undefined,
+  license: data.license,
+  offers: { "@type": "Offer", price: "0" },
+  featureList: [
+    ...(data.docker ? ["Docker image"] : []),
+    ...(data.kubernetes ? ["Kubernetes manifests"] : []),
+    ...(data.sso ? ["SSO support"] : []),
+    ...data.databases,
+  ],
+  isPartOf: {
+    "@type": "WebSite",
+    name: "Self-Hosting Catalog",
+    url: "https://kokoapi.space/",
+  },
+};
+---
+
+<Base
+  title={`${data.title} — self-hostable ${category?.data.title?.toLowerCase() ?? "software"}`}
+  description={`${data.tagline} ${data.license} · ${formatRam(data.ramMb)} RAM · ${data.arch.map(archLabel).join("/")}. Compare alternatives and self-host it yourself.`}
+  jsonLd={jsonLd}
+>
+  <div class="container app-hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <a href="/apps/">Apps</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span aria-current="page">{data.title}</span>
+    </nav>
+
+    <div class="app-title-row">
+      <h1>{data.title}</h1>
+      {category && (
+        <a class="chip chip-accent" href={categoryPath(category.id)}>
+          {category.data.emoji} {category.data.title}
+        </a>
+      )}
+    </div>
+    <p class="app-tagline">{data.tagline}</p>
+
+    <div class="app-actions">
+      {links.map((l) => (
+        <a
+          class="btn btn-primary"
+          href={l.href}
+          target={l.href.startsWith("http") ? "_blank" : undefined}
+          rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+        >
+          {l.label} ↗
+        </a>
+      ))}
+    </div>
+    <p class="text-muted mt-1">Last reviewed {lastReviewed(data.updated)}</p>
+  </div>
+
+  <div class="container">
+    <div class="app-layout">
+      <article class="prose">
+        <h2>About {data.title}</h2>
+        <Content />
+        {data.tags.length > 0 && (
+          <p>
+            <strong>Tags:</strong>{" "}
+            {data.tags.map((tag, i) => (
+              <>
+                {i > 0 && ", "}
+                <a href={`/apps/?q=${encodeURIComponent(tag)}`}>{tag}</a>
+              </>
+            ))}
+          </p>
+        )}
+      </article>
+
+      <aside class="spec-card" aria-label={`${data.title} specifications`}>
+        <h2>Specs at a glance</h2>
+        <dl class="spec-list">
+          {specRows.map((row) => (
+            <li>
+              <dt>{row.label}</dt>
+              <dd
+                class:list={{
+                  yes: row.kind === "yes",
+                  no: row.kind === "no",
+                }}
+              >
+                {row.value}
+              </dd>
+            </li>
+          ))}
+        </dl>
+      </aside>
+    </div>
+  </div>
+
+  {peers.length > 0 && (
+    <section class="container section" aria-label={`Alternatives to ${data.title}`}>
+      <div class="section-title">
+        <h2>Compare with alternatives</h2>
+        <span class="text-muted">
+          {sameCategory.length > 0 && (
+            <>
+              More in <a href={categoryPath(data.category)}>{category?.data.title}</a>
+            </>
+          )}
+        </span>
+      </div>
+      <p class="text-muted mb-1">
+        Typical baseline figures for a small single-node deployment — always verify against
+        the project's own hardware recommendations.
+      </p>
+      <CompareTable current={product} peers={peers} />
+      <p class="mt-2">
+        Prefer a full directory view?{" "}
+        <a href="/apps/">Browse all {all.length} apps</a> and filter by RAM, license,
+        architecture and more.
+      </p>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,45 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getProducts, getCategories, categoryPath } from "../../lib/catalog";
+
+const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+
+const counts = new Map<string, number>();
+for (const p of products) {
+  counts.set(p.data.category, (counts.get(p.data.category) ?? 0) + 1);
+}
+
+const withCounts = categories
+  .map((c) => ({ ...c, count: counts.get(c.id) ?? 0 }))
+  .filter((c) => c.count > 0)
+  .sort((a, b) => b.count - a.count || a.data.title.localeCompare(b.data.title));
+---
+
+<Base
+  title="Categories of self-hostable software"
+  description="Explore self-hosting categories: password managers, note-taking, dashboards, media servers, photo storage, bookmarks, RSS readers, monitoring, file sync and more."
+>
+  <div class="container page-head">
+    <p class="eyebrow">Taxonomy</p>
+    <h1>Browse by category</h1>
+    <p class="lead">
+      {categories.length} categories cover the common building blocks of a home server —
+      from password vaults to reverse proxies. Each category page lists comparable apps and
+      links to side-by-side comparisons.
+    </p>
+  </div>
+
+  <div class="container">
+    <div class="grid cat-grid">
+      {withCounts.map((c) => (
+        <a class="card cat-card" href={categoryPath(c.id)}>
+          <span class="cat-emoji" aria-hidden="true">{c.data.emoji}</span>
+          <span class="cat-name">{c.data.title}</span>
+          <span class="cat-count">
+            {c.count} app{c.count === 1 ? "" : "s"}
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

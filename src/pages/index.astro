@@ -1,0 +1,134 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import { getProducts, getCategories, appPath, categoryPath } from "../lib/catalog";
+
+const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+
+const categoryById = new Map(categories.map((c) => [c.id, c]));
+const categoryTitle = (id: string) => categoryById.get(id)?.data.title ?? id;
+
+const counts = new Map<string, number>();
+for (const p of products) {
+  counts.set(p.data.category, (counts.get(p.data.category) ?? 0) + 1);
+}
+const categoriesWithCount = categories
+  .map((c) => ({ ...c, count: counts.get(c.id) ?? 0 }))
+  .filter((c) => c.count > 0)
+  .sort((a, b) => b.count - a.count || a.data.title.localeCompare(b.data.title));
+
+const featured = products.filter((p) => p.data.featured);
+const recent = [...products]
+  .sort(
+    (a, b) =>
+      b.data.updated.localeCompare(a.data.updated) ||
+      a.data.title.localeCompare(b.data.title),
+  )
+  .slice(0, 6);
+
+const dockerCount = products.filter((p) => p.data.docker).length;
+const k8sCount = products.filter((p) => p.data.kubernetes).length;
+const ssoCount = products.filter((p) => p.data.sso).length;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Self-Hosting Catalog",
+  description:
+    "A curated, searchable and comparison-ready directory of self-hostable software.",
+  url: "https://kokoapi.space/",
+  isPartOf: { "@type": "WebSite", name: "kokoapi.space", url: "https://kokoapi.space/" },
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: products.length,
+    itemListElement: featured.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "SoftwareApplication",
+        name: p.data.title,
+        url: `https://kokoapi.space${appPath(p.id)}`,
+        applicationCategory: "WebApplication",
+        operatingSystem: "Linux",
+      },
+    })),
+  },
+};
+---
+
+<Base
+  jsonLd={jsonLd}
+  description="Browse a curated catalog of self-hostable software. Filter by category, RAM, CPU, architecture, license, database, SSO, Docker and Kubernetes, compare alternatives, then run everything on your own hardware."
+>
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Open catalog of self-hostable software</span>
+      <h1>Run your own stack, on your own terms.</h1>
+      <p class="lead">
+        <strong>{products.length} hand-reviewed apps</strong> across{" "}
+        {categoriesWithCount.length} categories — every entry checked for license, resource
+        footprint, packaging and self-hostability. Search, filter and compare before you
+        deploy.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/apps/">Browse the catalog</a>
+        <a class="btn btn-secondary" href="/categories/">Explore categories</a>
+      </div>
+      <p class="stats-row mt-2" aria-label="Catalog stats">
+        <span class="chip chip-accent">📦 {products.length} apps</span>
+        <span class="chip chip-accent">🗂️ {categoriesWithCount.length} categories</span>
+        <span class="chip chip-accent">🐳 {dockerCount}× Docker</span>
+        <span class="chip chip-accent">☸️ {k8sCount}× Kubernetes</span>
+        <span class="chip chip-accent">🔐 {ssoCount}× SSO-ready</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Editor's picks</h2>
+        <a class="more" href="/apps/">View all apps →</a>
+      </div>
+      <div class="grid cards-grid">
+        {featured.map((p) => (
+          <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Browse by category</h2>
+        <a class="more" href="/categories/">All categories →</a>
+      </div>
+      <div class="grid cat-grid">
+        {categoriesWithCount.map((c) => (
+          <a class="card cat-card" href={categoryPath(c.id)}>
+            <span class="cat-emoji" aria-hidden="true">{c.data.emoji}</span>
+            <span class="cat-name">{c.data.title}</span>
+            <span class="cat-count">
+              {c.count} app{c.count === 1 ? "" : "s"}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Recently reviewed</h2>
+        <a class="more" href="/apps/?sort=newest">Newest first →</a>
+      </div>
+      <div class="grid cards-grid">
+        {recent.map((p) => (
+          <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
