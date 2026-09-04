@@ -1,0 +1,25 @@
+services:
+  catalog:
+    build: .
+    image: kokoapi-space/catalog:latest
+    container_name: kokoapi-catalog
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    # Nginx only needs to write to /var/cache/nginx and /var/run at runtime.
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

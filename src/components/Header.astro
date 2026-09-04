@@ -1,0 +1,35 @@
+---
+const pathname = Astro.url.pathname;
+
+function isActive(prefix: string): boolean | undefined {
+  return pathname === prefix || pathname.startsWith(prefix) ? true : undefined;
+}
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/" aria-label="Self-Hosting Catalog — home">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6366f1" />
+            <stop offset="1" stop-color="#8b5cf6" />
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="14" fill="url(#logo-g)" />
+        <rect x="16" y="18" width="32" height="26" rx="4" fill="#fff" fill-opacity="0.16" />
+        <rect x="21" y="24" width="22" height="3.5" rx="1.75" fill="#fff" />
+        <rect x="21" y="31" width="15" height="3.5" rx="1.75" fill="#fff" fill-opacity="0.7" />
+        <circle cx="46" cy="33" r="3" fill="#22d3ee" />
+        <rect x="29" y="18" width="6" height="4" rx="1.5" fill="#fff" />
+      </svg>
+      <span>kokoapi<span class="space">.space</span></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <a href="/apps/" aria-current={isActive("/apps/")}>Browse apps</a>
+      <a href="/categories/" aria-current={isActive("/categories/")}>Categories</a>
+      <a href="/about/" aria-current={isActive("/about/")}>About</a>
+    </nav>
+  </div>
+</header>

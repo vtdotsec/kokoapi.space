@@ -1,0 +1,28 @@
+{
+  "name": "kokoapi-space-catalog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosting catalog for kokoapi.space - a static, Markdown-driven directory of self-hostable software.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
