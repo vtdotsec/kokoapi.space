@@ -46,11 +46,8 @@ const searchText = [
   data-updated={data.updated}
 >
   <div class="card-topline">
-    <span class="chip chip-accent">{categoryTitle ?? data.category}</span>
-    {data.featured && (
-      <span class="featured-dot" title="Featured pick" aria-label="Featured pick"></span>
-    )}
-    {data.kubernetes && <span class="chip">Kubernetes</span>}
+    <span class="card-cat">{categoryTitle ?? data.category}</span>
+    {data.featured && <span class="pick">Featured</span>}
   </div>
 
   <h3 class="card-title">
@@ -60,10 +57,11 @@ const searchText = [
   <p class="card-desc">{data.tagline}</p>
 
   <div class="card-meta" aria-label={`${data.title} specs`}>
-    <span class="kv"><strong>RAM</strong>~{formatRam(data.ramMb)}</span>
-    <span class="kv"><strong>CPU</strong>{cpuLabel(data.cpu)}</span>
-    <span class="kv"><strong>License</strong>{data.license}</span>
-    {data.sso && <span class="kv"><strong>SSO</strong>Yes</span>}
-    {!data.sso && <span class="kv"><strong>Docker</strong>{data.docker ? "Yes" : "No"}</span>}
+    <span class="kv"><span class="k">RAM</span><b>~{formatRam(data.ramMb)}</b></span>
+    <span class="kv"><span class="k">CPU</span><b>{cpuLabel(data.cpu)}</b></span>
+    <span class="kv"><span class="k">License</span><b>{data.license}</b></span>
+    {data.kubernetes && <span class="kv"><span class="k">Kubernetes</span><b>Yes</b></span>}
+    {data.sso && <span class="kv"><span class="k">SSO</span><b>Yes</b></span>}
+    {!data.sso && <span class="kv"><span class="k">Docker</span><b>{data.docker ? "Yes" : "No"}</b></span>}
   </div>
 </article>

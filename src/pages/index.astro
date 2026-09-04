@@ -1,7 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
 import ProductCard from "../components/ProductCard.astro";
-import { getProducts, getCategories, appPath, categoryPath } from "../lib/catalog";
+import {
+  getProducts,
+  getCategories,
+  appPath,
+  categoryPath,
+  formatRam,
+} from "../lib/catalog";
 
 const [products, categories] = await Promise.all([getProducts(), getCategories()]);
 
@@ -26,7 +32,6 @@ const recent = [...products]
   )
   .slice(0, 6);
 
-const dockerCount = products.filter((p) => p.data.docker).length;
 const k8sCount = products.filter((p) => p.data.kubernetes).length;
 const ssoCount = products.filter((p) => p.data.sso).length;
 
@@ -35,7 +40,7 @@ const jsonLd = {
   "@type": "CollectionPage",
   name: "Self-Hosting Catalog",
   description:
-    "A curated, searchable and comparison-ready directory of self-hostable software.",
+    "A directory of self-hostable software where each entry documents license, architectures, resource footprint, packaging and SSO support.",
   url: "https://kokoapi.space/",
   isPartOf: { "@type": "WebSite", name: "kokoapi.space", url: "https://kokoapi.space/" },
   mainEntity: {
@@ -58,77 +63,106 @@ const jsonLd = {
 
 <Base
   jsonLd={jsonLd}
-  description="Browse a curated catalog of self-hostable software. Filter by category, RAM, CPU, architecture, license, database, SSO, Docker and Kubernetes, compare alternatives, then run everything on your own hardware."
+  description="Directory of self-hostable software. Each entry documents license, architectures, RAM and CPU footprint, database requirements, Docker/Kubernetes packaging and SSO support. Markdown content, static site."
 >
-  <section class="hero">
-    <div class="container">
-      <span class="eyebrow">Open catalog of self-hostable software</span>
-      <h1>Run your own stack, on your own terms.</h1>
-      <p class="lead">
-        <strong>{products.length} hand-reviewed apps</strong> across{" "}
-        {categoriesWithCount.length} categories — every entry checked for license, resource
-        footprint, packaging and self-hostability. Search, filter and compare before you
-        deploy.
-      </p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="/apps/">Browse the catalog</a>
-        <a class="btn btn-secondary" href="/categories/">Explore categories</a>
+  <section class="container home-intro">
+    <h1>Self-hosting catalog</h1>
+    <p class="lead">
+      A directory of software you can install and run on your own hardware. Each entry
+      records the details that decide whether it fits your setup: license, CPU
+      architectures, typical RAM and CPU footprint, database requirements, packaging
+      (Docker/Kubernetes) and SSO support.
+    </p>
+    <p class="intro-sub">
+      Content is maintained as Markdown in a Git repository and the site is generated as
+      static HTML. No accounts, no analytics.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/apps/">Browse all {products.length} apps</a>
+      <a class="btn btn-secondary" href="/categories/">Browse by category</a>
+    </div>
+
+    <dl class="home-stats" aria-label="Catalog summary">
+      <div>
+        <dt>Apps</dt>
+        <dd>{products.length}</dd>
       </div>
-      <p class="stats-row mt-2" aria-label="Catalog stats">
-        <span class="chip chip-accent">📦 {products.length} apps</span>
-        <span class="chip chip-accent">🗂️ {categoriesWithCount.length} categories</span>
-        <span class="chip chip-accent">🐳 {dockerCount}× Docker</span>
-        <span class="chip chip-accent">☸️ {k8sCount}× Kubernetes</span>
-        <span class="chip chip-accent">🔐 {ssoCount}× SSO-ready</span>
-      </p>
+      <div>
+        <dt>Categories</dt>
+        <dd>{categoriesWithCount.length}</dd>
+      </div>
+      <div>
+        <dt>Kubernetes</dt>
+        <dd>{k8sCount}</dd>
+      </div>
+      <div>
+        <dt>SSO</dt>
+        <dd>{ssoCount}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="container home-block" aria-labelledby="featured-heading">
+    <div class="section-title">
+      <h2 id="featured-heading">Featured apps</h2>
+      <a class="more" href="/apps/">All {products.length} apps →</a>
+    </div>
+    <div class="grid cards-grid">
+      {featured.map((p) => (
+        <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
+      ))}
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-title">
-        <h2>Editor's picks</h2>
-        <a class="more" href="/apps/">View all apps →</a>
-      </div>
-      <div class="grid cards-grid">
-        {featured.map((p) => (
-          <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
-        ))}
-      </div>
+  <section class="container home-block" aria-labelledby="categories-heading">
+    <div class="section-title">
+      <h2 id="categories-heading">Browse by category</h2>
+      <a class="more" href="/categories/">All categories →</a>
     </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-title">
-        <h2>Browse by category</h2>
-        <a class="more" href="/categories/">All categories →</a>
-      </div>
-      <div class="grid cat-grid">
-        {categoriesWithCount.map((c) => (
-          <a class="card cat-card" href={categoryPath(c.id)}>
-            <span class="cat-emoji" aria-hidden="true">{c.data.emoji}</span>
-            <span class="cat-name">{c.data.title}</span>
-            <span class="cat-count">
+    <div class="cat-index">
+      {categoriesWithCount.map((c) => (
+        <a class="cat-row" href={categoryPath(c.id)}>
+          <span class="cat-row-top">
+            <span class="cat-row-name">{c.data.title}</span>
+            <span class="cat-row-count">
               {c.count} app{c.count === 1 ? "" : "s"}
             </span>
-          </a>
-        ))}
-      </div>
+          </span>
+          <span class="cat-row-tag">{c.data.tagline}</span>
+        </a>
+      ))}
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-title">
-        <h2>Recently reviewed</h2>
-        <a class="more" href="/apps/?sort=newest">Newest first →</a>
-      </div>
-      <div class="grid cards-grid">
-        {recent.map((p) => (
-          <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
-        ))}
-      </div>
+  <section class="container home-block" aria-labelledby="recent-heading">
+    <div class="section-title">
+      <h2 id="recent-heading">Recently reviewed</h2>
+      <a class="more" href="/apps/?sort=newest">Newest first →</a>
     </div>
+    <table class="recent-table">
+      <thead>
+        <tr>
+          <th scope="col">App</th>
+          <th scope="col" class="col-cat">Category</th>
+          <th scope="col" class="col-lic">License</th>
+          <th scope="col" class="col-ram">Typical RAM</th>
+          <th scope="col">Last reviewed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {recent.map((p) => (
+          <tr>
+            <td>
+              <a class="recent-name" href={appPath(p.id)}>{p.data.title}</a>
+              <span class="recent-tagline">{p.data.tagline}</span>
+            </td>
+            <td class="col-cat">{categoryTitle(p.data.category)}</td>
+            <td class="col-lic">{p.data.license}</td>
+            <td class="col-ram">{formatRam(p.data.ramMb)}</td>
+            <td class="col-date">{p.data.updated}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </section>
 </Base>
