@@ -1,6 +1,11 @@
 // kokoapi.space — page-level translations (window.KOKO_I18N).
 // Loaded before ui.js on pages that use data-i18n beyond the shared header.
 window.KOKO_I18N = {
+  "nav.image": { en: "Image tools", pt: "Imagem" },
+  "nav.pdf": { en: "PDF tools", pt: "PDF" },
+  "nav.convert": { en: "File converter", pt: "Conversor de arquivos" },
+  "nav.secret": { en: "Secret Sender", pt: "Secret Sender" },
+  "nav.qrcode": { en: "QR toolkit", pt: "QR Code" },
   // Shared page-level keys
   "home.title": { en: "Web tools, without the usual baggage", pt: "Ferramentas web, sem frescura" },
   "home.lead": { en: "kokoapi.space is a small set of open-source web tools. Everything runs in your browser: documents, images, QR codes and short encrypted notes stay on your device unless a tool says otherwise.", pt: "O kokoapi.space é um conjunto pequeno de ferramentas web de código aberto. Tudo roda no seu navegador: documentos, imagens, QR codes e notas criptografadas curtas permanecem no seu dispositivo, exceto quando a ferramenta diz o contrário." },
