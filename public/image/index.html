@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/_ui/theme.css" />
     <script src="/image/vendor/fflate.js"></script>
     <script src="/image/image.js" defer></script>
+    <script is:inline src="/_ui/i18n-pages.js"></script>
     <script src="/_ui/ui.js" defer></script>
   </head>
   <body>
@@ -37,35 +38,35 @@
       <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
       <a class="main-nav-link" data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
     </nav>
-    <span class="top-actions">
+        <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" data-i18n="btn.theme" aria-label="Toggle theme">
-        <svg class="theme-ico-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
-        <svg class="theme-ico-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
+        <span class="theme-ico-light" aria-hidden="true">☀️</span>
+        <span class="theme-ico-dark" aria-hidden="true">🌙</span>
       </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">PT</button>
+      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">🇺🇸 EN</button>
     </span>
   </div>
 </header>
 
 
     <main class="wrap">
-      <h1>Image toolkit</h1>
-      <p class="lead">
+      <h1 data-i18n="image.title">Image toolkit</h1>
+      <p class="lead" data-i18n="image.lead">
         Convert between formats, compress and resize, or strip metadata from images. All
         processing happens locally, page by page, with no upload.
       </p>
-      <p class="note">
+      <p class="note" data-i18n="image.note">
         100% local image processing. Your files never leave your browser.
       </p>
 
       <div class="seg" role="group" aria-label="Tool">
-        <button type="button" class="seg-btn" data-tool="convert" aria-pressed="true">Convert</button>
-        <button type="button" class="seg-btn" data-tool="resize" aria-pressed="false">Compress &amp; Resize</button>
-        <button type="button" class="seg-btn" data-tool="strip" aria-pressed="false">Strip Metadata</button>
-        <button type="button" class="seg-btn" data-tool="crop" aria-pressed="false">Crop</button>
-        <button type="button" class="seg-btn" data-tool="wmark" aria-pressed="false">Watermark</button>
-        <button type="button" class="seg-btn" data-tool="filters" aria-pressed="false">Filters</button>
-        <button type="button" class="seg-btn" data-tool="batch" aria-pressed="false">Batch</button>
+        <button type="button" class="seg-btn" data-tool="convert" aria-pressed="true">data-i18n="image.convert" Convert</button>
+        <button type="button" class="seg-btn" data-tool="resize" aria-pressed="false">data-i18n="image.resize" Compress &amp; Resize</button>
+        <button type="button" class="seg-btn" data-tool="strip" aria-pressed="false">data-i18n="image.strip" Strip Metadata</button>
+        <button type="button" class="seg-btn" data-tool="crop" aria-pressed="false">data-i18n="image.crop" Crop</button>
+        <button type="button" class="seg-btn" data-tool="wmark" aria-pressed="false">data-i18n="image.wmark" Watermark</button>
+        <button type="button" class="seg-btn" data-tool="filters" aria-pressed="false">data-i18n="image.filters" Filters</button>
+        <button type="button" class="seg-btn" data-tool="batch" aria-pressed="false">data-i18n="image.batch" Batch</button>
       </div>
 
       <!-- Convert -->
@@ -348,7 +349,7 @@
 
     <footer class="site-footer">
       <div class="wrap">
-        <span>© 2026 kokoapi.space — MIT licensed.</span>
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
         <span>No uploads · Files stay on your device · No cookies</span>
       </div>
     </footer>

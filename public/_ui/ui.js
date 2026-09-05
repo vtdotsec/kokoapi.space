@@ -11,7 +11,7 @@
   var DEFAULTS = {
     "nav.image": { en: "Image tools", pt: "Imagem" },
     "nav.pdf": { en: "PDF tools", pt: "PDF" },
-    "nav.convert": { en: "File converter", pt: "Conversor" },
+    "nav.convert": { en: "File converter", pt: "Conversor de arquivos" },
     "nav.secret": { en: "Secret Sender", pt: "Secret Sender" },
     "nav.qrcode": { en: "QR toolkit", pt: "QR Code" },
     "btn.theme": { en: "Toggle theme", pt: "Alternar tema" },
@@ -28,7 +28,7 @@
     applyI18n(lang);
     var btn = document.getElementById("lang-toggle");
     if (btn) {
-      btn.textContent = lang === "pt" ? "EN" : "PT";
+      btn.textContent = lang === "pt" ? "🇺🇸 EN" : "🇧🇷 PT";
       btn.setAttribute("aria-label", lang === "pt" ? "Switch to English" : "Mudar para português");
     }
   }

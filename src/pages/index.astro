@@ -3,26 +3,31 @@ import Base from "../layouts/Base.astro";
 
 const tools = [
   {
+    key: "nav.image",
     title: "Image tools",
     path: "/image/",
     desc: "Convert, compress, resize, crop, filter and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.",
   },
   {
+    key: "nav.pdf",
     title: "PDF tools",
     path: "/pdf/",
     desc: "Merge, split, rotate, reorder, watermark, compress and convert PDF files entirely in your browser. Your files never leave your device.",
   },
   {
+    key: "nav.convert",
     title: "File converter",
     path: "/convert/",
     desc: "Markdown/HTML/PDF, images, JSON/CSV/XML/YAML, ZIP and GZIP conversions, all executed locally in your browser.",
   },
   {
+    key: "nav.secret",
     title: "Secret Sender",
     path: "/secret/",
     desc: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.",
   },
   {
+    key: "nav.qrcode",
     title: "QR toolkit",
     path: "/qrcode/",
     desc: "Generate QR codes for links, Wi-Fi, contacts and more, or scan a code with your camera or an image — all on your device.",
@@ -58,13 +63,13 @@ const principles = [
   description="kokoapi.space hosts open-source web tools: image editing, a PDF toolkit, a file converter, ephemeral encrypted sharing and a QR toolkit. No accounts, no telemetry, no ads, no cookies. Files are processed locally."
 >
   <section class="container home-intro">
-    <h1>Web tools, without the usual baggage</h1>
-    <p class="lead">
+    <h1 data-i18n="home.title">Web tools, without the usual baggage</h1>
+    <p class="lead" data-i18n="home.lead">
       kokoapi.space is a small set of open-source web tools. Everything runs in your
       browser: documents, images, QR codes and short encrypted notes stay on your device
       unless a tool says otherwise.
     </p>
-    <p class="intro-sub">
+    <p class="intro-sub" data-i18n="home.intro">
       Everything is free and works without an account. There is no telemetry, no ads, no
       cookies and nothing to pay.
     </p>
@@ -72,13 +77,13 @@ const principles = [
 
   <section class="container home-block" aria-labelledby="tools-heading">
     <div class="section-title">
-      <h2 id="tools-heading">Tools</h2>
+      <h2 id="tools-heading" data-i18n="home.tools">Tools</h2>
     </div>
     <div class="app-index">
       {tools.map((tool) => (
         <a class="app-row" href={tool.path}>
           <span class="app-row-top">
-            <span class="app-row-name">{tool.title}</span>
+            <span class="app-row-name" data-i18n={tool.key}>{tool.title}</span>
             <span class="app-row-path">{tool.path}</span>
           </span>
           <span class="app-row-desc">{tool.desc}</span>
@@ -89,7 +94,7 @@ const principles = [
 
   <section class="container home-block" aria-labelledby="principles-heading">
     <div class="section-title">
-      <h2 id="principles-heading">What you can expect here</h2>
+      <h2 id="principles-heading" data-i18n="home.expect">What you can expect here</h2>
     </div>
     <ul class="principles">
       {principles.map((p) => (

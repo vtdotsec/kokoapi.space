@@ -790,7 +790,7 @@
     setStatus("cv-m2p-status", "");
     try {
       var html = m2pMode() === "md" ? marked.parse(src) : src;
-      var out = await htmlToPdfBytes(html);
+      var out = await simpleTextPdf(src, m2pMode() === "md");
       var name = (fileWord(out.title) || "document") + ".pdf";
       download(new Blob([out.bytes], { type: "application/pdf" }), name);
       setStatus("cv-m2p-status", "Created " + name + " (" + fmtBytes(out.bytes.length) + ").");
@@ -2077,4 +2077,106 @@
   yjRefresh();
   xjRefresh();
   mkRefresh();
+
+  /* Deterministic text->PDF export (fix: previously blank output).
+     Parses markdown (or strips HTML), wraps words, and draws with pdf-lib
+     standard fonts, adding pages when the cursor reaches the bottom margin. */
+  async function simpleTextPdf(src, isMd) {
+    var doc = await PDFLib.PDFDocument.create();
+    var helv = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var W = 595.28, H = 841.89, M = 50, CW = W - M * 2;
+    var page = doc.addPage([W, H]);
+    var y = H - M;
+
+    function newPage() { page = doc.addPage([W, H]); y = H - M; }
+
+    function drawOne(text, size) {
+      if (!text) return;
+      if (y - size * 1.45 < M) newPage();
+      page.drawText(text, { x: M, y: y, size: size, font: helv });
+      y -= size * 1.45;
+    }
+
+    function drawParagraph(text, size) {
+      var words = String(text).split(/\s+/);
+      var line = "";
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i];
+        var probe = line ? line + " " + w : w;
+        if (helv.widthOfTextAtSize(probe, size) <= CW) {
+          line = probe;
+        } else {
+          drawOne(line, size);
+          line = w;
+        }
+      }
+      if (line) drawOne(line, size);
+      if (size >= 10) y -= size * 0.5;
+    }
+
+    var raw;
+    if (isMd) {
+      raw = src.split(/\r?\n/);
+    } else {
+      var t = src
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/p>|<\/div>|<\/h[1-6]>|<\/li>|<\/pre>/gi, "\n")
+        .replace(/<[^>]+>/g, " ");
+      t = t.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+           .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ");
+      raw = t.split(/\r?\n/);
+    }
+
+    var wrote = false;
+    var inCode = false;
+    var list = false;
+    for (var i = 0; i < raw.length; i++) {
+      var line = String(raw[i]).replace(/\t/g, "    ").replace(/\s+$/, "");
+      var trimmed = line.trim();
+      if (isMd) {
+        if (/^```/.test(trimmed)) { inCode = !inCode; continue; }
+        var hm = trimmed.match(/^(#{1,6})\s+(.*)$/);
+        if (hm) {
+          var lvl = hm[1].length;
+          drawParagraph(hm[2], lvl <= 1 ? 20 : lvl === 2 ? 16 : lvl === 3 ? 13 : 11.5);
+          wrote = true;
+          continue;
+        }
+        if (/^---+$|^\*\*\*+$/.test(trimmed)) {
+          if (y - 24 < M) newPage();
+          page.drawRectangle({ x: M, y: y - 6, width: CW, height: 1, color: PDFLib.rgb(0, 0, 0) });
+          y -= 18;
+          continue;
+        }
+        if (inCode) {
+          drawParagraph(trimmed, 9.5);
+          wrote = true;
+          continue;
+        }
+        if (list || /^[-*+]\s+/.test(trimmed)) {
+          drawParagraph(trimmed.replace(/^[-*+]\s+/, "• "), 10.5);
+          list = true;
+          wrote = true;
+          continue;
+        }
+        if (!trimmed) { list = false; if (wrote) y -= 4; continue; }
+        drawParagraph(trimmed, 11);
+        wrote = true;
+        list = false;
+      } else {
+        if (!trimmed) continue;
+        drawParagraph(trimmed, 11);
+        wrote = true;
+      }
+    }
+    if (!wrote) {
+      // Never ship an empty document: fall back to the raw text.
+      drawParagraph(String(src || "Empty input").slice(0, 2000), 11);
+    }
+    var bytes = await doc.save();
+    return { bytes: bytes, title: "" };
+  }
+
 })();

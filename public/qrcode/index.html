@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/_ui/theme.css" />
     <script src="/qrcode/vendor/qrcode.js"></script>
     <script src="/qrcode/vendor/jsQR.js"></script>
+    <script is:inline src="/_ui/i18n-pages.js"></script>
     <script src="/_ui/ui.js" defer></script>
     <script src="/qrcode/qrcode.js" defer></script>
   </head>
@@ -35,27 +36,27 @@
           <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
           <a class="main-nav-link current" data-i18n="nav.qrcode" aria-current="page" href="/qrcode/">QR toolkit</a>
         </nav>
-        <span class="top-actions">
-          <button type="button" class="nav-btn" id="theme-toggle" data-i18n="btn.theme" aria-label="Toggle theme">
-            <svg class="theme-ico-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
-            <svg class="theme-ico-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
-          </button>
-          <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">PT</button>
-        </span>
+            <span class="top-actions">
+      <button type="button" class="nav-btn" id="theme-toggle" data-i18n="btn.theme" aria-label="Toggle theme">
+        <span class="theme-ico-light" aria-hidden="true">☀️</span>
+        <span class="theme-ico-dark" aria-hidden="true">🌙</span>
+      </button>
+      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">🇺🇸 EN</button>
+    </span>
       </div>
     </header>
 
     <main class="wrap">
-      <h1>QR toolkit</h1>
-      <p class="lead">Generate QR codes or scan one with your camera or an image.</p>
-      <p class="note">
+      <h1 data-i18n="qrcode.title">QR toolkit</h1>
+      <p class="lead" data-i18n="qrcode.lead">Generate QR codes or scan one with your camera or an image.</p>
+      <p class="note" data-i18n="qrcode.note">
         Camera processing happens entirely on your device. No video frames or images leave
         your browser.
       </p>
 
       <div class="seg" role="group" aria-label="Tool">
-        <button type="button" class="seg-btn" data-tool="gen" aria-pressed="true">Generate</button>
-        <button type="button" class="seg-btn" data-tool="scan" aria-pressed="false">Scan</button>
+        <button type="button" class="seg-btn" data-tool="gen" aria-pressed="true">data-i18n="qrcode.gen" Generate</button>
+        <button type="button" class="seg-btn" data-tool="scan" aria-pressed="false">data-i18n="qrcode.scan" Scan</button>
       </div>
 
       <!-- Generate -->
@@ -119,7 +120,7 @@
 
     <footer class="site-footer">
       <div class="wrap">
-        <span>© 2026 kokoapi.space — MIT licensed.</span>
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
         <span>No uploads · Camera stays on your device · No cookies</span>
       </div>
     </footer>
