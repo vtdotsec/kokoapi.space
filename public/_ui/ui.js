@@ -40,11 +40,29 @@
     Object.keys(pageDict).forEach(function (k) {
       if (pageDict[k]) dict[k] = { en: pageDict[k].en, pt: pageDict[k].pt };
     });
+    document.documentElement.setAttribute("lang", lang === "pt" ? "pt-BR" : "en");
     var nodes = document.querySelectorAll("[data-i18n]");
     for (var i = 0; i < nodes.length; i++) {
       var key = nodes[i].getAttribute("data-i18n");
       var entry = dict[key];
       if (entry && entry[lang]) nodes[i].textContent = entry[lang];
+    }
+    // Fallback: translate static leaf text that exactly matches a dictionary
+    // entry but is not (yet) annotated with data-i18n.
+    if (lang !== "pt") return; // data-i18n nodes above already restored EN.
+    var byEn = {};
+    Object.keys(dict).forEach(function (k) {
+      if (dict[k] && dict[k].en && dict[k].pt) byEn[dict[k].en] = dict[k].pt;
+    });
+    var leaves = document.querySelectorAll("body p, body span, body a, body h1, body h2, body h3, body h4, body button, body label, body li, body th, body dt, body legend");
+    for (var j = 0; j < leaves.length; j++) {
+      var el = leaves[j];
+      if (el.getAttribute && el.getAttribute("data-i18n") !== null) continue;
+      if (el.children && el.children.length) continue;
+      var t = (el.textContent || "").trim();
+      if (!t) continue;
+      var pt = byEn[t];
+      if (pt) el.textContent = pt;
     }
   }
 
