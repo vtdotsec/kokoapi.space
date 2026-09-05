@@ -4,30 +4,35 @@ import Base from "../layouts/Base.astro";
 const tools = [
   {
     key: "nav.image",
+    dkey: "desc.image",
     title: "Image tools",
     path: "/image/",
     desc: "Convert, compress, resize, crop, filter and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.",
   },
   {
     key: "nav.pdf",
+    dkey: "desc.pdf",
     title: "PDF tools",
     path: "/pdf/",
     desc: "Merge, split, rotate, reorder, watermark, compress and convert PDF files entirely in your browser. Your files never leave your device.",
   },
   {
     key: "nav.convert",
+    dkey: "desc.convert",
     title: "File converter",
     path: "/convert/",
     desc: "Markdown/HTML/PDF, images, JSON/CSV/XML/YAML, ZIP and GZIP conversions, all executed locally in your browser.",
   },
   {
     key: "nav.secret",
+    dkey: "desc.secret",
     title: "Secret Sender",
     path: "/secret/",
     desc: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.",
   },
   {
     key: "nav.qrcode",
+    dkey: "desc.qrcode",
     title: "QR toolkit",
     path: "/qrcode/",
     desc: "Generate QR codes for links, Wi-Fi, contacts and more, or scan a code with your camera or an image — all on your device.",
@@ -36,22 +41,27 @@ const tools = [
 
 const principles = [
   {
+    key: "home.opensource",
     term: "Open source",
     desc: "The code for these tools and for this site is public and can be reviewed, audited or self-hosted.",
   },
   {
+    key: "home.noaccount",
     term: "No account",
     desc: "No sign-up, no login, no profile. Every tool works immediately.",
   },
   {
+    key: "home.notelemetry",
     term: "No telemetry",
     desc: "No analytics, no tracking pixels, no data collection of any kind.",
   },
   {
+    key: "home.noads",
     term: "No ads and no cookies",
     desc: "Nothing is sold or profiled. The pages set no cookies.",
   },
   {
+    key: "home.free",
     term: "Free",
     desc: "No payments, no quotas, no paywalls. Hosting is paid for out of pocket.",
   },
@@ -86,7 +96,7 @@ const principles = [
             <span class="app-row-name" data-i18n={tool.key}>{tool.title}</span>
             <span class="app-row-path">{tool.path}</span>
           </span>
-          <span class="app-row-desc">{tool.desc}</span>
+          <span class="app-row-desc" data-i18n={tool.dkey}>{tool.desc}</span>
         </a>
       ))}
     </div>
@@ -99,8 +109,8 @@ const principles = [
     <ul class="principles">
       {principles.map((p) => (
         <li>
-          <strong>{p.term}</strong>
-          <span class="principles-desc">{p.desc}</span>
+          <strong data-i18n={p.key}>{p.term}</strong>
+          <span class="principles-desc" data-i18n={`${p.key}.d`}>{p.desc}</span>
         </li>
       ))}
     </ul>

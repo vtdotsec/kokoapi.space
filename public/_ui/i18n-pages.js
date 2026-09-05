@@ -57,4 +57,16 @@ window.KOKO_I18N = {
   "convert.title": { en: "File converter", pt: "Conversor de arquivos" },
   "convert.lead": { en: "Convert documents, images, data files and archives in your browser.", pt: "Converta documentos, imagens, arquivos de dados e compactados no seu navegador." },
   "convert.note": { en: "100% local conversion in your browser. Your files are never uploaded.", pt: "Conversão 100% local no seu navegador. Seus arquivos nunca são enviados." },
+
+  // Tool descriptions (root page)
+  "desc.image": { en: "Convert, compress, resize, crop, filter and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.", pt: "Converta, compacte, redimensione, recorte, filtre e remova metadados de imagens localmente. O processamento ocorre no seu navegador; nada é enviado." },
+  "desc.pdf": { en: "Merge, split, rotate, reorder, watermark, compress and convert PDF files entirely in your browser. Your files never leave your device.", pt: "Junte, divida, gire, reorganize, adicione marca d'água, compacte e converta arquivos PDF inteiramente no seu navegador. Seus arquivos nunca saem do seu dispositivo." },
+  "desc.convert": { en: "Markdown/HTML/PDF, images, JSON/CSV/XML/YAML, ZIP and GZIP conversions, all executed locally in your browser.", pt: "Conversões de Markdown/HTML/PDF, imagens, JSON/CSV/XML/YAML, ZIP e GZIP, todas executadas localmente no seu navegador." },
+  "desc.secret": { en: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.", pt: "Compartilhe uma nota, senha ou arquivo pequeno com um link que expira ou se autodestrói após uma leitura. Criptografado no seu navegador antes de chegar ao servidor." },
+  "desc.qrcode": { en: "Generate QR codes for links, Wi-Fi, contacts and more, or scan a code with your camera or an image — all on your device.", pt: "Gere QR codes para links, Wi-Fi, contatos e mais, ou leia um código com a câmera ou uma imagem — tudo no seu dispositivo." },
+
+  // Footer
+  "footer.github": { en: "GitHub · Open-source", pt: "GitHub · Código aberto" },
+  "footer.about": { en: "Open-source web tools. Processing happens in your browser: no accounts, no telemetry, no ads and no cookies.", pt: "Ferramentas web de código aberto. O processamento acontece no seu navegador: sem contas, sem telemetria, sem anúncios e sem cookies." },
+  "footer.right": { en: "No accounts · No telemetry · No cookies", pt: "Sem contas · Sem telemetria · Sem cookies" },
 };
