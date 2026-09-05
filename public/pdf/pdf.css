@@ -606,3 +606,75 @@ main.wrap {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- pdf layout: vertical sidebar + right action panel ---------- */
+.pdf-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.pdf-side {
+  position: sticky;
+  top: 72px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  padding: 0.4rem;
+}
+
+.pdf-side .seg {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  background: transparent;
+}
+
+.pdf-side .seg-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border-left: 0;
+  white-space: normal;
+}
+
+.pdf-side .seg-btn + .seg-btn {
+  border-left: 0;
+}
+
+.pdf-side .seg-btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pdf-main {
+  min-width: 0;
+}
+
+.pdf-main > section[data-tool-panel][hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .pdf-layout {
+    grid-template-columns: 1fr;
+  }
+  .pdf-side {
+    position: static;
+  }
+  .pdf-side .seg {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .pdf-side .seg-btn {
+    width: auto;
+    white-space: nowrap;
+    flex: none;
+  }
+}

@@ -39,7 +39,7 @@
       <a class="main-nav-link" href="/pdf/">PDF tools</a>
       <a class="main-nav-link" aria-current="page" href="/convert/">File converter</a>
       <a class="main-nav-link" href="/secret/">Secret Sender</a>
-      <a class="main-nav-link" href="/qrcode/">QR toolkit</a>
+      <a class="main-nav-link" href="/qrcode/">QR code</a>
     </nav>
     <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
@@ -67,7 +67,23 @@
       </p>
 
       <!-- ============ Documents ============ -->
-      <section class="cat" id="cat-documents">
+      <div class="cv-layout">
+  <aside class="cv-side" aria-label="Tools">
+    <h2 class="cv-side-title">Tools</h2>
+    <nav class="cv-side-nav">
+      <button type="button" data-target="tool-md2html" class="active">Markdown to HTML</button>
+      <button type="button" data-target="tool-m2p">Markdown / HTML to PDF</button>
+      <button type="button" data-target="tool-pdf2txt">PDF to text</button>
+      <button type="button" data-target="tool-img2">Convert images</button>
+      <button type="button" data-target="tool-jsoncsv">JSON &harr; CSV</button>
+      <button type="button" data-target="tool-yamljson">JSON &harr; YAML</button>
+      <button type="button" data-target="tool-xml2json">XML to JSON</button>
+      <button type="button" data-target="tool-mkzip">Create ZIP / TAR / GZIP</button>
+      <button type="button" data-target="tool-unpack">Extract archive</button>
+    </nav>
+  </aside>
+  <div class="cv-main">
+<section class="cat" id="cat-documents">
         <h2 class="cat-title">Documents</h2>
 
         <section class="tool" id="tool-md2html">
@@ -391,7 +407,9 @@
         </section>
       </section>
 
-      <noscript>
+      </div>
+  </div>
+  <noscript>
         <p class="note">
           This tool needs JavaScript: every conversion runs locally in your browser with
           client-side libraries.

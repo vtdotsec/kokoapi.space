@@ -37,7 +37,7 @@
       <a class="main-nav-link" aria-current="page" href="/pdf/">PDF tools</a>
       <a class="main-nav-link" href="/convert/">File converter</a>
       <a class="main-nav-link" href="/secret/">Secret Sender</a>
-      <a class="main-nav-link" href="/qrcode/">QR toolkit</a>
+      <a class="main-nav-link" href="/qrcode/">QR code</a>
     </nav>
     <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
@@ -65,7 +65,9 @@
         leave your device.
       </p>
 
-      <div class="seg" role="group" aria-label="Tool">
+      <div class="pdf-layout">
+  <aside class="pdf-side" aria-label="PDF tools">
+<div class="seg" role="group" aria-label="Tool">
         <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true">Merge</button>
         <button type="button" class="seg-btn" data-tool="split" aria-pressed="false">Split</button>
         <button type="button" class="seg-btn" data-tool="reorder" aria-pressed="false">Reorganize</button>
@@ -78,6 +80,9 @@
         <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false">Images to PDF</button>
         <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false">PDF to Images</button>
       </div>
+  </aside>
+  <div class="pdf-main">
+
 
       <!-- Merge -->
       <section id="tool-merge" data-tool-panel>
@@ -432,7 +437,9 @@
         </p>
       </section>
 
-      <noscript>
+        </div>
+</div>
+<noscript>
         <p class="note">
           This tool needs JavaScript to read and write PDF files locally in your browser.
         </p>

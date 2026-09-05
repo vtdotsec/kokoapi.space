@@ -12,7 +12,7 @@ export const NAV_LABELS = [
   "PDF tools",
   "File converter",
   "Secret Sender",
-  "QR toolkit",
+  "QR code",
 ];
 
 export function fixture(name) {

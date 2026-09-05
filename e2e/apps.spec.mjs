@@ -70,6 +70,7 @@ test.describe("pdf tools", () => {
 test.describe("file converter", () => {
   test("markdown produces a non-empty PDF", async ({ page }) => {
     await page.goto("/convert/");
+    await page.locator('.cv-side-nav [data-target="tool-m2p"]').click();
     await page.locator("#cv-m2p-src").fill("## Heading\n\nHello world. This is a paragraph with several words for wrapping.");
     await expect(page.locator("#cv-m2p-run")).toBeEnabled();
     const downloadPromise = page.waitForEvent("download");
@@ -84,6 +85,7 @@ test.describe("file converter", () => {
 
   test("json to csv", async ({ page }) => {
     await page.goto("/convert/");
+    await page.locator('.cv-side-nav [data-target="tool-jsoncsv"]').click();
     await page.locator('input[name="cv-jsoncsv-dir"][value="json2csv"]').check();
     await page
       .locator("#cv-jsoncsv-in")

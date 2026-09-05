@@ -1640,6 +1640,27 @@
   xjRefresh();
   mkRefresh();
 
+
+  /* Convert sidebar switcher: one tool visible at a time. */
+  var cvSideBtns = Array.prototype.slice.call(document.querySelectorAll(".cv-side-nav [data-target]"));
+  var cvTools = Array.prototype.slice.call(document.querySelectorAll(".cv-main .tool"));
+
+  function cvShowTool(id) {
+    cvTools.forEach(function (t) { t.hidden = t.id !== id; });
+    cvSideBtns.forEach(function (b) {
+      var on = b.getAttribute("data-target") === id;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+  }
+  cvSideBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-target");
+      if (t) cvShowTool(t);
+    });
+  });
+  cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
+
   /* Deterministic text->PDF export (fix: previously blank output).
      Parses markdown (or strips HTML), wraps words, and draws with pdf-lib
      standard fonts, adding pages when the cursor reaches the bottom margin. */
