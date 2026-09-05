@@ -1,13 +1,32 @@
 ---
 const pathname = Astro.url.pathname;
 
-function isActive(prefix: string): boolean | undefined {
-  return pathname === prefix || pathname.startsWith(prefix) ? true : undefined;
+const pageLabel = pathname.startsWith("/secret/")
+  ? "Secret"
+  : pathname.startsWith("/pdf/")
+    ? "PDF"
+    : pathname.startsWith("/image/")
+      ? "Image"
+      : pathname.startsWith("/convert/")
+        ? "Convert"
+        : pathname.startsWith("/catalog/")
+          ? "Catalog"
+          : "";
+
+function currentFor(href: string): string | undefined {
+  return pathname === href || pathname.startsWith(href) ? "current" : undefined;
 }
+
+const links = [
+  { href: "/secret/", label: "Secret" },
+  { href: "/pdf/", label: "PDF tools" },
+  { href: "/image/", label: "Image tools" },
+  { href: "/convert/", label: "File converter" },
+];
 ---
 
-<header class="site-header">
-  <div class="container">
+<header class="topbar">
+  <div class="wrap">
     <a class="brand" href="/" aria-label="kokoapi.space — home">
       <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
         <rect class="lg-plate" width="64" height="64" rx="13" />
@@ -18,12 +37,36 @@ function isActive(prefix: string): boolean | undefined {
       </svg>
       <span>kokoapi<span class="space">.space</span></span>
     </a>
-
-    <nav class="main-nav" aria-label="Primary">
-      <a href="/catalog/" aria-current={isActive("/catalog/")}>Catalog</a>
-      <a href="/secret/">Secret</a>
-      <a href="/pdf/">PDF</a>
-      <a href="/image/">Image</a>
-    </nav>
+    {pageLabel && (
+      <>
+        <span class="topbar-crumb" aria-hidden="true">/</span>
+        <span class="topbar-page">{pageLabel}</span>
+      </>
+    )}
+    <button
+      type="button"
+      class="menu-toggle"
+      id="site-menu-toggle"
+      aria-expanded="false"
+      aria-controls="site-menu"
+    >
+      <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="1" y="2.5" width="14" height="1.6" rx="0.8" fill="currentColor" />
+        <rect x="1" y="7.2" width="14" height="1.6" rx="0.8" fill="currentColor" />
+        <rect x="1" y="11.9" width="14" height="1.6" rx="0.8" fill="currentColor" />
+      </svg>
+      <span>Menu</span>
+    </button>
   </div>
+  <nav class="site-menu" id="site-menu" aria-label="kokoapi.space apps">
+    {links.map((link) => (
+      <a
+        class:list={["site-menu-link", currentFor(link.href)]}
+        aria-current={currentFor(link.href) ? "true" : undefined}
+        href={link.href}
+      >
+        {link.label}
+      </a>
+    ))}
+  </nav>
 </header>

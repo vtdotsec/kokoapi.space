@@ -1,37 +1,37 @@
 ---
 import Base from "../layouts/Base.astro";
 
-const apps = [
+const tools = [
   {
-    title: "Self-hosting catalog",
-    path: "/catalog/",
-    desc: "A directory of software you can run on your own hardware, with license, resource and packaging data for every entry. Static pages maintained as Markdown.",
-  },
-  {
-    title: "Ephemeral sharing",
+    title: "Secret",
     path: "/secret/",
     desc: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.",
   },
   {
     title: "PDF toolkit",
     path: "/pdf/",
-    desc: "Merge, split, rotate, compress and convert PDF pages entirely in your browser. Your files never leave your device.",
+    desc: "Merge, split, rotate, reorder, watermark, compress and convert PDF files entirely in your browser. Your files never leave your device.",
   },
   {
     title: "Image toolkit",
     path: "/image/",
-    desc: "Convert, compress, resize and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.",
+    desc: "Convert, compress, resize, crop, filter and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.",
+  },
+  {
+    title: "File converter",
+    path: "/convert/",
+    desc: "Markdown/HTML/PDF, images, JSON/CSV/XML/YAML, ZIP and GZIP conversions, all executed locally in your browser.",
   },
 ];
 
 const principles = [
   {
     term: "Open source",
-    desc: "The code for these apps and for this site is public and can be reviewed, audited or self-hosted.",
+    desc: "The code for these tools and for this site is public and can be reviewed, audited or self-hosted.",
   },
   {
     term: "No account",
-    desc: "No sign-up, no login, no profile. Every app works immediately.",
+    desc: "No sign-up, no login, no profile. Every tool works immediately.",
   },
   {
     term: "No telemetry",
@@ -49,37 +49,41 @@ const principles = [
 ---
 
 <Base
-  title="kokoapi.space — open-source web apps"
-  description="kokoapi.space hosts small open-source web apps: a self-hosting catalog, ephemeral encrypted sharing and a browser-based PDF toolkit. No accounts, no telemetry, no ads, no cookies."
+  title="kokoapi.space — open-source web tools"
+  description="kokoapi.space hosts open-source web tools: ephemeral encrypted sharing, a PDF toolkit, an image toolkit and a file converter. No accounts, no telemetry, no ads, no cookies. Files are processed locally."
 >
   <section class="container home-intro">
-    <h1>Open-source web apps</h1>
+    <h1>Web tools, without the usual baggage</h1>
     <p class="lead">
-      kokoapi.space hosts a small set of open-source applications on its own hardware.
-      Everything here is free to use and works without an account. There is no telemetry,
-      no ads, no cookies and nothing to pay.
+      kokoapi.space is a small set of open-source web tools. They run on this hardware,
+      but the processing happens in your browser: your documents, images and data never
+      leave your device unless a tool says otherwise.
     </p>
     <p class="intro-sub">
-      Some apps run as plain static pages in your browser; the rest are small services
-      with no database and no user accounts. Source code ships with each app.
+      Everything is free and works without an account. There is no telemetry, no ads, no
+      cookies and nothing to pay.
     </p>
   </section>
 
-  <section class="container home-block" aria-labelledby="apps-heading">
+  <section class="container home-block" aria-labelledby="tools-heading">
     <div class="section-title">
-      <h2 id="apps-heading">Hosted apps</h2>
+      <h2 id="tools-heading">Tools</h2>
     </div>
     <div class="app-index">
-      {apps.map((app) => (
-        <a class="app-row" href={app.path}>
+      {tools.map((tool) => (
+        <a class="app-row" href={tool.path}>
           <span class="app-row-top">
-            <span class="app-row-name">{app.title}</span>
-            <span class="app-row-path">{app.path}</span>
+            <span class="app-row-name">{tool.title}</span>
+            <span class="app-row-path">{tool.path}</span>
           </span>
-          <span class="app-row-desc">{app.desc}</span>
+          <span class="app-row-desc">{tool.desc}</span>
         </a>
       ))}
     </div>
+    <p class="intro-sub">
+      The self-hosting software catalog that started this site still lives at{" "}
+      <a href="/catalog/">/catalog/</a>.
+    </p>
   </section>
 
   <section class="container home-block" aria-labelledby="principles-heading">

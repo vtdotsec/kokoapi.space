@@ -565,6 +565,42 @@ main.wrap {
   color: var(--text-muted);
 }
 
+/* ---------- text export / drag reorder ---------- */
+
+.text-pane {
+  width: 100%;
+  min-height: 14rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  resize: vertical;
+  margin-top: 0.75rem;
+}
+
+.text-pane:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+.thumb[draggable="true"] {
+  cursor: grab;
+}
+
+.thumb[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.thumb.drag-over {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition-duration: 0.01ms !important;

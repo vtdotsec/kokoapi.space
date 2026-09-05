@@ -11,10 +11,12 @@
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/pdf/pdf.css" />
+    <link rel="stylesheet" href="/_ui/app.css" />
     <script src="/pdf/vendor/pdf-lib.min.js"></script>
     <script src="/pdf/vendor/pdf.min.js"></script>
     <script src="/pdf/vendor/fflate.js"></script>
     <script src="/pdf/pdf.js" defer></script>
+    <script src="/_ui/menu.js" defer></script>
   </head>
   <body>
     <header class="topbar">
@@ -29,9 +31,19 @@
           </svg>
           <span>kokoapi<span class="space">.space</span></span>
         </a>
-        <span class="crumb" aria-hidden="true">/</span>
-        <a class="crumb-link" href="/pdf/">pdf</a>
+        <span class="topbar-crumb" aria-hidden="true">/</span>
+        <span class="topbar-page">PDF</span>
+        <button type="button" class="menu-toggle" id="site-menu-toggle" aria-expanded="false" aria-controls="site-menu">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="2.5" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="7.2" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="11.9" width="14" height="1.6" rx="0.8" fill="currentColor" /></svg>
+          <span>Menu</span>
+        </button>
       </div>
+      <nav class="site-menu" id="site-menu" aria-label="kokoapi.space apps">
+        <a class="site-menu-link" href="/secret/">Secret</a>
+        <a class="site-menu-link current" aria-current="true" href="/pdf/">PDF tools</a>
+        <a class="site-menu-link" href="/image/">Image tools</a>
+        <a class="site-menu-link" href="/convert/">File converter</a>
+      </nav>
     </header>
 
     <main class="wrap">
@@ -52,6 +64,11 @@
         <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false">Images to PDF</button>
         <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false">PDF to Images</button>
         <button type="button" class="seg-btn" data-tool="compress" aria-pressed="false">Compress</button>
+        <button type="button" class="seg-btn" data-tool="watermark" aria-pressed="false">Watermark</button>
+        <button type="button" class="seg-btn" data-tool="pagenum" aria-pressed="false">Page numbers</button>
+        <button type="button" class="seg-btn" data-tool="unlock" aria-pressed="false">Protect / Unlock</button>
+        <button type="button" class="seg-btn" data-tool="extract" aria-pressed="false">Extract text</button>
+        <button type="button" class="seg-btn" data-tool="reorder" aria-pressed="false">Reorder</button>
       </div>
 
       <!-- Merge -->
@@ -223,6 +240,188 @@
           <button type="button" id="compress-run" class="btn" disabled>Compress and download</button>
           <span id="compress-status" class="status" role="status"></span>
         </div>
+      </section>
+
+      <!-- Watermark -->
+      <section id="tool-watermark" data-tool-panel hidden>
+        <label class="file-drop" for="watermark-file">
+          <input type="file" id="watermark-file" accept="application/pdf" />
+          <span>Choose one PDF to watermark</span>
+        </label>
+        <p class="size-note" id="watermark-info"></p>
+
+        <fieldset class="options">
+          <legend>Markup</legend>
+          <div class="option">
+            <label class="radio" for="watermark-text">Text</label>
+            <input
+              type="text"
+              id="watermark-text"
+              class="text-input range-input"
+              spellcheck="false"
+              placeholder="Confidential"
+            />
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Font size</span>
+              <input type="range" id="watermark-size" min="8" max="120" value="40" />
+              <output for="watermark-size">40</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Opacity</span>
+              <input type="range" id="watermark-opacity" min="5" max="100" value="15" />
+              <output for="watermark-opacity">15</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Rotation</span>
+              <input type="range" id="watermark-rotate" min="-90" max="90" value="-45" />
+              <output for="watermark-rotate">-45</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio" for="watermark-color">Color</label>
+            <select id="watermark-color" class="select">
+              <option value="black" selected>Black</option>
+              <option value="white">White</option>
+              <option value="red">Red</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="watermark-run" class="btn" disabled>Add watermark and download</button>
+          <span id="watermark-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Page numbers -->
+      <section id="tool-pagenum" data-tool-panel hidden>
+        <label class="file-drop" for="pagenum-file">
+          <input type="file" id="pagenum-file" accept="application/pdf" />
+          <span>Choose one PDF to number</span>
+        </label>
+        <p class="size-note" id="pagenum-info"></p>
+
+        <fieldset class="options">
+          <legend>Format</legend>
+          <div class="option">
+            <label class="radio" for="pagenum-template">Template</label>
+            <input
+              type="text"
+              id="pagenum-template"
+              class="text-input range-input"
+              spellcheck="false"
+              value="Page {n} of {total}"
+            />
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-pos">Position</label>
+            <select id="pagenum-pos" class="select">
+              <option value="bottom" selected>Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-align">Align</label>
+            <select id="pagenum-align" class="select">
+              <option value="center" selected>Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Font size</span>
+              <input type="range" id="pagenum-size" min="6" max="72" value="10" />
+              <output for="pagenum-size">10</output>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="pagenum-run" class="btn" disabled>Add page numbers and download</button>
+          <span id="pagenum-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Protect / Unlock -->
+      <section id="tool-unlock" data-tool-panel hidden>
+        <label class="file-drop" for="unlock-file">
+          <input type="file" id="unlock-file" accept="application/pdf" />
+          <span>Choose a password-protected PDF to unlock</span>
+        </label>
+        <p class="size-note" id="unlock-info"></p>
+
+        <fieldset class="options">
+          <legend>Password</legend>
+          <div class="option">
+            <label class="radio" for="unlock-password">Password</label>
+            <input
+              type="password"
+              id="unlock-password"
+              class="text-input range-input"
+              autocomplete="current-password"
+              placeholder="Password required by the file"
+            />
+          </div>
+        </fieldset>
+
+        <p class="note" id="unlock-note" hidden>
+          The unlocked PDF is rebuilt from rendered pages, so its text becomes non-selectable.
+        </p>
+        <p class="note">
+          Adding an open password is not supported by the client-side PDF libraries used here; you can only remove a password you already know.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="unlock-run" class="btn" disabled>Unlock and download</button>
+          <span id="unlock-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Extract text -->
+      <section id="tool-extract" data-tool-panel hidden>
+        <label class="file-drop" for="extract-file">
+          <input type="file" id="extract-file" accept="application/pdf" />
+          <span>Choose one PDF to extract text from</span>
+        </label>
+        <p class="size-note" id="extract-info" hidden></p>
+
+        <div class="form-row">
+          <button type="button" id="extract-copy" class="btn ghost" disabled>Copy text</button>
+          <button type="button" id="extract-txt" class="btn" disabled>Download .txt</button>
+          <span id="extract-status" class="status" role="status"></span>
+        </div>
+        <textarea
+          id="extract-output"
+          class="text-pane"
+          rows="12"
+          readonly
+          spellcheck="false"
+          placeholder="Extracted text appears here."
+        ></textarea>
+      </section>
+
+      <!-- Reorder -->
+      <section id="tool-reorder" data-tool-panel hidden>
+        <label class="file-drop" for="reorder-file">
+          <input type="file" id="reorder-file" accept="application/pdf" />
+          <span>Choose one PDF, then drag pages into the order you want</span>
+        </label>
+        <div class="form-row org-bar" id="reorder-bar" hidden>
+          <button type="</div>button" id="reorder-run" class="btn" disabled>Download PDF in this order</button>
+          <span id="reorder-status" class="status" role="status"></span>
+          <span class="muted" id="reorder-count"></span>
+        </div>
+        <div id="reorder-thumbs" class="thumbs" hidden></div>
+        <p class="size-note" id="reorder-help" hidden>
+          Drag a page card to change the order. The downloaded PDF follows the order shown.
+        </p>
       </section>
 
       <noscript>

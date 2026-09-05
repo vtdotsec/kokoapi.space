@@ -74,7 +74,7 @@
   /* Tool switching                                                    */
   /* ================================================================ */
 
-  var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress"];
+  var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress", "watermark", "pagenum", "unlock", "extract", "reorder"];
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
 
   function activate(tool) {
@@ -865,6 +865,617 @@
       setStatus("compress-status", err && err.message ? err.message : "Compression failed.", true);
     } finally {
       markBusy(compressRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Watermark                                                         */
+  /* ================================================================ */
+
+  var wmState = null; // { bytes, name, pages }
+  var wmRun = $("watermark-run");
+  wmRun.dataset.label = "Add watermark and download";
+
+  function wmCanRun() {
+    wmRun.disabled = !wmState || !String($("watermark-text").value || "").trim();
+  }
+
+  $("watermark-text").addEventListener("input", wmCanRun);
+  bindRangeOutput("watermark-size");
+  bindRangeOutput("watermark-opacity");
+  bindRangeOutput("watermark-rotate");
+
+  $("watermark-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    wmState = null;
+    wmRun.disabled = true;
+    setStatus("watermark-status", "Reading…");
+    $("watermark-info").textContent = "";
+    try {
+      var bytes = await bytesOf(file);
+      var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+      if (doc.isEncrypted) {
+        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+      }
+      wmState = { bytes: bytes, name: file.name, pages: doc.getPageCount() };
+      $("watermark-info").textContent =
+        file.name + " — " + wmState.pages + " page" + (wmState.pages === 1 ? "" : "s");
+      setStatus("watermark-status", "");
+      wmCanRun();
+    } catch (err) {
+      setStatus("watermark-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF.', true);
+    }
+  });
+
+  var WM_COLORS = {
+    black: PDFLib.rgb(0, 0, 0),
+    white: PDFLib.rgb(1, 1, 1),
+    red: PDFLib.rgb(0.72, 0.06, 0.06),
+  };
+
+  // pdf-lib rotates text around its anchor point (x, y), so solve the anchor
+  // backwards from the text's estimated centre to rotate about (cx, cy).
+  function placeRotatedText(page, font, text, size, angleDeg, cx, cy, color, opacity) {
+    var rad = (angleDeg * Math.PI) / 180;
+    var width = font.widthOfTextAtSize(text, size);
+    var centreY = size * 0.35; // baseline to visual centre of the line, approx.
+    var cos = Math.cos(rad);
+    var sin = Math.sin(rad);
+    var ax = cx - (cos * (width / 2) - sin * centreY);
+    var ay = cy - (sin * (width / 2) + cos * centreY);
+    page.drawText(text, {
+      x: ax,
+      y: ay,
+      size: size,
+      font: font,
+      color: color,
+      opacity: opacity,
+      rotate: PDFLib.degrees(angleDeg),
+    });
+  }
+
+  wmRun.addEventListener("click", async function () {
+    if (!wmState) return;
+    markBusy(wmRun, true, "Watermarking…");
+    setStatus("watermark-status", "");
+    try {
+      var src = await PDFLib.PDFDocument.load(wmState.bytes, { ignoreEncryption: true });
+      if (src.isEncrypted) {
+        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+      }
+      var font = await src.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      var text = String($("watermark-text").value || "").trim();
+      if (!text) return;
+      var size = Number($("watermark-size").value);
+      var opacity = Number($("watermark-opacity").value) / 100;
+      var angle = Number($("watermark-rotate").value);
+      var color = WM_COLORS[$("watermark-color").value] || WM_COLORS.black;
+      var pages = src.getPages();
+      for (var i = 0; i < pages.length; i++) {
+        placeRotatedText(
+          pages[i],
+          font,
+          text,
+          size,
+          angle,
+          pages[i].getWidth() / 2,
+          pages[i].getHeight() / 2,
+          color,
+          opacity,
+        );
+        setStatus("watermark-status", "Watermarked page " + (i + 1) + " of " + pages.length + ".");
+      }
+      var result = await src.save();
+      download(new Blob([result], { type: "application/pdf" }), cleanName(baseName(wmState.name)) + "-watermarked.pdf");
+      setStatus("watermark-status", "Watermarked " + pages.length + " page" + (pages.length === 1 ? "" : "s") + ".");
+    } catch (err) {
+      setStatus("watermark-status", err && err.message ? err.message : "Watermarking failed.", true);
+    } finally {
+      markBusy(wmRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Page numbers                                                      */
+  /* ================================================================ */
+
+  var pnState = null; // { bytes, name, pages }
+  var pnRun = $("pagenum-run");
+  pnRun.dataset.label = "Add page numbers and download";
+
+  function pnCanRun() {
+    pnRun.disabled = !pnState || !String($("pagenum-template").value || "").trim();
+  }
+
+  $("pagenum-template").addEventListener("input", pnCanRun);
+  bindRangeOutput("pagenum-size");
+
+  $("pagenum-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    pnState = null;
+    pnRun.disabled = true;
+    setStatus("pagenum-status", "Reading…");
+    $("pagenum-info").textContent = "";
+    try {
+      var bytes = await bytesOf(file);
+      var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+      if (doc.isEncrypted) {
+        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+      }
+      pnState = { bytes: bytes, name: file.name, pages: doc.getPageCount() };
+      $("pagenum-info").textContent =
+        file.name + " — " + pnState.pages + " page" + (pnState.pages === 1 ? "" : "s");
+      setStatus("pagenum-status", "");
+      pnCanRun();
+    } catch (err) {
+      setStatus("pagenum-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF.', true);
+    }
+  });
+
+  pnRun.addEventListener("click", async function () {
+    if (!pnState) return;
+    markBusy(pnRun, true, "Numbering pages…");
+    setStatus("pagenum-status", "");
+    try {
+      var src = await PDFLib.PDFDocument.load(pnState.bytes, { ignoreEncryption: true });
+      if (src.isEncrypted) {
+        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+      }
+      var font = await src.embedFont(PDFLib.StandardFonts.Helvetica);
+      var template = String($("pagenum-template").value || "");
+      var pos = $("pagenum-pos").value;
+      var align = $("pagenum-align").value;
+      var size = Number($("pagenum-size").value);
+      var total = src.getPageCount();
+      var pages = src.getPages();
+      var MARGIN = 16;
+      for (var i = 0; i < pages.length; i++) {
+        var text = template
+          .replace(/\{n\}/g, String(i + 1))
+          .replace(/\{total\}/g, String(total));
+        if (text) {
+          var textWidth = font.widthOfTextAtSize(text, size);
+          var pageWidth = pages[i].getWidth();
+          var pageHeight = pages[i].getHeight();
+          var x;
+          if (align === "left") x = MARGIN;
+          else if (align === "right") x = pageWidth - MARGIN - textWidth;
+          else x = (pageWidth - textWidth) / 2;
+          var y = pos === "top" ? pageHeight - MARGIN - size * 0.72 : MARGIN + size * 0.2;
+          pages[i].drawText(text, {
+            x: x,
+            y: y,
+            size: size,
+            font: font,
+            color: PDFLib.rgb(0.3, 0.31, 0.36),
+          });
+        }
+        setStatus("pagenum-status", "Numbered page " + (i + 1) + " of " + pages.length + ".");
+      }
+      var result = await src.save();
+      download(new Blob([result], { type: "application/pdf" }), cleanName(baseName(pnState.name)) + "-numbered.pdf");
+      setStatus("pagenum-status", "Numbered " + pages.length + " page" + (pages.length === 1 ? "" : "s") + ".");
+    } catch (err) {
+      setStatus("pagenum-status", err && err.message ? err.message : "Numbering failed.", true);
+    } finally {
+      markBusy(pnRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Protect / Unlock (password removal by raster re-render)           */
+  /* ================================================================ */
+
+  var ulState = null; // { bytes, name }
+  var ulRun = $("unlock-run");
+  ulRun.dataset.label = "Unlock and download";
+  var UNLOCK_SCALE = 1.5;
+
+  function ulCanRun() {
+    ulRun.disabled = !ulState;
+  }
+
+  $("unlock-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    ulState = null;
+    ulRun.disabled = true;
+    setStatus("unlock-status", "Reading…");
+    $("unlock-info").textContent = "";
+    $("unlock-note").hidden = true;
+    try {
+      var bytes = await bytesOf(file);
+      ulState = { bytes: bytes, name: file.name };
+      var preview = null;
+      try {
+        preview = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+        $("unlock-info").textContent =
+          file.name + " — " + preview.numPages + " page" + (preview.numPages === 1 ? "" : "s");
+        $("unlock-note").hidden = false;
+        setStatus("unlock-status", "");
+      } catch (err2) {
+        if (err2 && err2.name === "PasswordException") {
+          $("unlock-info").textContent = file.name + " — password protected";
+          $("unlock-note").hidden = false;
+          setStatus("unlock-status", "Enter the password below, then press Unlock.");
+        } else {
+          ulState = null;
+          throw err2;
+        }
+      }
+      if (preview) {
+        try { preview.destroy(); } catch (err3) {}
+      }
+      ulCanRun();
+    } catch (err) {
+      setStatus("unlock-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF (encrypted or corrupted).', true);
+    }
+  });
+
+  ulRun.addEventListener("click", async function () {
+    if (!ulState) return;
+    markBusy(ulRun, true, "Rendering pages…");
+    setStatus("unlock-status", "");
+    var pdf = null;
+    try {
+      var password = String($("unlock-password").value || "");
+      var opts = { data: ulState.bytes.slice() };
+      if (password) opts.password = password;
+      pdf = await pdfjsLib.getDocument(opts).promise;
+      var out = await PDFLib.PDFDocument.create();
+      for (var i = 0; i < pdf.numPages; i++) {
+        var canvas = await renderPdfCanvas(pdf, i, UNLOCK_SCALE);
+        var blob = await canvasToBlob(canvas, "image/jpeg", 0.92);
+        var jpeg = new Uint8Array(await blob.arrayBuffer());
+        var img = await out.embedJpg(jpeg);
+        var pw = canvas.width / UNLOCK_SCALE;
+        var ph = canvas.height / UNLOCK_SCALE;
+        var page = out.addPage([pw, ph]);
+        page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
+        setStatus("unlock-status", "Rendered page " + (i + 1) + " of " + pdf.numPages + ".");
+      }
+      var result = await out.save();
+      download(new Blob([result], { type: "application/pdf" }), cleanName(baseName(ulState.name)) + "-unlocked.pdf");
+      setStatus("unlock-status", "Downloaded " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + " without the password.");
+    } catch (err) {
+      if (err && err.name === "PasswordException") {
+        setStatus("unlock-status", "Wrong password — check it and try again.", true);
+      } else {
+        setStatus("unlock-status", err && err.message ? err.message : "Unlocking failed.", true);
+      }
+    } finally {
+      if (pdf) {
+        try { pdf.destroy(); } catch (err) {}
+      }
+      markBusy(ulRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Extract text                                                      */
+  /* ================================================================ */
+
+  var exState = null; // { pdf, name }
+  var exCopy = $("extract-copy");
+  var exTxt = $("extract-txt");
+  var exOut = $("extract-output");
+
+  function exCanRun() {
+    exCopy.disabled = !exState;
+    exTxt.disabled = !exState;
+  }
+
+  $("extract-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    exCopy.disabled = true;
+    exTxt.disabled = true;
+    exOut.value = "";
+    $("extract-info").hidden = true;
+    setStatus("extract-status", "Reading text…");
+    if (exState) {
+      try { exState.pdf.destroy(); } catch (err) {}
+      exState = null;
+    }
+    try {
+      var bytes = await bytesOf(file);
+      var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+      exState = { pdf: pdf, name: file.name };
+      $("extract-info").hidden = false;
+      $("extract-info").textContent =
+        file.name + " — " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s");
+
+      var chunks = [];
+      for (var i = 0; i < pdf.numPages; i++) {
+        var content = await pdf.getPage(i).getTextContent();
+        var line = [];
+        for (var k = 0; k < content.items.length; k++) {
+          var it = content.items[k];
+          if (it && typeof it.str === "string") line.push(it.str);
+        }
+        chunks.push(line.join("\n"));
+        setStatus("extract-status", "Read page " + (i + 1) + " of " + pdf.numPages + ".");
+      }
+      var text = chunks.join("\n\n");
+      exOut.value = text;
+      setStatus("extract-status", "Extracted " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + ", " + text.length + " characters.");
+      exCanRun();
+    } catch (err) {
+      setStatus("extract-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF.', true);
+    }
+  });
+
+  exCopy.addEventListener("click", async function () {
+    var text = exOut.value;
+    if (!exState) return;
+    var ok = false;
+    try {
+      if (navigator.clipboard && window.isSecureContext !== false) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      }
+    } catch (err) {
+      ok = false;
+    }
+    if (!ok) {
+      exOut.focus();
+      exOut.select();
+      try {
+        ok = document.execCommand("copy");
+      } catch (err) {
+        ok = false;
+      }
+    }
+    setStatus("extract-status", ok ? "Copied to the clipboard." : "Copy failed — select the text and copy manually.", !ok);
+  });
+
+  exTxt.addEventListener("click", function () {
+    if (!exState) return;
+    var blob = new Blob([exOut.value], { type: "text/plain;charset=utf-8" });
+    download(blob, cleanName(baseName(exState.name)) + ".txt");
+    setStatus("extract-status", "Downloaded the text as a .txt file.");
+  });
+
+  /* ================================================================ */
+  /* Reorder: draggable page thumbnails                                */
+  /* ================================================================ */
+
+  var rrState = null; // { pdf, bytes, name }
+  var rrItems = []; // { idx, task, card, canvas, posEl }
+  var rrGrid = $("reorder-thumbs");
+  var rrRun = $("reorder-run");
+  rrRun.dataset.label = "Download PDF in this order";
+  var rrBar = document.querySelector("#tool-reorder .org-bar");
+  var rrHelp = $("reorder-help");
+  var rrDragFrom = -1;
+
+  function rrCanRun() {
+    rrRun.disabled = !rrState || rrItems.length === 0;
+    $("reorder-count").textContent = rrItems.length ? rrItems.length + " page" + (rrItems.length === 1 ? "" : "s") : "";
+    rrBar.hidden = !rrState || rrItems.length === 0;
+    rrGrid.hidden = !rrState || rrItems.length === 0;
+    rrHelp.hidden = !rrState || rrItems.length === 0;
+  }
+
+  function rrIndexOf(card) {
+    var pg = card.dataset.pg;
+    for (var i = 0; i < rrItems.length; i++) {
+      if (String(rrItems[i].idx) === pg) return i;
+    }
+    return -1;
+  }
+
+  function rrClearOver() {
+    rrItems.forEach(function (it) {
+      if (it.card) it.card.classList.remove("drag-over");
+    });
+  }
+
+  function rrReflow() {
+    rrItems.forEach(function (item) {
+      rrGrid.appendChild(item.card);
+    });
+    rrItems.forEach(function (item, i) {
+      item.posEl.textContent = "#" + (i + 1);
+      item.card.title = "Position " + (i + 1) + " — drag to reorder";
+      item.card.setAttribute("aria-label", "Page " + (item.idx + 1) + ", position " + (i + 1) + ", draggable");
+    });
+    rrCanRun();
+  }
+
+  function rrDrop(card, ev) {
+    var from = rrDragFrom;
+    var to = rrIndexOf(card);
+    if (from === -1 || to === -1 || from === to) return;
+    var rect = card.getBoundingClientRect();
+    var after = ev.clientX > rect.left + rect.width / 2;
+    var at = after ? to + 1 : to;
+    if (from < at) at -= 1;
+    var item = rrItems.splice(from, 1)[0];
+    rrItems.splice(Math.max(0, Math.min(at, rrItems.length)), 0, item);
+    rrReflow();
+  }
+
+  function rrBindCard(card) {
+    card.draggable = true;
+    card.addEventListener("dragstart", function (ev) {
+      rrDragFrom = rrIndexOf(card);
+      if (rrDragFrom === -1) {
+        ev.preventDefault();
+        return;
+      }
+      ev.dataTransfer.effectAllowed = "move";
+      ev.dataTransfer.setData("text/plain", String(rrDragFrom));
+      card.classList.add("dragging");
+      rrClearOver();
+    });
+    card.addEventListener("dragend", function () {
+      card.classList.remove("dragging");
+      rrDragFrom = -1;
+      rrClearOver();
+    });
+  }
+
+  rrGrid.addEventListener("dragover", function (ev) {
+    if (rrDragFrom === -1) return;
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = "move";
+    rrClearOver();
+    var card = ev.target.closest ? ev.target.closest(".thumb") : null;
+    if (card && rrGrid.contains(card)) card.classList.add("drag-over");
+  });
+
+  rrGrid.addEventListener("drop", function (ev) {
+    if (rrDragFrom === -1) return;
+    ev.preventDefault();
+    var card = ev.target.closest ? ev.target.closest(".thumb") : null;
+    if (card && rrGrid.contains(card)) {
+      rrDrop(card, ev);
+    } else {
+      // Dropped on empty space: move to the end.
+      var item = rrItems.splice(rrDragFrom, 1)[0];
+      rrItems.push(item);
+      rrReflow();
+    }
+    rrDragFrom = -1;
+    rrClearOver();
+  });
+
+  async function rrDrawThumb(item) {
+    if (!rrState) return;
+    var page = await rrState.pdf.getPage(item.idx);
+    var base = page.getViewport({ scale: 1 });
+    var scale = THUMB_W / base.width;
+    var vp = page.getViewport({ scale: scale });
+    item.canvas.width = Math.max(1, Math.floor(vp.width));
+    item.canvas.height = Math.max(1, Math.floor(vp.height));
+    var ctx = item.canvas.getContext("2d");
+    if (item.task) {
+      try { item.task.cancel(); } catch (err) {}
+      item.task = null;
+    }
+    item.task = page.render({ canvasContext: ctx, viewport: vp });
+    try {
+      await item.task.promise;
+    } catch (err) {
+      if (err && err.name !== "RenderingCancelledException") throw err;
+    }
+  }
+
+  function rrRenderThumbs() {
+    rrGrid.textContent = "";
+    rrItems.forEach(function (item) {
+      var card = document.createElement("div");
+      card.className = "thumb";
+      card.dataset.pg = String(item.idx);
+
+      var canvas = document.createElement("canvas");
+      canvas.className = "thumb-canvas";
+      item.canvas = canvas;
+
+      var row = document.createElement("div");
+      row.className = "thumb-row";
+
+      var label = document.createElement("span");
+      label.className = "thumb-label";
+      label.textContent = "P" + (item.idx + 1);
+
+      var posEl = document.createElement("span");
+      posEl.className = "thumb-rot";
+      item.posEl = posEl;
+
+      row.appendChild(label);
+      row.appendChild(posEl);
+      card.appendChild(canvas);
+      card.appendChild(row);
+      item.card = card;
+      rrBindCard(card);
+      rrGrid.appendChild(card);
+    });
+    rrReflow();
+    rrItems.forEach(function (item) {
+      rrDrawThumb(item).catch(function (err) {
+        if (rrState && rrItems.indexOf(item) !== -1) {
+          setStatus("reorder-status", err && err.message ? err.message : "Could not render thumbnails.", true);
+        }
+      });
+    });
+  }
+
+  $("reorder-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    setStatus("reorder-status", "");
+    rrRun.disabled = true;
+    rrGrid.hidden = true;
+    rrHelp.hidden = true;
+    rrBar.hidden = true;
+    setStatus("reorder-status", "Loading pages…");
+
+    try {
+      var bytes = await bytesOf(file);
+      var task = pdfjsLib.getDocument({ data: bytes.slice() });
+      var pdf;
+      try {
+        pdf = await task.promise;
+      } catch (err) {
+        if (err && err.name === "PasswordException") {
+          setStatus("reorder-status", "This PDF needs a password — remove it with the Protect / Unlock tool first.", true);
+          return;
+        }
+        throw err;
+      }
+      if (rrState) {
+        rrItems.forEach(function (it) {
+          if (it.task) {
+            try { it.task.cancel(); } catch (err2) {}
+          }
+        });
+        try { rrState.pdf.destroy(); } catch (err2) {}
+        rrState = null;
+        rrItems = [];
+      }
+      rrState = { pdf: pdf, bytes: bytes, name: file.name };
+      for (var i = 0; i < pdf.numPages; i++) {
+        rrItems.push({ idx: i, task: null });
+      }
+      setStatus("reorder-status", "");
+      rrRenderThumbs();
+      rrCanRun();
+    } catch (err) {
+      setStatus("reorder-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF (encrypted or corrupted).', true);
+    }
+  });
+
+  rrRun.addEventListener("click", async function () {
+    if (!rrState || rrItems.length === 0) return;
+    markBusy(rrRun, true, "Building PDF…");
+    setStatus("reorder-status", "");
+    try {
+      var src = await PDFLib.PDFDocument.load(rrState.bytes, { ignoreEncryption: true });
+      if (src.isEncrypted) {
+        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+      }
+      var out = await PDFLib.PDFDocument.create();
+      for (var i = 0; i < rrItems.length; i++) {
+        var copied = await out.copyPages(src, [rrItems[i].idx]);
+        out.addPage(copied[0]);
+        setStatus("reorder-status", "Added page " + (i + 1) + " of " + rrItems.length + ".");
+      }
+      var result = await out.save();
+      download(new Blob([result], { type: "application/pdf" }), cleanName(baseName(rrState.name)) + "-reordered.pdf");
+      setStatus("reorder-status", "Downloaded " + rrItems.length + " page" + (rrItems.length === 1 ? "" : "s") + " in the new order.");
+    } catch (err) {
+      setStatus("reorder-status", err && err.message ? err.message : "Export failed.", true);
+    } finally {
+      markBusy(rrRun, false);
     }
   });
 })();
