@@ -4,6 +4,19 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
+  function loadScript(url) {
+    if (!window.__kokoLibs) window.__kokoLibs = {};
+    return window.__kokoLibs[url] || (window.__kokoLibs[url] = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { delete window.__kokoLibs[url]; reject(new Error("Failed to load " + url)); };
+      document.head.appendChild(s);
+    }));
+  }
+  function loadJsQR() { return loadScript("/qrcode/vendor/jsQR.js"); }
+
   function setStatus(id, text, isError) {
     var el = $(id);
     if (el) {
@@ -238,14 +251,20 @@
     $("scan-stop").disabled = true;
   }
 
-  function decodeFromImageData(imageData) {
-    var code = jsQR(imageData.data, imageData.width, imageData.height, {
+  async function decodeFromImageData(imageData) {
+    try {
+      await loadJsQR();
+    } catch (err) {
+      setStatus("scan-status", "The QR scanner could not be loaded.", true);
+      return null;
+    }
+    var code = window.jsQR(imageData.data, imageData.width, imageData.height, {
       inversionAttempts: "dontInvert",
     });
     return code ? code.data : null;
   }
 
-  function scanLoop(video, canvas) {
+  async function scanLoop(video, canvas) {
     if (!stream) return;
     var w = 480;
     var h = Math.round(video.videoHeight * (w / video.videoWidth));
@@ -253,7 +272,8 @@
     canvas.height = h || 1;
     canvas.getContext("2d").drawImage(video, 0, 0, w, h);
     var data = canvas.getContext("2d").getImageData(0, 0, w, h);
-    var text = decodeFromImageData(data);
+    var text = await decodeFromImageData(data);
+    if (!stream) return; // camera was stopped while decoding
     if (text) {
       $("scan-result").value = text;
       setStatus("scan-status", "Code detected.");
@@ -301,13 +321,13 @@
       e.target.value = "";
       var url = URL.createObjectURL(file);
       var img = new Image();
-      img.onload = function () {
+      img.onload = async function () {
         var c = document.createElement("canvas");
         c.width = img.naturalWidth;
         c.height = img.naturalHeight;
         c.getContext("2d").drawImage(img, 0, 0);
         URL.revokeObjectURL(url);
-        var text = decodeFromImageData(c.getContext("2d").getImageData(0, 0, c.width, c.height));
+        var text = await decodeFromImageData(c.getContext("2d").getImageData(0, 0, c.width, c.height));
         if (text) {
           $("scan-result").value = text;
           setStatus("scan-status", "Code detected in the image.");

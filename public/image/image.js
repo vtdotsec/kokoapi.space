@@ -5,7 +5,18 @@
 (function () {
   "use strict";
 
-  var fflate = window.fflate;
+  function loadScript(url) {
+    if (!window.__kokoLibs) window.__kokoLibs = {};
+    return window.__kokoLibs[url] || (window.__kokoLibs[url] = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { delete window.__kokoLibs[url]; reject(new Error("Failed to load " + url)); };
+      document.head.appendChild(s);
+    }));
+  }
+  function loadFflate() { return loadScript("/image/vendor/fflate.js"); }
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -396,7 +407,8 @@
         var key = Object.keys(entries)[0];
         download(new Blob([entries[key]], { type: mime }), key);
       } else {
-        var zip = fflate.zipSync(entries, { level: 6 });
+        await loadFflate();
+        var zip = window.fflate.zipSync(entries, { level: 6 });
         download(new Blob([zip], { type: "application/zip" }), "stripped-images.zip");
       }
       setStatus("strip-status", "Exported " + stripSelection.length + " file" + (stripSelection.length === 1 ? "" : "s") + " without metadata.");
@@ -963,7 +975,8 @@
         entries[name] = new Uint8Array(await blob.arrayBuffer());
         setStatus("batch-status", "Converted " + (i + 1) + " of " + batchFiles.length + ".");
       }
-      var zip = fflate.zipSync(entries, { level: 6 });
+      await loadFflate();
+      var zip = window.fflate.zipSync(entries, { level: 6 });
       var zipName = "images-" + fmt + ".zip";
       download(new Blob([zip], { type: "application/zip" }), zipName);
       setStatus(

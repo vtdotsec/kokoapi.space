@@ -4,23 +4,27 @@
 (function () {
   "use strict";
 
-  var PDFLib = window.PDFLib;
-  var pdfjsLib = window.pdfjsLib;
-  var fflate = window.fflate;
-  var marked = window.marked;
-  var jsyaml = window.jsyaml;
+  /* Vendored libraries are lazy-loaded on first use so the initial page does
+     not ship ~1MB of third-party JS. Each feature flow awaits loadScript()
+     right before it runs, then reads the library from window into a local. */
+  var MARKED_URL = "/convert/vendor/marked.umd.js";
+  var PDFLIB_URL = "/convert/vendor/pdf-lib.min.js";
+  var PDFJS_URL = "/convert/vendor/pdf.min.js";
+  var PDFJS_WORKER_URL = "/convert/vendor/pdf.worker.min.js";
+  var JSYAML_URL = "/convert/vendor/js-yaml.min.js";
+  var FFLATE_URL = "/convert/vendor/fflate.js";
 
-  if (!PDFLib || !pdfjsLib || !fflate || !marked || !jsyaml) {
-    var p = document.createElement("p");
-    p.className = "note";
-    p.textContent =
-      "A required local library failed to load. The converter needs its vendored scripts to work.";
-    p.style.borderLeftColor = "var(--danger)";
-    document.body.insertBefore(p, document.body.firstChild);
-    return;
+  function loadScript(url) {
+    if (!window.__kokoLibs) window.__kokoLibs = {};
+    return window.__kokoLibs[url] || (window.__kokoLibs[url] = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { delete window.__kokoLibs[url]; reject(new Error("Failed to load " + url)); };
+      document.head.appendChild(s);
+    }));
   }
-
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "/convert/vendor/pdf.worker.min.js";
 
   /* ================================================================ */
   /* Helpers                                                            */
@@ -256,7 +260,7 @@
     return m ? m[0].toLowerCase() : "";
   }
 
-  mhRun.addEventListener("click", function () {
+  mhRun.addEventListener("click", async function () {
     var src = mhSrc.value;
     if (!src.trim() || mhBusy) return;
     mhBusy = true;
@@ -264,6 +268,8 @@
     markBusy(mhRun, true, "Converting…");
     setStatus(mhStatus, "");
     try {
+      await loadScript(MARKED_URL);
+      var marked = window.marked;
       mhLastHtml = marked.parse(src);
       $("cv-md2html-out").innerHTML = mhLastHtml;
       $("cv-md2html-out").hidden = false;
@@ -304,12 +310,14 @@
     small: 1, s: 1, strike: 1, del: 1, ins: 1, tt: 1, kbd: 1, label: 1, mark: 1
   };
 
-  var TEXT_INK = null; // filled below, needs PDFLib
+  var TEXT_INK = null; // filled lazily on first use; needs PDFLib
+  var COLORS = null;
 
   function makeColors() {
     function ink(hex) {
       var n = parseInt(hex.slice(1), 16);
-      return PDFLib.rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+      var rgb = window.PDFLib.rgb;
+      return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
     }
     TEXT_INK = ink("#17181d");
     return {
@@ -320,7 +328,13 @@
       rule: ink("#c9cbd2")
     };
   }
-  var COLORS = makeColors();
+
+  // Deferred: colors are only computed when a feature first asks for them,
+  // which happens after the PDFLib vendor script has been lazy-loaded.
+  function pdfColors() {
+    if (!COLORS) COLORS = makeColors();
+    return COLORS;
+  }
   var CW = PAGE_W - 2 * MARGIN;
 
   /* ================================================================ */
@@ -354,6 +368,9 @@
     setStatus("cv-pdf2txt-status", "Reading " + file.name + "…");
     var doc = null;
     try {
+      await loadScript(PDFJS_URL);
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
+      var pdfjsLib = window.pdfjsLib;
       var u8 = await readU8(file);
       var task = pdfjsLib.getDocument({ data: u8 });
       try {
@@ -594,6 +611,8 @@
     var okCount = 0;
     var errors = [];
     try {
+      await loadScript(FFLATE_URL);
+      var fflate = window.fflate;
       for (var i = 0; i < img2Files.length; i++) {
         var file = img2Files[i];
         setStatus("cv-img2-status", "Converting " + (i + 1) + " of " + img2Files.length + " (" + baseName(file.name) + ")…");
@@ -939,13 +958,15 @@
     });
   }
 
-  yjRun.addEventListener("click", function () {
+  yjRun.addEventListener("click", async function () {
     if (yjBusy || !yjIn.value.trim()) return;
     yjBusy = true;
     yjRefresh();
     markBusy(yjRun, true, "Converting…");
     setStatus("cv-yamljson-status", "");
     try {
+      await loadScript(JSYAML_URL);
+      var jsyaml = window.jsyaml;
       var dir = yjDir();
       var outText;
       if (dir === "yaml2json") {
@@ -1374,6 +1395,11 @@
     markBusy(mkRun, true, "Packing…");
     setStatus("cv-mkzip-status", "");
     try {
+      // ZIP/GZIP need fflate; plain TAR uses the custom writer below.
+      if (mode === "zip" || mode === "gzip") {
+        await loadScript(FFLATE_URL);
+        var fflate = window.fflate;
+      }
       var entries = [];
       var used = new Set();
       for (var i = 0; i < mkFiles.length; i++) {
@@ -1435,6 +1461,7 @@
   function openArchive(u8, fileName) {
     var kind = sniffKind(u8);
     var entries = [];
+    var fflate = window.fflate; // used by the zip/gzip paths; caller lazy-loads it
     if (kind === "zip") {
       var files = fflate.unzipSync(u8);
       var names = Object.keys(files);
@@ -1551,6 +1578,7 @@
     $("cv-unpack-info").hidden = true;
     setStatus("cv-unpack-status", "Reading " + file.name + "…");
     try {
+      await loadScript(FFLATE_URL);
       var u8 = await readU8(file);
       var res = openArchive(u8, file.name);
       unKind = res.kind;
@@ -1567,12 +1595,14 @@
     }
   });
 
-  unAll.addEventListener("click", function () {
+  unAll.addEventListener("click", async function () {
     var files = fileEntries(unEntries);
     if (files.length <= 1) return;
     markBusy(unAll, true, "Zipping…");
     setStatus("cv-unpack-status", "");
     try {
+      await loadScript(FFLATE_URL);
+      var fflate = window.fflate;
       var map = {};
       files.forEach(function (e) {
         map[e.name] = e.data;
@@ -1617,6 +1647,7 @@
     markBusy(m2pRun, true, "Building PDF…");
     setStatus("cv-m2p-status", "");
     try {
+      await loadScript(PDFLIB_URL);
       var out = await simpleTextPdf(src, m2pMode() === "md");
       var name = (fileWord(out.title) || "document") + ".pdf";
       download(new Blob([out.bytes], { type: "application/pdf" }), name);
@@ -1689,6 +1720,7 @@
      Parses markdown (or strips HTML), wraps words, and draws with pdf-lib
      standard fonts, adding pages when the cursor reaches the bottom margin. */
   async function simpleTextPdf(src, isMd) {
+    var PDFLib = window.PDFLib; // lazy-loaded by the m2p run flow before this runs
     var doc = await PDFLib.PDFDocument.create();
     var helv = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
     var W = 595.28, H = 841.89, M = 50, CW = W - M * 2;

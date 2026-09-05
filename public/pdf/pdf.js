@@ -5,23 +5,37 @@
 (function () {
   "use strict";
 
-  var PDFLib = window.PDFLib;
-  var pdfjsLib = window.pdfjsLib;
-  var fflate = window.fflate;
+  // The heavy vendor libraries are loaded lazily on first use (they are not
+  // fetched at page load). Each async flow below awaits loadScript() for the
+  // libs its tool needs and then re-reads the window global into these shared
+  // bindings before doing any work, so helpers can rely on them.
+  var PDFLib, pdfjsLib, fflate;
 
-  if (!PDFLib || !pdfjsLib) {
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      '<p class="note" style="border-left-color:var(--danger)">A required library failed to load. The toolkit needs its local scripts to work.</p>',
-    );
-    return;
+  var PDFLIB_URL = "/pdf/vendor/pdf-lib.min.js";
+  var PDFJS_URL = "/pdf/vendor/pdf.min.js";
+  var FFLATE_URL = "/pdf/vendor/fflate.js";
+
+  function loadScript(url) {
+    if (!window.__kokoLibs) window.__kokoLibs = {};
+    return window.__kokoLibs[url] || (window.__kokoLibs[url] = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { delete window.__kokoLibs[url]; reject(new Error("Failed to load " + url)); };
+      document.head.appendChild(s);
+    }));
   }
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf/vendor/pdf.worker.min.js";
-  if (pdfjsLib.GlobalWorkerOptions.standardFontDataUrl === undefined) {
-    // v4 exposes this; v3 derives it from the worker path. Nothing to do.
-  } else {
-    pdfjsLib.GlobalWorkerOptions.standardFontDataUrl = "/pdf/vendor/standard_fonts/";
+  // Loads pdf.js and configures its worker/font data as soon as it exists.
+  function loadPdfjs() {
+    return loadScript(PDFJS_URL).then(function () {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf/vendor/pdf.worker.min.js";
+      // v4 exposes standardFontDataUrl; v3 derives it from the worker path.
+      if (window.pdfjsLib.GlobalWorkerOptions.standardFontDataUrl !== undefined) {
+        window.pdfjsLib.GlobalWorkerOptions.standardFontDataUrl = "/pdf/vendor/standard_fonts/";
+      }
+    });
   }
 
   var $ = function (id) { return document.getElementById(id); };
@@ -202,6 +216,8 @@
     markBusy(mergeRun, true, "Merging…");
     setStatus("merge-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var out = await PDFLib.PDFDocument.create();
       for (var i = 0; i < mergeItems.length; i++) {
         var file = mergeItems[i].file;
@@ -258,6 +274,8 @@
     setStatus("split-status", "Reading…");
     $("split-info").textContent = "";
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var bytes = await bytesOf(file);
       var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       splitState = { bytes: bytes, name: file.name, pageCount: doc.getPageCount() };
@@ -296,12 +314,16 @@
     markBusy(splitRun, true, "Splitting…");
     setStatus("split-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(splitState.bytes, { ignoreEncryption: true });
       var total = splitState.pageCount;
       var base = cleanName(baseName(splitState.name));
 
       if (pagesOption.checked) {
         // One PDF per page, packed into a ZIP.
+        await loadScript(FFLATE_URL);
+        fflate = window.fflate;
         var files = {};
         for (var i = 0; i < total; i++) {
           var one = await PDFLib.PDFDocument.create();
@@ -374,6 +396,8 @@
     setStatus("org-status", "Loading pages…");
 
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       var task = pdfjsLib.getDocument({ data: bytes.slice() });
       var pdf = await task.promise;
@@ -501,6 +525,8 @@
     markBusy(orgRun, true, "Building PDF…");
     setStatus("org-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(org.bytes, { ignoreEncryption: true });
       var out = await PDFLib.PDFDocument.create();
       for (var i = 0; i < org.items.length; i++) {
@@ -677,6 +703,8 @@
     markBusy(img2pdfRun, true, "Building PDF…");
     setStatus("imgs2pdf-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var sizeMode = checkedRadio("imgs2pdf-size");
       var out = await PDFLib.PDFDocument.create();
       var A4W = 595.28;
@@ -750,6 +778,8 @@
     setStatus("pdf2img-status", "Reading…");
     $("pdf2img-info").textContent = "";
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
       if (p2i) {
@@ -803,6 +833,8 @@
       }
 
       if (zipFiles) {
+        await loadScript(FFLATE_URL);
+        fflate = window.fflate;
         var zip = fflate.zipSync(zipFiles, { level: 6 });
         download(new Blob([zip], { type: "application/zip" }), base + "-images.zip");
         setStatus("pdf2img-status", "Exported " + p2i.doc.numPages + " page" + (p2i.doc.numPages === 1 ? "" : "s") + " as " + ext.toUpperCase() + ".");
@@ -835,6 +867,8 @@
     setStatus("compress-status", "Reading…");
     $("compress-info").textContent = "";
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
       if (cstate) {
@@ -858,6 +892,8 @@
     markBusy(compressRun, true, "Rendering…");
     setStatus("compress-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var quality = Number($("compress-quality").value) / 100;
       var scale = Number($("compress-scale").value);
       var out = await PDFLib.PDFDocument.create();
@@ -909,6 +945,8 @@
     setStatus("watermark-status", "Reading…");
     $("watermark-info").textContent = "";
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var bytes = await bytesOf(file);
       var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       if (doc.isEncrypted) {
@@ -924,11 +962,18 @@
     }
   });
 
-  var WM_COLORS = {
-    black: PDFLib.rgb(0, 0, 0),
-    white: PDFLib.rgb(1, 1, 1),
-    red: PDFLib.rgb(0.72, 0.06, 0.06),
-  };
+  // pdf-lib is lazy-loaded, so build the palette on first use, not at startup.
+  var WM_COLORS = null;
+  function wmColors() {
+    if (!WM_COLORS) {
+      WM_COLORS = {
+        black: PDFLib.rgb(0, 0, 0),
+        white: PDFLib.rgb(1, 1, 1),
+        red: PDFLib.rgb(0.72, 0.06, 0.06),
+      };
+    }
+    return WM_COLORS;
+  }
 
   // pdf-lib rotates text around its anchor point (x, y), so solve the anchor
   // backwards from the text's estimated centre to rotate about (cx, cy).
@@ -956,6 +1001,8 @@
     markBusy(wmRun, true, "Watermarking…");
     setStatus("watermark-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(wmState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
         throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
@@ -966,7 +1013,7 @@
       var size = Number($("watermark-size").value);
       var opacity = Number($("watermark-opacity").value) / 100;
       var angle = Number($("watermark-rotate").value);
-      var color = WM_COLORS[$("watermark-color").value] || WM_COLORS.black;
+      var color = wmColors()[$("watermark-color").value] || wmColors().black;
       var pages = src.getPages();
       for (var i = 0; i < pages.length; i++) {
         placeRotatedText(
@@ -1016,6 +1063,8 @@
     setStatus("pagenum-status", "Reading…");
     $("pagenum-info").textContent = "";
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var bytes = await bytesOf(file);
       var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       if (doc.isEncrypted) {
@@ -1036,6 +1085,8 @@
     markBusy(pnRun, true, "Numbering pages…");
     setStatus("pagenum-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(pnState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
         throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
@@ -1104,6 +1155,8 @@
     $("unlock-info").textContent = "";
     $("unlock-note").hidden = true;
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       ulState = { bytes: bytes, name: file.name };
       var preview = null;
@@ -1138,6 +1191,10 @@
     setStatus("unlock-status", "");
     var pdf = null;
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var password = String($("unlock-password").value || "");
       var opts = { data: ulState.bytes.slice() };
       if (password) opts.password = password;
@@ -1199,6 +1256,8 @@
       exState = null;
     }
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
       exState = { pdf: pdf, name: file.name };
@@ -1435,6 +1494,8 @@
     setStatus("reorder-status", "Loading pages…");
 
     try {
+      await loadPdfjs();
+      pdfjsLib = window.pdfjsLib;
       var bytes = await bytesOf(file);
       var task = pdfjsLib.getDocument({ data: bytes.slice() });
       var pdf;
@@ -1474,6 +1535,8 @@
     markBusy(rrRun, true, "Building PDF…");
     setStatus("reorder-status", "");
     try {
+      await loadScript(PDFLIB_URL);
+      PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(rrState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
         throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
