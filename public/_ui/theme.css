@@ -1,0 +1,48 @@
+/* kokoapi.space — theme tokens. Default is dark; the light theme is applied with
+   <html data-theme="light">. Loaded AFTER the app's own stylesheet so it wins. */
+
+:root {
+  --bg: #0e0f13;
+  --bg-elevated: #16171d;
+  --bg-muted: #1e2027;
+  --border: #2a2c35;
+  --border-strong: #3b3e49;
+  --text: #ececf2;
+  --text-secondary: #b7b9c4;
+  --text-muted: #878b98;
+  --accent: #818cf8;
+  --accent-strong: #a5b0fb;
+  --accent-soft: #22284a;
+  --accent-contrast: #0e0f13;
+  --success: #34d399;
+  --success-soft: #0e352b;
+  --warning: #fbbf24;
+  --warning-soft: #3a2d0c;
+  --danger: #f87171;
+  --danger-soft: #3a1717;
+  --focus-ring: 0 0 0 3px rgb(129 140 248 / 0.4);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f7f8;
+  --bg-elevated: #ffffff;
+  --bg-muted: #edeef1;
+  --border: #e3e4e8;
+  --border-strong: #cfd1d8;
+  --text: #17181d;
+  --text-secondary: #4a4d57;
+  --text-muted: #6d707b;
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --accent-soft: #eef0fe;
+  --accent-contrast: #ffffff;
+  --success: #047857;
+  --success-soft: #d9f2e8;
+  --warning: #b45309;
+  --warning-soft: #fdeed3;
+  --danger: #b91c1c;
+  --danger-soft: #fbe3e3;
+  --focus-ring: 0 0 0 3px rgb(79 70 229 / 0.35);
+  color-scheme: light;
+}

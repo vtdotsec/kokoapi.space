@@ -216,7 +216,10 @@ async function handleCreate(req, res) {
     v: 1,
     kind: body.kind,
     createdAt: now(),
-    expiresAt: now() + LIFETIME_MS[body.expires],
+    // Expiration starts when the secret is first revealed (cipher GET), not at
+    // creation, so an unrevealed secret is never aged by the clock.
+    lifetime: LIFETIME_MS[body.expires],
+    expiresAt: null,
     burn: body.expires === "read",
     iv: iv.toString("base64url"),
     size,
@@ -262,6 +265,7 @@ async function handleMeta(req, res, id) {
   const meta = await loadMeta(id);
   if (!meta) return fail(res, 404, "Not found");
   const out = { ok: true, v: meta.v, kind: meta.kind, size: meta.size, iv: meta.iv, burn: meta.burn };
+  if (meta.expiresAt) out.expiresAt = meta.expiresAt;
   if (meta.kind === "file") {
     out.name = meta.name;
     out.type = meta.type;
@@ -281,6 +285,16 @@ async function handleCipher(req, res, id) {
     await fsp.rm(binPath(id), { force: true });
     await fsp.rm(metaPath(id), { force: true });
     return fail(res, 404, "Not found");
+  }
+
+  // First reveal of a time-limited secret: start the clock now.
+  if (!meta.burn && meta.expiresAt === null) {
+    meta.expiresAt = now() + (meta.lifetime || LIFETIME_MS["24h"]);
+    try {
+      await fsp.writeFile(metaPath(id), JSON.stringify(meta));
+    } catch {
+      // meta write failure: keep serving, the sweeper will retry the file.
+    }
   }
 
   let data;
@@ -321,13 +335,17 @@ async function sweep() {
   const t = now();
   const metaIds = new Set();
   const binIds = new Set();
+  const unrevealedMaxMs = 30 * 24 * 3600 * 1000; // safety cap for never-revealed blobs
   for (const name of entries) {
     if (name.endsWith(".json")) {
       const id = name.slice(0, -5);
       metaIds.add(id);
       try {
         const meta = JSON.parse(await fsp.readFile(metaPath(id), "utf8"));
-        if (meta.expiresAt && meta.expiresAt <= t) {
+        const expired = meta.expiresAt && meta.expiresAt <= t;
+        const staleUnrevealed =
+          meta.expiresAt === null && t - (meta.createdAt || 0) >= unrevealedMaxMs;
+        if (expired || staleUnrevealed) {
           await fsp.rm(metaPath(id), { force: true });
           await fsp.rm(binPath(id), { force: true });
         }

@@ -1,28 +1,9 @@
 ---
 const pathname = Astro.url.pathname;
 
-const pageLabel = pathname.startsWith("/secret/")
-  ? "Secret"
-  : pathname.startsWith("/pdf/")
-    ? "PDF"
-    : pathname.startsWith("/image/")
-      ? "Image"
-      : pathname.startsWith("/convert/")
-        ? "Convert"
-        : pathname.startsWith("/catalog/")
-          ? "Catalog"
-          : "";
-
-function currentFor(href: string): string | undefined {
-  return pathname === href || pathname.startsWith(href) ? "current" : undefined;
+function isActive(href: string): boolean {
+  return pathname === href || pathname.startsWith(href);
 }
-
-const links = [
-  { href: "/secret/", label: "Secret" },
-  { href: "/pdf/", label: "PDF tools" },
-  { href: "/image/", label: "Image tools" },
-  { href: "/convert/", label: "File converter" },
-];
 ---
 
 <header class="topbar">
@@ -37,36 +18,32 @@ const links = [
       </svg>
       <span>kokoapi<span class="space">.space</span></span>
     </a>
-    {pageLabel && (
-      <>
-        <span class="topbar-crumb" aria-hidden="true">/</span>
-        <span class="topbar-page">{pageLabel}</span>
-      </>
-    )}
-    <button
-      type="button"
-      class="menu-toggle"
-      id="site-menu-toggle"
-      aria-expanded="false"
-      aria-controls="site-menu"
-    >
-      <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true">
-        <rect x="1" y="2.5" width="14" height="1.6" rx="0.8" fill="currentColor" />
-        <rect x="1" y="7.2" width="14" height="1.6" rx="0.8" fill="currentColor" />
-        <rect x="1" y="11.9" width="14" height="1.6" rx="0.8" fill="currentColor" />
-      </svg>
-      <span>Menu</span>
-    </button>
-  </div>
-  <nav class="site-menu" id="site-menu" aria-label="kokoapi.space apps">
-    {links.map((link) => (
-      <a
-        class:list={["site-menu-link", currentFor(link.href)]}
-        aria-current={currentFor(link.href) ? "true" : undefined}
-        href={link.href}
+
+    <nav class="main-nav" aria-label="Tools">
+      <a class:list={["main-nav-link", { current: isActive("/image/") }]} data-i18n="nav.image" href="/image/">Image tools</a>
+      <a class:list={["main-nav-link", { current: isActive("/pdf/") }]} data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
+      <a class:list={["main-nav-link", { current: isActive("/convert/") }]} data-i18n="nav.convert" href="/convert/">File converter</a>
+      <a class:list={["main-nav-link", { current: isActive("/secret/") }]} data-i18n="nav.secret" href="/secret/">Secret Sender</a>
+      <a class:list={["main-nav-link", { current: isActive("/qrcode/") }]} data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
+    </nav>
+
+    <span class="top-actions">
+      <button
+        type="button"
+        class="nav-btn"
+        id="theme-toggle"
+        data-i18n="btn.theme"
+        aria-label="Toggle theme"
       >
-        {link.label}
-      </a>
-    ))}
-  </nav>
+        <svg class="theme-ico-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8" cy="8" r="3.2" />
+          <path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" />
+        </svg>
+        <svg class="theme-ico-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z" />
+        </svg>
+      </button>
+      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">PT</button>
+    </span>
+  </div>
 </header>

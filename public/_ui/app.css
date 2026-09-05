@@ -1,8 +1,7 @@
-/* kokoapi.space — shared top bar, site menu and layout.
-   Linked after each app's own stylesheet; tokens (:root) come from the app css. */
+/* kokoapi.space — shared top bar (inline nav), layout and controls.
+   Linked after each app's own stylesheet; tokens come from the app CSS. */
 
 .topbar {
-  position: relative;
   border-bottom: 1px solid var(--border);
   background: var(--bg-elevated);
 }
@@ -15,11 +14,12 @@
 }
 
 .topbar .wrap {
-  position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem;
-  height: 56px;
+  gap: 0.35rem 1.2rem;
+  min-height: 58px;
+  padding-block: 0.4rem;
 }
 
 .brand {
@@ -31,6 +31,7 @@
   font-size: 1.125rem;
   color: var(--text);
   white-space: nowrap;
+  margin-right: 0.4rem;
 }
 
 .brand:hover {
@@ -63,20 +64,41 @@
   fill: var(--accent);
 }
 
-.topbar-crumb {
-  color: var(--border-strong);
-  font-weight: 700;
-  user-select: none;
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem;
 }
 
-.topbar-page {
-  font-weight: 600;
-  font-size: 0.95rem;
+.main-nav-link {
   color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 
-.menu-toggle {
+.main-nav-link:hover {
+  color: var(--text);
+  background: var(--bg-muted);
+  text-decoration: none;
+}
+
+.main-nav-link[aria-current="page"],
+.main-nav-link.current {
+  color: var(--accent);
+}
+
+.top-actions {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -86,76 +108,39 @@
   color: var(--text-secondary);
   cursor: pointer;
   font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.4rem 0.55rem;
 }
 
-.menu-toggle:hover {
+.nav-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.menu-toggle[aria-expanded="true"] {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.menu-icon {
+.nav-btn svg {
+  width: 0.95rem;
+  height: 0.95rem;
   display: block;
-  width: 1rem;
-  height: 1rem;
 }
 
-.site-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: clamp(1rem, 4vw, 1.5rem);
-  z-index: 60;
+.theme-ico-dark,
+.theme-ico-light {
   display: none;
-  min-width: 230px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md, 0 6px 18px -8px rgb(0 0 0 / 0.18));
-  padding: 0.3rem;
 }
 
-.site-menu.open {
+html[data-theme="light"] .theme-ico-light {
   display: block;
 }
 
-.site-menu-link {
+html:not([data-theme="light"]) .theme-ico-dark {
   display: block;
-  padding: 0.45rem 0.7rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-secondary);
 }
 
-.site-menu-link:hover {
-  background: var(--bg-muted);
-  color: var(--text);
-  text-decoration: none;
-}
-
-.site-menu-link.current {
-  color: var(--accent);
-}
-
-/* App pages load their content in a <main class="wrap">; keep every page on the
-   same centered column. */
 main.wrap {
   width: 100%;
   max-width: 1000px;
   margin-inline: auto;
   padding-inline: clamp(1rem, 4vw, 1.5rem);
-}
-
-@media (max-width: 560px) {
-  .topbar-page {
-    display: none;
-  }
 }

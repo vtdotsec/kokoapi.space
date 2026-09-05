@@ -266,6 +266,7 @@
   function showReaderError(title, msg) {
     hide("reader-loading");
     hide("reader-content");
+    hide("reader-locked");
     show("reader-error");
     $("reader-error-title").textContent = title;
     $("reader-error-msg").textContent = msg;
@@ -395,13 +396,29 @@
       });
     });
 
+    var revealBtn = $("reveal-btn");
+    if (revealBtn) {
+      revealBtn.addEventListener("click", function () {
+        hide("reader-locked");
+        show("reader-loading");
+        handleRead();
+      });
+    }
+
     var id = pathId();
     if (id) {
       hide("create-view");
       hide("result-view");
       show("reader-view");
-      show("reader-loading");
-      handleRead();
+      if (readKey()) {
+        hide("reader-loading");
+        show("reader-locked");
+      } else {
+        showReaderError(
+          "Missing decryption key",
+          "The link needs its #key fragment to be decryptable. If you pasted it from a chat app, make sure the whole link was copied."
+        );
+      }
     } else {
       show("create-view");
     }

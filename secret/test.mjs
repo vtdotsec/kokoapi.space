@@ -128,7 +128,26 @@ async function main() {
     passed++;
   }
 
-  // 5. Sweep removes expired blobs
+  // 5. Timed secrets only start counting after the first read (reveal).
+  {
+    const content = Buffer.from("timed");
+    const { key, iv, cipher } = await encrypt(content);
+    const res = await createBlob({
+      v: 1, kind: "text", expires: "1h",
+      iv: iv.toString("base64url"), cipher: cipher.toString("base64url"), size: content.length,
+    });
+    const { id } = await res.json();
+    // Before reveal the secret has no expiry and must not be purged.
+    const before = await (await fetch(`${base}/secret/api/blob/${id}/meta`)).json();
+    assert.ok(before.expiresAt == null, "no expiry before reveal");
+    await readSecret(id, key);
+    const after = await (await fetch(`${base}/secret/api/blob/${id}/meta`)).json();
+    assert.ok(after.expiresAt > Date.now(), "expiry starts after reveal");
+    console.log("ok — expiry starts on reveal");
+    passed++;
+  }
+
+  // 6. Sweep removes expired blobs
   {
     const content = Buffer.from("old");
     const { iv, cipher } = await encrypt(content);
@@ -154,12 +173,12 @@ async function main() {
     passed++;
   }
 
-  // 6. Static page
+  // 7. Static page
   {
     const res = await fetch(`${base}/secret/`);
     assert.equal(res.status, 200);
     const html = await res.text();
-    assert.match(html, /Ephemeral sharing/);
+    assert.match(html, /Secret Sender/);
     const css = await fetch(`${base}/secret/app.css`);
     assert.equal(css.status, 200);
     const js = await fetch(`${base}/secret/app.js`);

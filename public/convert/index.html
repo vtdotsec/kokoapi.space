@@ -12,41 +12,45 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/convert/convert.css" />
     <link rel="stylesheet" href="/_ui/app.css" />
+    <link rel="stylesheet" href="/_ui/theme.css" />
     <script src="/convert/vendor/pdf-lib.min.js"></script>
     <script src="/convert/vendor/pdf.min.js"></script>
     <script src="/convert/vendor/fflate.js"></script>
     <script src="/convert/vendor/marked.umd.js"></script>
     <script src="/convert/vendor/js-yaml.min.js"></script>
     <script src="/convert/convert.js" defer></script>
-    <script src="/_ui/menu.js" defer></script>
+    <script src="/_ui/ui.js" defer></script>
   </head>
   <body>
     <header class="topbar">
-      <div class="wrap">
-        <a class="brand" href="/" aria-label="kokoapi.space — home">
-          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
-            <rect class="lg-plate" width="64" height="64" rx="13" />
-            <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
-            <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
-            <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
-            <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
-          </svg>
-          <span>kokoapi<span class="space">.space</span></span>
-        </a>
-        <span class="topbar-crumb" aria-hidden="true">/</span>
-        <span class="topbar-page">Convert</span>
-        <button type="button" class="menu-toggle" id="site-menu-toggle" aria-expanded="false" aria-controls="site-menu">
-          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="2.5" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="7.2" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="11.9" width="14" height="1.6" rx="0.8" fill="currentColor" /></svg>
-          <span>Menu</span>
-        </button>
-      </div>
-      <nav class="site-menu" id="site-menu" aria-label="kokoapi.space apps">
-        <a class="site-menu-link" href="/secret/">Secret</a>
-        <a class="site-menu-link" href="/pdf/">PDF tools</a>
-        <a class="site-menu-link" href="/image/">Image tools</a>
-        <a class="site-menu-link current" aria-current="true" href="/convert/">File converter</a>
-      </nav>
-    </header>
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="kokoapi.space — home">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect class="lg-plate" width="64" height="64" rx="13" />
+        <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+        <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+        <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+        <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+      </svg>
+      <span>kokoapi<span class="space">.space</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Tools">
+      <a class="main-nav-link" data-i18n="nav.image" href="/image/">Image tools</a>
+      <a class="main-nav-link" data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
+      <a class="main-nav-link" aria-current="page" data-i18n="nav.convert" href="/convert/">File converter</a>
+      <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
+      <a class="main-nav-link" data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
+    </nav>
+    <span class="top-actions">
+      <button type="button" class="nav-btn" id="theme-toggle" data-i18n="btn.theme" aria-label="Toggle theme">
+        <svg class="theme-ico-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
+        <svg class="theme-ico-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
+      </button>
+      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">PT</button>
+    </span>
+  </div>
+</header>
+
 
     <main class="wrap">
       <h1>File converter</h1>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR toolkit — kokoapi.space</title>
+    <meta name="description" content="Generate and scan QR codes in your browser. All processing happens locally on your device." />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/qrcode/qrcode.css" />
+    <link rel="stylesheet" href="/_ui/app.css" />
+    <link rel="stylesheet" href="/_ui/theme.css" />
+    <script src="/qrcode/vendor/qrcode.js"></script>
+    <script src="/qrcode/vendor/jsQR.js"></script>
+    <script src="/_ui/ui.js" defer></script>
+    <script src="/qrcode/qrcode.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="kokoapi.space — home">
+          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+            <rect class="lg-plate" width="64" height="64" rx="13" />
+            <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+            <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+            <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+            <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+          </svg>
+          <span>kokoapi<span class="space">.space</span></span>
+        </a>
+        <nav class="main-nav" aria-label="Tools">
+          <a class="main-nav-link" data-i18n="nav.image" href="/image/">Image tools</a>
+          <a class="main-nav-link" data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
+          <a class="main-nav-link" data-i18n="nav.convert" href="/convert/">File converter</a>
+          <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
+          <a class="main-nav-link current" data-i18n="nav.qrcode" aria-current="page" href="/qrcode/">QR toolkit</a>
+        </nav>
+        <span class="top-actions">
+          <button type="button" class="nav-btn" id="theme-toggle" data-i18n="btn.theme" aria-label="Toggle theme">
+            <svg class="theme-ico-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
+            <svg class="theme-ico-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
+          </button>
+          <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">PT</button>
+        </span>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <h1>QR toolkit</h1>
+      <p class="lead">Generate QR codes or scan one with your camera or an image.</p>
+      <p class="note">
+        Camera processing happens entirely on your device. No video frames or images leave
+        your browser.
+      </p>
+
+      <div class="seg" role="group" aria-label="Tool">
+        <button type="button" class="seg-btn" data-tool="gen" aria-pressed="true">Generate</button>
+        <button type="button" class="seg-btn" data-tool="scan" aria-pressed="false">Scan</button>
+      </div>
+
+      <!-- Generate -->
+      <section id="tool-gen" data-tool-panel>
+        <div class="cols">
+          <div class="col">
+            <label class="field-label" for="qr-type">Content type</label>
+            <select id="qr-type" class="select">
+              <option value="url">URL</option>
+              <option value="text">Text</option>
+              <option value="wifi">Wi-Fi</option>
+              <option value="vcard">vCard</option>
+              <option value="email">E-mail</option>
+              <option value="sms">SMS</option>
+              <option value="tel">Phone</option>
+            </select>
+
+            <div class="fields" id="qr-fields"></div>
+
+            <label class="field-label" for="qr-size">Size</label>
+            <input type="range" id="qr-size" min="160" max="640" step="16" value="320" class="range" />
+          </div>
+          <div class="col center">
+            <canvas id="qr-canvas" width="320" height="320" aria-label="Generated QR code"></canvas>
+            <div class="form-row">
+              <button type="button" id="qr-download" class="btn">Download PNG</button>
+              <span id="qr-status" class="status"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scan -->
+      <section id="tool-scan" data-tool-panel hidden>
+        <div class="cols">
+          <div class="col">
+            <div class="scan-box" id="scan-box">
+              <video id="scan-video" playsinline muted hidden></video>
+              <p class="muted" id="scan-idle">Camera is off.</p>
+            </div>
+            <div class="form-row">
+              <button type="button" id="scan-start" class="btn">Start camera</button>
+              <button type="button" id="scan-stop" class="btn ghost" disabled>Stop</button>
+            </div>
+            <label class="file-drop">
+              <input type="file" id="scan-file" accept="image/*" />
+              <span>…or scan an image file</span>
+            </label>
+          </div>
+          <div class="col">
+            <p class="field-label">Result</p>
+            <textarea id="scan-result" rows="5" readonly placeholder="Decoded content appears here."></textarea>
+            <div class="form-row">
+              <button type="button" id="scan-copy" class="btn ghost">Copy</button>
+            </div>
+            <p class="size-note" id="scan-status" role="status"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© 2026 kokoapi.space — MIT licensed.</span>
+        <span>No uploads · Camera stays on your device · No cookies</span>
+      </div>
+    </footer>
+  </body>
+</html>
