@@ -1,6 +1,6 @@
-// kokoapi.space — shared UI: language toggle, theme toggle and i18n application.
+// kokoapi.space — shared UI: language toggle, theme toggle and i18n engine.
 // All translations live in the central dictionary window.KOKO_I18N
-// (public/_ui/i18n-pages.js), which must be loaded before this file.
+// (public/_ui/i18n-pages.js), loaded before this file on every page.
 
 (function () {
   "use strict";
@@ -18,54 +18,80 @@
     return window.KOKO_I18N || {};
   }
 
-  function applyI18n(lang) {
+  function applyTo(el, text) {
+    // textContent assignment is safe for annotated leaves; for containers that
+    // only hold one text child we avoid wiping inner structure by keeping
+    // child nodes intact (annotated elements are leaves by convention).
+    if (el.childNodes.length === 1 && el.firstChild.nodeType === 3) {
+      el.firstChild.nodeValue = text;
+    } else if (!el.children || el.children.length === 0) {
+      el.textContent = text;
+    } else {
+      // Container with nested annotated elements (e.g. footer span + link):
+      // only replace its plain text nodes, leaving children untouched.
+      var nodes = Array.prototype.slice.call(el.childNodes);
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType === 3 && nodes[i].nodeValue && nodes[i].nodeValue.trim()) {
+          nodes[i].nodeValue = text;
+          break;
+        }
+      }
+    }
+  }
+
+  function updateTranslations(lang) {
     var D = dict();
     document.documentElement.setAttribute("lang", lang === "pt" ? "pt-BR" : "en");
 
-    // Explicit annotations: data-i18n (text), data-i18n-placeholder,
-    // data-i18n-value (inputs).
+    // 1) Text content via data-i18n.
     var nodes = document.querySelectorAll("[data-i18n]");
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
       var key = el.getAttribute("data-i18n");
-      if (D[key] && D[key][lang]) el.textContent = D[key][lang];
-    }
-    var ph = document.querySelectorAll("[data-i18n-placeholder]");
-    for (var j = 0; j < ph.length; j++) {
-      var pkey = ph[j].getAttribute("data-i18n-placeholder");
-      if (D[pkey] && D[pkey][lang]) ph[j].setAttribute("placeholder", D[pkey][lang]);
-    }
-    var val = document.querySelectorAll("[data-i18n-value]");
-    for (var k = 0; k < val.length; k++) {
-      var vkey = val[k].getAttribute("data-i18n-value");
-      if (D[vkey] && D[vkey][lang]) val[k].value = D[vkey][lang];
+      if (!key || !D[key] || !D[key][lang]) continue;
+      applyTo(el, D[key][lang]);
     }
 
-    if (lang !== "pt") return; // data-i18n nodes already restored to EN.
+    // 2) Placeholder / value attributes.
+    var attrMap = [
+      ["data-i18n-placeholder", "placeholder"],
+      ["data-i18n-value", "value"],
+      ["data-i18n-title", "title"],
+    ];
+    for (var a = 0; a < attrMap.length; a++) {
+      var q = document.querySelectorAll("[" + attrMap[a][0] + "]");
+      for (var b = 0; b < q.length; b++) {
+        var k = q[b].getAttribute(attrMap[a][0]);
+        if (D[k] && D[k][lang]) q[b].setAttribute(attrMap[a][1], D[k][lang]);
+      }
+    }
 
-    // Fallback: translate static leaf text that exactly matches a dictionary
-    // entry but has no annotation (covers any residual footer/middle strings).
+    if (lang !== "pt") return; // annotated nodes already restored to EN.
+
+    // 3) Fallback for unannotated static leaves whose exact text matches a
+    // dictionary entry (covers residual footer/middle strings).
     var byEn = {};
     Object.keys(D).forEach(function (key) {
       if (D[key] && D[key].en && D[key].pt) byEn[D[key].en] = D[key].pt;
     });
     var leaves = document.querySelectorAll(
-      "body p, body span, body a, body h1, body h2, body h3, body h4, body button, body label, body li, body th, body dt, body legend"
+      "body p, body span, body a, body h1, body h2, body h3, body h4, body button, body label, body li, body th, body dt, body legend, body div"
     );
     for (var m = 0; m < leaves.length; m++) {
       var el2 = leaves[m];
       if (el2.getAttribute && el2.getAttribute("data-i18n") !== null) continue;
       if (el2.children && el2.children.length) continue;
+      if (el2.closest && el2.closest("#theme-toggle, #lang-toggle")) continue;
       var t = (el2.textContent || "").trim();
       if (!t) continue;
       var pt = byEn[t];
-      if (pt) el2.textContent = pt;
+      if (pt) applyTo(el2, pt);
     }
   }
 
   function setLang(lang) {
     try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
-    applyI18n(lang);
+    updateTranslations(lang);
     var btn = document.getElementById("lang-toggle");
     if (btn) {
       var us = btn.querySelector(".flag-us");
@@ -101,7 +127,7 @@
     }
   }
 
-  ready(function () {
+  function init() {
     setTheme(getTheme());
 
     var themeBtn = document.getElementById("theme-toggle");
@@ -118,5 +144,19 @@
       });
     }
     setLang(getLang());
-  });
+
+    // Re-run once everything (fonts/layout, late nodes) is fully loaded.
+    if (document.readyState === "complete") {
+      updateTranslations(getLang());
+    } else {
+      window.addEventListener("load", function () {
+        updateTranslations(getLang());
+      });
+    }
+  }
+
+  // Public handle (also useful for tests / manual re-application).
+  window.updateTranslations = updateTranslations;
+
+  ready(init);
 })();
