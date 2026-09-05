@@ -158,7 +158,7 @@
   /* Tab switching                                                     */
   /* ================================================================ */
 
-  var TOOLS = ["convert", "resize", "strip"];
+  var TOOLS = ["convert", "resize", "strip", "crop", "wmark", "filters", "batch"];
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
 
   function activate(tool) {
@@ -380,6 +380,576 @@
       setStatus("strip-status", err && err.message ? err.message : "Stripping failed.", true);
     } finally {
       markBusy(stripRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Crop                                                              */
+  /* ================================================================ */
+
+  var cropState = null; // { file, canvas } decoded at natural size
+  var cropSel = null;   // { x, y, w, h } in source pixels
+  var cropDrag = null;  // drag start in source pixels
+  var cropCanvas = $("crop-canvas");
+  var cropRun = $("crop-run");
+  var cropReset = $("crop-reset");
+  var cropRaf = 0;
+
+  function cropPos(e) {
+    var rect = cropCanvas.getBoundingClientRect();
+    var sx = rect.width ? cropCanvas.width / rect.width : 1;
+    var sy = rect.height ? cropCanvas.height / rect.height : 1;
+    return {
+      x: (e.clientX - rect.left) * sx,
+      y: (e.clientY - rect.top) * sy,
+    };
+  }
+
+  function cropNormalize(a, b) {
+    var W = cropState.canvas.width;
+    var H = cropState.canvas.height;
+    var x = Math.max(0, Math.round(Math.min(a.x, b.x, W)));
+    var y = Math.max(0, Math.round(Math.min(a.y, b.y, H)));
+    var x2 = Math.max(0, Math.round(Math.min(Math.max(a.x, b.x), W)));
+    var y2 = Math.max(0, Math.round(Math.min(Math.max(a.y, b.y), H)));
+    var w = x2 - x;
+    var h = y2 - y;
+    if (w < 1 || h < 1) return null;
+    return { x: x, y: y, w: w, h: h };
+  }
+
+  function cropSync() {
+    var s = cropSel;
+    cropRun.disabled = !s;
+    cropReset.disabled = !s;
+    $("crop-readout").textContent = s
+      ? "x " + s.x + ", y " + s.y + ", w " + s.w + ", h " + s.h + " px"
+      : "";
+  }
+
+  function cropDraw() {
+    if (!cropState) return;
+    var src = cropState.canvas;
+    var ctx = cropCanvas.getContext("2d");
+    cropCanvas.hidden = false;
+    cropCanvas.width = src.width;
+    cropCanvas.height = src.height;
+    ctx.clearRect(0, 0, src.width, src.height);
+    ctx.drawImage(src, 0, 0);
+    var s = cropSel;
+    if (!s) return;
+    var W = src.width;
+    var H = src.height;
+    ctx.fillStyle = "rgba(10, 12, 20, 0.42)";
+    ctx.fillRect(0, 0, W, s.y);
+    ctx.fillRect(0, s.y + s.h, W, H - s.y - s.h);
+    ctx.fillRect(0, s.y, s.x, s.h);
+    ctx.fillRect(s.x + s.w, s.y, W - s.x - s.w, s.h);
+    var rect = cropCanvas.getBoundingClientRect();
+    var sc = rect.width ? cropCanvas.width / rect.width : 1;
+    ctx.save();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.lineWidth = Math.max(1, 1.5 / sc);
+    ctx.setLineDash([Math.max(3, 6 / sc), Math.max(2, 4 / sc)]);
+    var lw = ctx.lineWidth;
+    ctx.strokeRect(s.x + lw / 2, s.y + lw / 2, Math.max(lw, s.w - lw), Math.max(lw, s.h - lw));
+    ctx.restore();
+  }
+
+  function cropScheduleDraw() {
+    if (cropRaf) return;
+    cropRaf = requestAnimationFrame(function () {
+      cropRaf = 0;
+      cropDraw();
+    });
+  }
+
+  cropCanvas.addEventListener("pointerdown", function (e) {
+    if (!cropState) return;
+    cropCanvas.setPointerCapture(e.pointerId);
+    cropDrag = cropPos(e);
+    cropSel = null;
+    cropDraw();
+    cropSync();
+  });
+
+  cropCanvas.addEventListener("pointermove", function (e) {
+    if (!cropDrag) return;
+    cropSel = cropNormalize(cropDrag, cropPos(e));
+    cropSync();
+    cropScheduleDraw();
+  });
+
+  function cropEnd(e) {
+    if (!cropDrag) return;
+    if (cropCanvas.hasPointerCapture && cropCanvas.hasPointerCapture(e.pointerId)) {
+      cropCanvas.releasePointerCapture(e.pointerId);
+    }
+    cropDrag = null;
+    cropDraw();
+    cropSync();
+  }
+  cropCanvas.addEventListener("pointerup", cropEnd);
+  cropCanvas.addEventListener("pointercancel", cropEnd);
+
+  $("crop-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    cropState = null;
+    cropSel = null;
+    cropDrag = null;
+    cropRun.disabled = true;
+    cropReset.disabled = true;
+    cropCanvas.hidden = true;
+    $("crop-readout").textContent = "";
+    setStatus("crop-status", "Decoding…");
+    $("crop-info").textContent = "";
+    try {
+      var canvas = await decodeToCanvas(file);
+      cropState = { file: file, canvas: canvas };
+      $("crop-info").textContent =
+        file.name + " — " + readableBytes(file.size) + " — " + canvas.width + "×" + canvas.height + " px";
+      cropDraw();
+      cropSync();
+      setStatus("crop-status", "Drag across the image to select a crop area.");
+    } catch (err) {
+      setStatus("crop-status", err && err.message ? err.message : "The file could not be decoded.", true);
+    }
+  });
+
+  cropReset.addEventListener("click", function () {
+    cropSel = null;
+    cropDrag = null;
+    cropDraw();
+    cropSync();
+    setStatus("crop-status", "Selection cleared.");
+  });
+
+  cropRun.addEventListener("click", async function () {
+    if (!cropState || !cropSel) return;
+    var s = cropSel;
+    markBusy(cropRun, true, "Cropping…");
+    setStatus("crop-status", "");
+    try {
+      var out = document.createElement("canvas");
+      out.width = s.w;
+      out.height = s.h;
+      out.getContext("2d").drawImage(cropState.canvas, s.x, s.y, s.w, s.h, 0, 0, s.w, s.h);
+      var blob = await canvasToBlob(out, "image/png");
+      var base = cleanName(baseName(cropState.file.name));
+      download(blob, base + "-crop.png");
+      setStatus("crop-status", "Saved " + s.w + "×" + s.h + " px crop as " + base + "-crop.png.");
+    } catch (err) {
+      setStatus("crop-status", err && err.message ? err.message : "Cropping failed.", true);
+    } finally {
+      markBusy(cropRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Watermark                                                         */
+  /* ================================================================ */
+
+  var wmarkState = null; // { file, canvas }
+  var wmarkLogo = null;  // { file, canvas }
+  var wmarkRun = $("wmark-run");
+  var wmarkSize = $("wmark-size");
+  var wmarkTimer = 0;
+  var UI_FONT = '"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
+
+  bindRangeOutput("wmark-size");
+  bindRangeOutput("wmark-opacity");
+
+  function wmarkIsLogo() {
+    return checkedRadio("wmark-mode") === "logo";
+  }
+
+  function wmarkAnchor(pos) {
+    var ax = 0.5;
+    var ay = 0.5;
+    if (pos.indexOf("left") !== -1) ax = 0;
+    else if (pos.indexOf("right") !== -1) ax = 1;
+    if (pos.indexOf("top") !== -1) ay = 0;
+    else if (pos.indexOf("bottom") !== -1) ay = 1;
+    return { ax: ax, ay: ay };
+  }
+
+  function wmarkInset(w, h) {
+    return Math.max(10, Math.round(Math.min(w, h) * 0.035));
+  }
+
+  function wmarkPlace(bw, bh, W, H, a) {
+    var pad = wmarkInset(W, H);
+    var x = a.ax * (W - bw) + (a.ax === 0 ? pad : a.ax === 1 ? -pad : 0);
+    var y = a.ay * (H - bh) + (a.ay === 0 ? pad : a.ay === 1 ? -pad : 0);
+    return { x: Math.round(x), y: Math.round(y) };
+  }
+
+  function wmarkDrawText(ctx, W, H) {
+    var text = $("wmark-text").value;
+    if (!String(text).trim()) return;
+    var size = Number(wmarkSize.value) || 48;
+    ctx.font = "600 " + size + "px " + UI_FONT;
+    var tw = ctx.measureText(text).width;
+    var bh = Math.round(size * 1.2);
+    var p = wmarkPlace(tw, bh, W, H, wmarkAnchor($("wmark-pos").value));
+    var off = Math.max(1, Math.round(size / 60));
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = off;
+    ctx.shadowOffsetY = off;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(text, p.x, p.y + Math.round(size * 0.1));
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowColor = "transparent";
+  }
+
+  function wmarkDrawLogo(ctx, W, H) {
+    if (!wmarkLogo) return;
+    var logo = wmarkLogo.canvas;
+    var pct = (Number(wmarkSize.value) || 25) / 100;
+    var lw = Math.max(1, Math.round(W * pct));
+    var lh = Math.max(1, Math.round(logo.height * (lw / logo.width)));
+    var p = wmarkPlace(lw, lh, W, H, wmarkAnchor($("wmark-pos").value));
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(logo, p.x, p.y, lw, lh);
+  }
+
+  function wmarkRenderNow() {
+    if (!wmarkState) return;
+    var base = wmarkState.canvas;
+    var cv = $("wmark-preview");
+    var ctx = cv.getContext("2d");
+    cv.hidden = false;
+    cv.width = base.width;
+    cv.height = base.height;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(base, 0, 0);
+    ctx.save();
+    var alpha = Number($("wmark-opacity").value) / 100;
+    ctx.globalAlpha = alpha < 1 ? alpha : 1;
+    if (wmarkIsLogo()) wmarkDrawLogo(ctx, cv.width, cv.height);
+    else wmarkDrawText(ctx, cv.width, cv.height);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  function wmarkSchedule() {
+    if (wmarkTimer) clearTimeout(wmarkTimer);
+    wmarkTimer = setTimeout(function () {
+      wmarkTimer = 0;
+      wmarkRenderNow();
+    }, 80);
+  }
+
+  function wmarkSyncMode() {
+    var logo = wmarkIsLogo();
+    $("wmark-text-line").hidden = logo;
+    $("wmark-logo-line").hidden = !logo;
+    if (logo) {
+      wmarkSize.min = "5";
+      wmarkSize.max = "100";
+      wmarkSize.value = "25";
+      $("wmark-size-label").textContent = "Size (% of width)";
+    } else {
+      wmarkSize.min = "8";
+      wmarkSize.max = "160";
+      wmarkSize.value = "48";
+      $("wmark-size-label").textContent = "Font size (px)";
+    }
+    var out = document.querySelector('output[for="wmark-size"]');
+    if (out) out.textContent = wmarkSize.value;
+    wmarkSchedule();
+  }
+
+  Array.prototype.slice
+    .call(document.querySelectorAll('input[name="wmark-mode"]'))
+    .forEach(function (el) {
+      el.addEventListener("change", wmarkSyncMode);
+    });
+  wmarkSyncMode();
+
+  $("wmark-text").addEventListener("input", wmarkSchedule);
+  wmarkSize.addEventListener("input", wmarkSchedule);
+  $("wmark-opacity").addEventListener("input", wmarkSchedule);
+  $("wmark-pos").addEventListener("change", wmarkSchedule);
+
+  $("wmark-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    wmarkRun.disabled = true;
+    wmarkState = null;
+    setStatus("wmark-status", "Decoding…");
+    $("wmark-info").textContent = "";
+    try {
+      var canvas = await decodeToCanvas(file);
+      wmarkState = { file: file, canvas: canvas };
+      $("wmark-info").textContent =
+        file.name + " — " + readableBytes(file.size) + " — " + canvas.width + "×" + canvas.height + " px";
+      wmarkRun.disabled = false;
+      wmarkRenderNow();
+      setStatus("wmark-status", "");
+    } catch (err) {
+      setStatus("wmark-status", err && err.message ? err.message : "The file could not be decoded.", true);
+    }
+  });
+
+  $("wmark-logo").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    wmarkLogo = null;
+    setStatus("wmark-status", "Decoding logo…");
+    try {
+      var canvas = await decodeToCanvas(file);
+      wmarkLogo = { file: file, canvas: canvas };
+      setStatus("wmark-status", "Logo ready: " + file.name + ".");
+      wmarkSchedule();
+    } catch (err) {
+      setStatus("wmark-status", "Logo could not be decoded.", true);
+    }
+  });
+
+  wmarkRun.addEventListener("click", async function () {
+    if (!wmarkState) return;
+    if (!wmarkIsLogo() && !String($("wmark-text").value).trim()) {
+      setStatus("wmark-status", "Enter the watermark text first.", true);
+      return;
+    }
+    if (wmarkIsLogo() && !wmarkLogo) {
+      setStatus("wmark-status", "Choose a logo image first.", true);
+      return;
+    }
+    markBusy(wmarkRun, true, "Rendering…");
+    setStatus("wmark-status", "");
+    try {
+      wmarkRenderNow();
+      var fmt = $("wmark-format").value;
+      var mime = TYPE_TO_MIME[fmt];
+      var blob = await canvasToBlob($("wmark-preview"), mime, fmt === "png" ? undefined : 0.92);
+      var base = cleanName(baseName(wmarkState.file.name));
+      download(blob, base + "-watermarked." + TYPE_TO_EXT[fmt]);
+      setStatus(
+        "wmark-status",
+        "Saved " + base + "-watermarked." + TYPE_TO_EXT[fmt] + " (" + readableBytes(blob.size) + ")."
+      );
+    } catch (err) {
+      setStatus("wmark-status", err && err.message ? err.message : "Watermarking failed.", true);
+    } finally {
+      markBusy(wmarkRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Filters                                                           */
+  /* ================================================================ */
+
+  var filtersState = null; // { file, canvas }
+  var filtersRun = $("filters-run");
+  var filtersTimer = 0;
+
+  bindRangeOutput("filters-brightness");
+  bindRangeOutput("filters-contrast");
+  bindRangeOutput("filters-saturation");
+
+  function filtersFilterString() {
+    var parts = [];
+    var b = Number($("filters-brightness").value);
+    if (b) parts.push("brightness(" + (1 + b / 100) + ")");
+    var c = Number($("filters-contrast").value);
+    if (c) parts.push("contrast(" + (1 + c / 100) + ")");
+    var s = Number($("filters-saturation").value);
+    if (s) parts.push("saturate(" + (1 + s / 100) + ")");
+    if ($("filters-gray").checked) parts.push("grayscale(1)");
+    if ($("filters-invert").checked) parts.push("invert(1)");
+    return parts.length ? parts.join(" ") : "none";
+  }
+
+  function filtersDraw() {
+    if (!filtersState) return;
+    var cv = $("filters-preview");
+    var ctx = cv.getContext("2d");
+    cv.hidden = false;
+    cv.width = filtersState.canvas.width;
+    cv.height = filtersState.canvas.height;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.filter = filtersFilterString();
+    ctx.drawImage(filtersState.canvas, 0, 0);
+    ctx.filter = "none";
+  }
+
+  function filtersSchedule() {
+    if (filtersTimer) clearTimeout(filtersTimer);
+    filtersTimer = setTimeout(function () {
+      filtersTimer = 0;
+      filtersDraw();
+    }, 60);
+  }
+
+  ["filters-brightness", "filters-contrast", "filters-saturation"].forEach(function (id) {
+    $(id).addEventListener("input", filtersSchedule);
+  });
+  ["filters-gray", "filters-invert"].forEach(function (id) {
+    $(id).addEventListener("change", filtersSchedule);
+  });
+
+  $("filters-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    filtersRun.disabled = true;
+    filtersState = null;
+    setStatus("filters-status", "Decoding…");
+    $("filters-info").textContent = "";
+    try {
+      var canvas = await decodeToCanvas(file);
+      filtersState = { file: file, canvas: canvas };
+      $("filters-info").textContent =
+        file.name + " — " + readableBytes(file.size) + " — " + canvas.width + "×" + canvas.height + " px";
+      filtersRun.disabled = false;
+      filtersDraw();
+      setStatus("filters-status", "");
+    } catch (err) {
+      setStatus("filters-status", err && err.message ? err.message : "The file could not be decoded.", true);
+    }
+  });
+
+  $("filters-reset").addEventListener("click", function () {
+    $("filters-brightness").value = "0";
+    $("filters-contrast").value = "0";
+    $("filters-saturation").value = "0";
+    $("filters-gray").checked = false;
+    $("filters-invert").checked = false;
+    ["filters-brightness", "filters-contrast", "filters-saturation"].forEach(function (id) {
+      var out = document.querySelector('output[for="' + id + '"]');
+      if (out) out.textContent = "0";
+    });
+    filtersDraw();
+    setStatus("filters-status", "Filters reset.");
+  });
+
+  filtersRun.addEventListener("click", async function () {
+    if (!filtersState) return;
+    markBusy(filtersRun, true, "Encoding…");
+    setStatus("filters-status", "");
+    try {
+      filtersDraw();
+      var blob = await canvasToBlob($("filters-preview"), "image/png");
+      var base = cleanName(baseName(filtersState.file.name));
+      download(blob, base + "-filtered.png");
+      setStatus("filters-status", "Saved " + base + "-filtered.png (" + readableBytes(blob.size) + ").");
+    } catch (err) {
+      setStatus("filters-status", err && err.message ? err.message : "Encoding failed.", true);
+    } finally {
+      markBusy(filtersRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Batch                                                             */
+  /* ================================================================ */
+
+  var batchFiles = [];
+  var batchRun = $("batch-run");
+  var batchLongest = $("batch-longest");
+  bindRangeOutput("batch-quality");
+
+  function batchRefreshList() {
+    var ul = $("batch-list");
+    ul.textContent = "";
+    var total = 0;
+    batchFiles.forEach(function (f) {
+      total += f.size;
+      var li = document.createElement("li");
+      var nm = document.createElement("span");
+      nm.textContent = baseName(f.name);
+      var sz = document.createElement("span");
+      sz.className = "fs";
+      sz.textContent = readableBytes(f.size);
+      li.appendChild(nm);
+      li.appendChild(sz);
+      ul.appendChild(li);
+    });
+    $("batch-note").textContent = batchFiles.length
+      ? batchFiles.length + " image" + (batchFiles.length === 1 ? "" : "s") + " selected — " + readableBytes(total) + " total."
+      : "";
+    batchRun.disabled = batchFiles.length === 0;
+  }
+
+  function batchUniqueName(used, name) {
+    if (!used[name]) {
+      used[name] = 1;
+      return name;
+    }
+    var dot = name.lastIndexOf(".");
+    var stem = dot > 0 ? name.slice(0, dot) : name;
+    var ext = dot > 0 ? name.slice(dot) : "";
+    for (var i = 2; i < 10000; i++) {
+      var cand = stem + " (" + i + ")" + ext;
+      if (!used[cand]) {
+        used[cand] = 1;
+        return cand;
+      }
+    }
+    return name;
+  }
+
+  $("batch-files").addEventListener("change", function (e) {
+    batchFiles = Array.prototype.slice.call(e.target.files || []);
+    batchRefreshList();
+    setStatus("batch-status", "");
+    e.target.value = "";
+  });
+
+  batchRun.addEventListener("click", async function () {
+    if (batchFiles.length === 0) return;
+    var fmt = $("batch-format").value;
+    var mime = TYPE_TO_MIME[fmt];
+    var ext = TYPE_TO_EXT[fmt];
+    var quality = mime === "image/png" ? undefined : Number($("batch-quality").value) / 100;
+    var longest = Number(batchLongest.value);
+    if (!isFinite(longest) || longest <= 0) longest = 0;
+
+    markBusy(batchRun, true, "Converting…");
+    setStatus("batch-status", "");
+    var entries = {};
+    var used = {};
+    try {
+      for (var i = 0; i < batchFiles.length; i++) {
+        var file = batchFiles[i];
+        var canvas = await decodeToCanvas(file);
+        if (longest > 0) {
+          var m = Math.max(canvas.width, canvas.height);
+          if (longest < m) {
+            var k = longest / m;
+            canvas = scaledCanvas(
+              canvas,
+              Math.max(1, Math.round(canvas.width * k)),
+              Math.max(1, Math.round(canvas.height * k))
+            );
+          }
+        }
+        var blob = await canvasToBlob(canvas, mime, quality);
+        var name = batchUniqueName(used, cleanName(baseName(file.name)) + "." + ext);
+        entries[name] = new Uint8Array(await blob.arrayBuffer());
+        setStatus("batch-status", "Converted " + (i + 1) + " of " + batchFiles.length + ".");
+      }
+      var zip = fflate.zipSync(entries, { level: 6 });
+      var zipName = "images-" + fmt + ".zip";
+      download(new Blob([zip], { type: "application/zip" }), zipName);
+      setStatus(
+        "batch-status",
+        "Converted " + batchFiles.length + " image" + (batchFiles.length === 1 ? "" : "s") + " → " + zipName + " (" + readableBytes(zip.length) + ")."
+      );
+    } catch (err) {
+      setStatus("batch-status", err && err.message ? err.message : "Batch conversion failed.", true);
+    } finally {
+      markBusy(batchRun, false);
     }
   });
 

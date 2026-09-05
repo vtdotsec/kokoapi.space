@@ -11,8 +11,10 @@
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/image/image.css" />
+    <link rel="stylesheet" href="/_ui/app.css" />
     <script src="/image/vendor/fflate.js"></script>
     <script src="/image/image.js" defer></script>
+    <script src="/_ui/menu.js" defer></script>
   </head>
   <body>
     <header class="topbar">
@@ -27,9 +29,19 @@
           </svg>
           <span>kokoapi<span class="space">.space</span></span>
         </a>
-        <span class="crumb" aria-hidden="true">/</span>
-        <a class="crumb-link" href="/image/">image</a>
+        <span class="topbar-crumb" aria-hidden="true">/</span>
+        <span class="topbar-page">Image</span>
+        <button type="button" class="menu-toggle" id="site-menu-toggle" aria-expanded="false" aria-controls="site-menu">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="2.5" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="7.2" width="14" height="1.6" rx="0.8" fill="currentColor" /><rect x="1" y="11.9" width="14" height="1.6" rx="0.8" fill="currentColor" /></svg>
+          <span>Menu</span>
+        </button>
       </div>
+      <nav class="site-menu" id="site-menu" aria-label="kokoapi.space apps">
+        <a class="site-menu-link" href="/secret/">Secret</a>
+        <a class="site-menu-link" href="/pdf/">PDF tools</a>
+        <a class="site-menu-link current" aria-current="true" href="/image/">Image tools</a>
+        <a class="site-menu-link" href="/convert/">File converter</a>
+      </nav>
     </header>
 
     <main class="wrap">
@@ -46,6 +58,10 @@
         <button type="button" class="seg-btn" data-tool="convert" aria-pressed="true">Convert</button>
         <button type="button" class="seg-btn" data-tool="resize" aria-pressed="false">Compress &amp; Resize</button>
         <button type="button" class="seg-btn" data-tool="strip" aria-pressed="false">Strip Metadata</button>
+        <button type="button" class="seg-btn" data-tool="crop" aria-pressed="false">Crop</button>
+        <button type="button" class="seg-btn" data-tool="wmark" aria-pressed="false">Watermark</button>
+        <button type="button" class="seg-btn" data-tool="filters" aria-pressed="false">Filters</button>
+        <button type="button" class="seg-btn" data-tool="batch" aria-pressed="false">Batch</button>
       </div>
 
       <!-- Convert -->
@@ -143,6 +159,178 @@
         <div class="form-row">
           <button type="button" id="strip-run" class="btn" disabled>Strip and download</button>
           <span id="strip-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Crop -->
+      <section id="tool-crop" data-tool-panel hidden>
+        <label class="file-drop" for="crop-file">
+          <input type="file" id="crop-file" accept="image/*" />
+          <span>Choose an image to crop</span>
+        </label>
+        <p class="size-note" id="crop-info"></p>
+
+        <canvas id="crop-canvas" class="preview-canvas crop-canvas" hidden></canvas>
+        <p class="crop-readout" id="crop-readout"></p>
+        <p class="size-note">Drag across the image to draw a selection. Coordinates are in source pixels.</p>
+
+        <div class="form-row">
+          <button type="button" id="crop-run" class="btn" disabled>Crop &amp; download PNG</button>
+          <button type="button" id="crop-reset" class="btn btn-ghost" disabled>Reset selection</button>
+          <span id="crop-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Watermark -->
+      <section id="tool-wmark" data-tool-panel hidden>
+        <label class="file-drop" for="wmark-file">
+          <input type="file" id="wmark-file" accept="image/*" />
+          <span>Choose an image to watermark</span>
+        </label>
+        <p class="size-note" id="wmark-info"></p>
+
+        <canvas id="wmark-preview" class="preview-canvas" hidden></canvas>
+
+        <fieldset class="options">
+          <legend>Watermark</legend>
+          <div class="opts">
+            <label class="radio"><input type="radio" name="wmark-mode" value="text" checked /><span>Text</span></label>
+            <label class="radio"><input type="radio" name="wmark-mode" value="logo" /><span>Logo image</span></label>
+          </div>
+          <div class="opt-stack">
+            <label class="wmark-text-row" id="wmark-text-line">
+              <span>Text</span>
+              <input type="text" id="wmark-text" class="text-input" maxlength="200" value="©" />
+            </label>
+            <label class="file-drop" id="wmark-logo-line" hidden>
+              <input type="file" id="wmark-logo" accept="image/png,image/jpeg,image/webp" />
+              <span>Choose logo image (PNG / JPEG / WebP)</span>
+            </label>
+            <label class="range-row">
+              <span id="wmark-size-label">Font size (px)</span>
+              <input type="range" id="wmark-size" min="8" max="160" value="48" />
+              <output for="wmark-size">48</output>
+            </label>
+            <label class="range-row">
+              <span>Opacity (%)</span>
+              <input type="range" id="wmark-opacity" min="5" max="100" value="60" />
+              <output for="wmark-opacity">60</output>
+            </label>
+            <div class="opts">
+              <span class="opt-label">Position</span>
+              <select class="select" id="wmark-pos">
+                <option value="top-left">top-left</option>
+                <option value="top-center">top-center</option>
+                <option value="top-right">top-right</option>
+                <option value="center-left">center-left</option>
+                <option value="center">center</option>
+                <option value="center-right">center-right</option>
+                <option value="bottom-left">bottom-left</option>
+                <option value="bottom-center">bottom-center</option>
+                <option value="bottom-right" selected>bottom-right</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="options">
+          <legend>Export</legend>
+          <div class="opts">
+            <span class="opt-label">Format</span>
+            <select class="select" id="wmark-format">
+              <option value="png" selected>PNG</option>
+              <option value="jpeg">JPEG</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="wmark-run" class="btn" disabled>Download watermarked</button>
+          <span id="wmark-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section id="tool-filters" data-tool-panel hidden>
+        <label class="file-drop" for="filters-file">
+          <input type="file" id="filters-file" accept="image/*" />
+          <span>Choose an image to filter</span>
+        </label>
+        <p class="size-note" id="filters-info"></p>
+
+        <canvas id="filters-preview" class="preview-canvas" hidden></canvas>
+
+        <fieldset class="options">
+          <legend>Adjustments</legend>
+          <div class="opt-stack">
+            <label class="range-row">
+              <span>Brightness</span>
+              <input type="range" id="filters-brightness" min="-100" max="100" value="0" />
+              <output for="filters-brightness">0</output>
+            </label>
+            <label class="range-row">
+              <span>Contrast</span>
+              <input type="range" id="filters-contrast" min="-100" max="100" value="0" />
+              <output for="filters-contrast">0</output>
+            </label>
+            <label class="range-row">
+              <span>Saturation</span>
+              <input type="range" id="filters-saturation" min="-100" max="100" value="0" />
+              <output for="filters-saturation">0</output>
+            </label>
+            <div class="opts">
+              <label class="radio"><input type="checkbox" id="filters-gray" /><span>Grayscale</span></label>
+              <label class="radio"><input type="checkbox" id="filters-invert" /><span>Invert</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="filters-run" class="btn" disabled>Download PNG</button>
+          <button type="button" id="filters-reset" class="btn btn-ghost">Reset</button>
+          <span id="filters-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Batch -->
+      <section id="tool-batch" data-tool-panel hidden>
+        <label class="file-drop" for="batch-files">
+          <input type="file" id="batch-files" accept="image/*" multiple />
+          <span>Choose one or more images to convert</span>
+        </label>
+        <p class="size-note" id="batch-note"></p>
+        <ul class="file-list" id="batch-list"></ul>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="opt-stack">
+            <div class="opts">
+              <span class="opt-label">Format</span>
+              <select class="select" id="batch-format">
+                <option value="png" selected>PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+              </select>
+            </div>
+            <label class="range-row">
+              <span>Quality (JPEG / WebP)</span>
+              <input type="range" id="batch-quality" min="10" max="100" value="85" />
+              <output for="batch-quality">85</output>
+            </label>
+            <label class="range-row">
+              <span>Longest side (px)</span>
+              <input type="number" id="batch-longest" class="num-input" min="0" max="20000" step="1" value="" placeholder="0" />
+              <span class="hint">blank or 0 = keep original size</span>
+            </label>
+          </div>
+        </fieldset>
+        <p class="size-note">
+          Everything is re-encoded (metadata stripped). PNG ignores the quality setting.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="batch-run" class="btn" disabled>Convert &amp; download ZIP</button>
+          <span id="batch-status" class="status" role="status"></span>
         </div>
       </section>
 
