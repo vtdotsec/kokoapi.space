@@ -12,10 +12,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "npm run build && playwright test",
+    "test:e2e:ui": "npm run build && playwright test --ui"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.49.1",
     "typescript": "^6.0.3"
   },
   "dependencies": {

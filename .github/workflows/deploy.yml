@@ -1,0 +1,60 @@
+# Deploys kokoapi.space on every push to main.
+# 1) CI validates that the Astro site builds cleanly.
+# 2) The production VM is notified over SSH to pull and rebuild the Docker
+#    containers (catalog nginx + secret node service).
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate build
+        run: npm run build
+
+      - name: Type/content check
+        run: npm run check
+
+  deploy:
+    name: Deploy to production
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || '22' }}
+          script: |
+            set -e
+            cd "$DEPLOY_PATH"
+            git pull --ff-only origin main
+            docker compose up -d --build
+            docker compose ps
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
