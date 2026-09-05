@@ -678,3 +678,38 @@ main.wrap {
     flex: none;
   }
 }
+
+/* ---------- mobile accordion sidebar ---------- */
+.side-toggle {
+  display: none;
+  width: 100%;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: left;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.side-toggle[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .pdf-side .side-toggle {
+    display: block;
+  }
+  .pdf-side .seg {
+    display: none;
+  }
+  .pdf-side.open .seg {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.4rem;
+  }
+}

@@ -74,6 +74,17 @@
       });
     }
 
+    // Accordion toggles for the mobile sidebars (pdf/convert tools).
+    var toggles = document.querySelectorAll(".side-toggle");
+    Array.prototype.forEach.call(toggles, function (toggle) {
+      toggle.addEventListener("click", function () {
+        var host = toggle.closest(".pdf-side, .cv-side");
+        if (!host) return;
+        var open = host.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", String(open));
+      });
+    });
+
     // Drag & drop for every <label class="file-drop"> wrapping a file input,
     // with accept/type/empty-file validation before the change event fires.
     var inputs = document.querySelectorAll("label.file-drop input[type=file]");

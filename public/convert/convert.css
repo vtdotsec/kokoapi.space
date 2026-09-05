@@ -450,3 +450,43 @@ main.wrap { padding-block: 2.5rem 3rem; }
     display: none;
   }
 }
+
+/* ---------- mobile accordion sidebar ---------- */
+.side-toggle {
+  display: none;
+  width: 100%;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: left;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+}
+
+.side-toggle[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .cv-side .side-toggle {
+    display: block;
+  }
+  .cv-side .cv-side-title,
+  .cv-side .cv-side-nav {
+    display: none;
+  }
+  .cv-side.open .cv-side-title {
+    display: block;
+    margin-top: 0.5rem;
+  }
+  .cv-side.open .cv-side-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25rem;
+  }
+}
