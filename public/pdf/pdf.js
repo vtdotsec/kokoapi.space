@@ -74,7 +74,7 @@
   /* Tool switching                                                    */
   /* ================================================================ */
 
-  var TOOLS = ["merge", "split", "organize"];
+  var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress"];
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
 
   function activate(tool) {
@@ -508,4 +508,363 @@
   });
 
   orgCanRun();
+
+  /* ================================================================ */
+  /* Shared helpers (canvas/bitmap)                                    */
+  /* ================================================================ */
+
+  function canvasToBlob(canvas, type, quality) {
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (blob) {
+        if (blob) resolve(blob);
+        else reject(new Error("The browser could not encode the image as " + type));
+      }, type, quality);
+    });
+  }
+
+  function loadViaImage(blob) {
+    var url = URL.createObjectURL(blob);
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.decoding = "async";
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { reject(new Error("File is not a decodable image")); };
+      img.src = url;
+    }).finally(function () {
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    });
+  }
+
+  // Decodes an image file and draws it onto a fresh canvas. Browsers apply EXIF
+  // orientation here and the resulting canvas has no metadata attached.
+  async function decodeToCanvas(blob) {
+    var source = null;
+    if (typeof createImageBitmap === "function") {
+      try {
+        source = await createImageBitmap(blob);
+      } catch (e) {
+        source = null;
+      }
+    }
+    if (!source) source = await loadViaImage(blob);
+    var canvas = document.createElement("canvas");
+    canvas.width = source.width;
+    canvas.height = source.height;
+    canvas.getContext("2d").drawImage(source, 0, 0);
+    if (typeof source.close === "function") {
+      try { source.close(); } catch (e) {}
+    }
+    return canvas;
+  }
+
+  async function renderPdfCanvas(doc, pageIndex, scale) {
+    var page = await doc.getPage(pageIndex);
+    var viewport = page.getViewport({ scale: scale });
+    var canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.ceil(viewport.width));
+    canvas.height = Math.max(1, Math.ceil(viewport.height));
+    var ctx = canvas.getContext("2d");
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    return canvas;
+  }
+
+  function checkedRadio(name) {
+    var els = document.querySelectorAll('input[name="' + name + '"]');
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].checked) return els[i].value;
+    }
+    return null;
+  }
+
+  // Generic output<->range wiring: <output for="id"> next to the range input.
+  function bindRangeOutput(id) {
+    var input = $(id);
+    var output = document.querySelector('output[for="' + id + '"]');
+    if (input && output) {
+      var update = function () { output.textContent = input.value; };
+      input.addEventListener("input", update);
+      update();
+    }
+  }
+
+  /* ================================================================ */
+  /* Images to PDF                                                     */
+  /* ================================================================ */
+
+  var imgItems = []; // { file }
+  var imgListEl = $("imgs2pdf-list");
+  var img2pdfRun = $("imgs2pdf-run");
+  img2pdfRun.dataset.label = "Create PDF";
+
+  function renderImgList() {
+    imgListEl.hidden = imgItems.length === 0;
+    imgListEl.textContent = "";
+    imgItems.forEach(function (item, i) {
+      var li = document.createElement("li");
+      li.className = "file-row";
+
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = String(i + 1) + ". " + item.file.name;
+
+      var meta = document.createElement("span");
+      meta.className = "meta";
+      meta.textContent = readableBytes(item.file.size);
+
+      var btns = document.createElement("span");
+      btns.className = "row-btns";
+
+      var up = document.createElement("button");
+      up.type = "button"; up.className = "icon-btn"; up.textContent = "↑"; up.title = "Move up";
+      up.disabled = i === 0;
+      up.addEventListener("click", function () { swapImg(i, i - 1); });
+
+      var down = document.createElement("button");
+      down.type = "button"; down.className = "icon-btn"; down.textContent = "↓"; down.title = "Move down";
+      down.disabled = i === imgItems.length - 1;
+      down.addEventListener("click", function () { swapImg(i, i + 1); });
+
+      var remove = document.createElement("button");
+      remove.type = "button"; remove.className = "icon-btn danger"; remove.textContent = "✕"; remove.title = "Remove";
+      remove.addEventListener("click", function () {
+        imgItems.splice(i, 1);
+        renderImgList();
+        img2pdfRun.disabled = imgItems.length === 0;
+      });
+
+      btns.appendChild(up); btns.appendChild(down); btns.appendChild(remove);
+      li.appendChild(name); li.appendChild(meta); li.appendChild(btns);
+      imgListEl.appendChild(li);
+    });
+    img2pdfRun.disabled = imgItems.length === 0;
+  }
+
+  function swapImg(a, b) {
+    var tmp = imgItems[a];
+    imgItems[a] = imgItems[b];
+    imgItems[b] = tmp;
+    renderImgList();
+  }
+
+  $("imgs2pdf-files").addEventListener("change", function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []);
+    files.forEach(function (f) {
+      if (!imgItems.some(function (it) { return it.file === f; })) {
+        imgItems.push({ file: f });
+      }
+    });
+    e.target.value = "";
+    renderImgList();
+  });
+
+  img2pdfRun.addEventListener("click", async function () {
+    if (imgItems.length === 0) return;
+    markBusy(img2pdfRun, true, "Building PDF…");
+    setStatus("imgs2pdf-status", "");
+    try {
+      var sizeMode = checkedRadio("imgs2pdf-size");
+      var out = await PDFLib.PDFDocument.create();
+      var A4W = 595.28;
+      var A4H = 841.89;
+      for (var i = 0; i < imgItems.length; i++) {
+        var file = imgItems[i].file;
+        var canvas = await decodeToCanvas(file);
+        var pngBlob = await canvasToBlob(canvas, "image/png");
+        var pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
+        var image = await out.embedPng(pngBytes);
+
+        var pw, ph, x, y, w, h;
+        if (sizeMode === "original") {
+          // 96 dpi: 1 pixel = 0.75 pt.
+          pw = canvas.width * 0.75;
+          ph = canvas.height * 0.75;
+          x = 0; y = 0; w = pw; h = ph;
+        } else {
+          pw = A4W; ph = A4H;
+          var s = Math.min(pw / canvas.width, ph / canvas.height);
+          w = canvas.width * s; h = canvas.height * s;
+          x = (pw - w) / 2; y = (ph - h) / 2;
+        }
+        var page = out.addPage([pw, ph]);
+        page.drawImage(image, { x: x, y: y, width: w, height: h });
+        setStatus("imgs2pdf-status", "Embedded " + (i + 1) + " of " + imgItems.length + ".");
+      }
+      var result = await out.save();
+      download(new Blob([result], { type: "application/pdf" }), "images.pdf");
+      setStatus("imgs2pdf-status", "Created a PDF with " + imgItems.length + " image" + (imgItems.length === 1 ? "" : "s") + ".");
+    } catch (err) {
+      setStatus("imgs2pdf-status", err && err.message ? err.message : "Conversion failed.", true);
+    } finally {
+      markBusy(img2pdfRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* PDF to Images                                                     */
+  /* ================================================================ */
+
+  var p2i = null; // { doc, bytes, name }
+  var pdf2imgRun = $("pdf2img-run");
+  pdf2imgRun.dataset.label = "Convert pages";
+  var pdf2imgLinkUrls = [];
+
+  function clearPdf2imgLinks() {
+    pdf2imgLinkUrls.forEach(function (url) { URL.revokeObjectURL(url); });
+    pdf2imgLinkUrls = [];
+    $("pdf2img-links").hidden = true;
+    $("pdf2img-links").textContent = "";
+  }
+
+  function updatePdf2imgControls() {
+    var jpeg = checkedRadio("pdf2img-format") === "jpeg";
+    $("pdf2img-quality-row").hidden = !jpeg;
+  }
+
+  Array.prototype.slice
+    .call(document.querySelectorAll('input[name="pdf2img-format"]'))
+    .forEach(function (el) { el.addEventListener("change", updatePdf2imgControls); });
+
+  bindRangeOutput("pdf2img-quality");
+
+  $("pdf2img-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    clearPdf2imgLinks();
+    pdf2imgRun.disabled = true;
+    setStatus("pdf2img-status", "Reading…");
+    $("pdf2img-info").textContent = "";
+    try {
+      var bytes = await bytesOf(file);
+      var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+      if (p2i) {
+        try { p2i.doc.destroy(); } catch (err) {}
+        p2i = null;
+      }
+      p2i = { doc: pdf, bytes: bytes, name: file.name };
+      $("pdf2img-info").textContent =
+        file.name + " — " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s");
+      pdf2imgRun.disabled = false;
+      setStatus("pdf2img-status", "");
+    } catch (err) {
+      setStatus("pdf2img-status", "The file could not be read as a PDF (encrypted or corrupted).", true);
+    }
+  });
+
+  pdf2imgRun.addEventListener("click", async function () {
+    if (!p2i) return;
+    markBusy(pdf2imgRun, true, "Rendering pages…");
+    setStatus("pdf2img-status", "");
+    try {
+      var fmt = checkedRadio("pdf2img-format");
+      var mime = fmt === "jpeg" ? "image/jpeg" : "image/png";
+      var ext = fmt === "jpeg" ? "jpg" : "png";
+      var quality = fmt === "jpeg" ? Number($("pdf2img-quality").value) / 100 : undefined;
+      var scale = 1;
+      var base = cleanName(baseName(p2i.name));
+      var mode = checkedRadio("pdf2img-mode");
+      clearPdf2imgLinks();
+
+      var zipFiles = mode === "zip" ? {} : null;
+      for (var i = 0; i < p2i.doc.numPages; i++) {
+        var canvas = await renderPdfCanvas(p2i.doc, i, scale);
+        var blob = await canvasToBlob(canvas, mime, quality);
+        if (zipFiles) {
+          zipFiles[base + "-p" + pad(i + 1, p2i.doc.numPages) + "." + ext] = new Uint8Array(await blob.arrayBuffer());
+        } else {
+          var url = URL.createObjectURL(blob);
+          pdf2imgLinkUrls.push(url);
+          var li = document.createElement("li");
+          li.className = "file-row";
+          var a = document.createElement("a");
+          a.className = "name";
+          a.href = url;
+          a.download = base + "-p" + pad(i + 1, p2i.doc.numPages) + "." + ext;
+          a.textContent = "Page " + (i + 1) + " — " + readableBytes(blob.size);
+          li.appendChild(a);
+          $("pdf2img-links").appendChild(li);
+        }
+        setStatus("pdf2img-status", "Rendered page " + (i + 1) + " of " + p2i.doc.numPages + ".");
+      }
+
+      if (zipFiles) {
+        var zip = fflate.zipSync(zipFiles, { level: 6 });
+        download(new Blob([zip], { type: "application/zip" }), base + "-images.zip");
+        setStatus("pdf2img-status", "Exported " + p2i.doc.numPages + " page" + (p2i.doc.numPages === 1 ? "" : "s") + " as " + ext.toUpperCase() + ".");
+      } else {
+        $("pdf2img-links").hidden = false;
+        setStatus("pdf2img-status", "Right-click a link to save it, or use its download.");
+      }
+    } catch (err) {
+      setStatus("pdf2img-status", err && err.message ? err.message : "Conversion failed.", true);
+    } finally {
+      markBusy(pdf2imgRun, false);
+    }
+  });
+
+  /* ================================================================ */
+  /* Compress PDF (raster re-render)                                   */
+  /* ================================================================ */
+
+  var cstate = null; // { doc, bytes, name }
+  var compressRun = $("compress-run");
+  compressRun.dataset.label = "Compress and download";
+  bindRangeOutput("compress-quality");
+
+  $("compress-file").addEventListener("change", async function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    compressRun.disabled = true;
+    $("compress-note").hidden = true;
+    setStatus("compress-status", "Reading…");
+    $("compress-info").textContent = "";
+    try {
+      var bytes = await bytesOf(file);
+      var pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+      if (cstate) {
+        try { cstate.doc.destroy(); } catch (err) {}
+        cstate = null;
+      }
+      cstate = { doc: pdf, bytes: bytes, name: file.name };
+      $("compress-info").textContent =
+        file.name + " — " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") +
+        ", " + readableBytes(file.size) + " original.";
+      $("compress-note").hidden = false;
+      compressRun.disabled = false;
+      setStatus("compress-status", "");
+    } catch (err) {
+      setStatus("compress-status", "The file could not be read as a PDF (encrypted or corrupted).", true);
+    }
+  });
+
+  compressRun.addEventListener("click", async function () {
+    if (!cstate) return;
+    markBusy(compressRun, true, "Rendering…");
+    setStatus("compress-status", "");
+    try {
+      var quality = Number($("compress-quality").value) / 100;
+      var scale = Number($("compress-scale").value);
+      var out = await PDFLib.PDFDocument.create();
+      for (var i = 0; i < cstate.doc.numPages; i++) {
+        var canvas = await renderPdfCanvas(cstate.doc, i, scale);
+        var blob = await canvasToBlob(canvas, "image/jpeg", quality);
+        var jpeg = new Uint8Array(await blob.arrayBuffer());
+        var img = await out.embedJpg(jpeg);
+        var pw = canvas.width / scale;
+        var ph = canvas.height / scale;
+        var page = out.addPage([pw, ph]);
+        page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
+        setStatus("compress-status", "Rendered page " + (i + 1) + " of " + cstate.doc.numPages + ".");
+      }
+      var result = await out.save();
+      var base = cleanName(baseName(cstate.name));
+      download(new Blob([result], { type: "application/pdf" }), base + "-compressed.pdf");
+      setStatus("compress-status", "Original " + readableBytes(cstate.bytes.length) + " → compressed " + readableBytes(result.length) + ".");
+    } catch (err) {
+      setStatus("compress-status", err && err.message ? err.message : "Compression failed.", true);
+    } finally {
+      markBusy(compressRun, false);
+    }
+  });
 })();

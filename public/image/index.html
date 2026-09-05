@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Image toolkit — kokoapi.space</title>
+    <meta
+      name="description"
+      content="Convert, compress, resize and strip metadata from images in your browser. All processing is local; files never leave your device."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/image/image.css" />
+    <script src="/image/vendor/fflate.js"></script>
+    <script src="/image/image.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="kokoapi.space — home">
+          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+            <rect class="lg-plate" width="64" height="64" rx="13" />
+            <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+            <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+            <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+            <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+          </svg>
+          <span>kokoapi<span class="space">.space</span></span>
+        </a>
+        <span class="crumb" aria-hidden="true">/</span>
+        <a class="crumb-link" href="/image/">image</a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <h1>Image toolkit</h1>
+      <p class="lead">
+        Convert between formats, compress and resize, or strip metadata from images. All
+        processing happens locally, page by page, with no upload.
+      </p>
+      <p class="note">
+        100% local image processing. Your files never leave your browser.
+      </p>
+
+      <div class="seg" role="group" aria-label="Tool">
+        <button type="button" class="seg-btn" data-tool="convert" aria-pressed="true">Convert</button>
+        <button type="button" class="seg-btn" data-tool="resize" aria-pressed="false">Compress &amp; Resize</button>
+        <button type="button" class="seg-btn" data-tool="strip" aria-pressed="false">Strip Metadata</button>
+      </div>
+
+      <!-- Convert -->
+      <section id="tool-convert" data-tool-panel>
+        <label class="file-drop" for="convert-file">
+          <input type="file" id="convert-file" accept="image/*" />
+          <span>Choose an image to convert</span>
+        </label>
+        <p class="size-note" id="convert-info"></p>
+
+        <fieldset class="options">
+          <legend>Target format</legend>
+          <div class="opts">
+            <label class="radio"><input type="radio" name="convert-fmt" value="png" /><span>PNG</span></label>
+            <label class="radio"><input type="radio" name="convert-fmt" value="jpeg" checked /><span>JPEG</span></label>
+            <label class="radio"><input type="radio" name="convert-fmt" value="webp" /><span>WebP</span></label>
+            <label class="radio" id="convert-avif-label"><input type="radio" name="convert-fmt" value="avif" /><span>AVIF</span></label>
+          </div>
+        </fieldset>
+
+        <div class="control-line" id="convert-quality-line" hidden>
+          <label class="range-row">
+            <span>Quality</span>
+            <input type="range" id="convert-quality" min="10" max="100" value="85" />
+            <output for="convert-quality">85</output>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <button type="button" id="convert-run" class="btn" disabled>Convert and download</button>
+          <span id="convert-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Compress & Resize -->
+      <section id="tool-resize" data-tool-panel hidden>
+        <label class="file-drop" for="resize-file">
+          <input type="file" id="resize-file" accept="image/*" />
+          <span>Choose an image to compress or resize</span>
+        </label>
+        <p class="size-note" id="resize-info"></p>
+
+        <fieldset class="options">
+          <legend>Settings</legend>
+          <div class="opt-stack">
+            <label class="range-row">
+              <span>Longest side (px)</span>
+              <input type="range" id="resize-size" min="16" max="8000" value="8000" disabled />
+              <output for="resize-size"></output>
+            </label>
+            <p class="size-note" id="resize-dims"></p>
+            <label class="range-row">
+              <span>Quality</span>
+              <input type="range" id="resize-quality" min="10" max="100" value="80" />
+              <output for="resize-quality">80</output>
+            </label>
+            <div class="opts">
+              <span class="opt-label">Output format</span>
+              <select class="select" id="resize-format">
+                <option value="auto">Same as original</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+                <option value="png">PNG</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="resize-run" class="btn" disabled>Compress and download</button>
+          <span id="resize-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Strip metadata -->
+      <section id="tool-strip" data-tool-panel hidden>
+        <label class="file-drop" for="strip-files">
+          <input type="file" id="strip-files" accept="image/*" multiple />
+          <span>Choose one or more images to strip metadata from</span>
+        </label>
+        <p class="size-note" id="strip-info"></p>
+
+        <fieldset class="options">
+          <legend>Output format</legend>
+          <div class="opts">
+            <label class="radio"><input type="radio" name="strip-fmt" value="png" checked /><span>PNG (lossless)</span></label>
+            <label class="radio"><input type="radio" name="strip-fmt" value="jpeg" /><span>JPEG (quality 90)</span></label>
+          </div>
+        </fieldset>
+        <p class="size-note">
+          Re-encoding from a canvas drops EXIF, GPS and other metadata. JPEG output is
+          re-compressed and loses a little quality; PNG is lossless.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="strip-run" class="btn" disabled>Strip and download</button>
+          <span id="strip-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <noscript>
+        <p class="note">
+          This tool needs JavaScript: image conversion runs locally with the browser’s
+          Canvas API.
+        </p>
+      </noscript>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© 2026 kokoapi.space — MIT licensed.</span>
+        <span>No uploads · Files stay on your device · No cookies</span>
+      </div>
+    </footer>
+  </body>
+</html>

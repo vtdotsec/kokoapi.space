@@ -6,7 +6,7 @@
     <title>PDF toolkit — kokoapi.space</title>
     <meta
       name="description"
-      content="Merge, split, rotate and delete pages of PDF files in your browser. All processing is local; your files never leave your device."
+      content="Merge, split, rotate, compress and convert PDF files in your browser. All processing is local; your files never leave your device."
     />
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -37,8 +37,8 @@
     <main class="wrap">
       <h1>PDF toolkit</h1>
       <p class="lead">
-        Merge, split, rotate or delete PDF pages. Choose a tool below, pick your files and
-        download the result.
+        Merge, split, rotate, convert to or from images, or compress PDF files. Choose a
+        tool below, pick your files and download the result.
       </p>
       <p class="note">
         Processing is 100% local in your browser. Your files are never uploaded and never
@@ -49,6 +49,9 @@
         <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true">Merge</button>
         <button type="button" class="seg-btn" data-tool="split" aria-pressed="false">Split</button>
         <button type="button" class="seg-btn" data-tool="organize" aria-pressed="false">Organize</button>
+        <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false">Images to PDF</button>
+        <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false">PDF to Images</button>
+        <button type="button" class="seg-btn" data-tool="compress" aria-pressed="false">Compress</button>
       </div>
 
       <!-- Merge -->
@@ -115,6 +118,111 @@
           Rotate a page with the arrows; delete it with the cross. Rotation is applied
           relative to the original page orientation.
         </p>
+      </section>
+
+      <!-- Images to PDF -->
+      <section id="tool-imgs2pdf" data-tool-panel hidden>
+        <label class="file-drop" for="imgs2pdf-files">
+          <input type="file" id="imgs2pdf-files" accept="image/png,image/jpeg,image/webp" multiple />
+          <span>Choose images (PNG, JPEG, WebP) — reorder below</span>
+        </label>
+        <ol id="imgs2pdf-list" class="file-list" hidden></ol>
+        <fieldset class="options">
+          <legend>Page size</legend>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="fit" checked />
+            <span>Fit each image on an A4 page</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="original" />
+            <span>Keep the image pixel size (96 dpi)</span>
+          </label>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="imgs2pdf-run" class="btn" disabled>Create PDF</button>
+          <span id="imgs2pdf-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- PDF to Images -->
+      <section id="tool-pdf2img" data-tool-panel hidden>
+        <label class="file-drop" for="pdf2img-file">
+          <input type="file" id="pdf2img-file" accept="application/pdf" />
+          <span>Choose a PDF to turn into images</span>
+        </label>
+        <p class="size-note" id="pdf2img-info"></p>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="png" checked />
+              <span>PNG (lossless)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="jpeg" />
+              <span>JPEG</span>
+            </label>
+            <label class="range-row" id="pdf2img-quality-row" hidden>
+              <span>Quality</span>
+              <input type="range" id="pdf2img-quality" min="20" max="100" value="90" />
+              <output for="pdf2img-quality">90</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="zip" checked />
+              <span>All pages as a ZIP</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="links" />
+              <span>Show individual download links</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="pdf2img-run" class="btn" disabled>Convert pages</button>
+          <span id="pdf2img-status" class="status" role="status"></span>
+        </div>
+        <ul id="pdf2img-links" class="file-list" hidden></ul>
+      </section>
+
+      <!-- Compress PDF -->
+      <section id="tool-compress" data-tool-panel hidden>
+        <label class="file-drop" for="compress-file">
+          <input type="file" id="compress-file" accept="application/pdf" />
+          <span>Choose a PDF to compress</span>
+        </label>
+        <p class="size-note" id="compress-info"></p>
+        <p class="note" id="compress-note" hidden>
+          Pages are re-rendered as JPEG images inside a new PDF. Text becomes non-selectable;
+          this works best for scans and image-heavy documents.
+        </p>
+
+        <fieldset class="options">
+          <legend>Compression</legend>
+          <div class="option">
+            <label class="range-row">
+              <span>Quality</span>
+              <input type="range" id="compress-quality" min="10" max="90" value="50" />
+              <output for="compress-quality">50</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio">
+              <span>Resolution</span>
+            </label>
+            <select class="select" id="compress-scale">
+              <option value="1">Screen (1×)</option>
+              <option value="1.5">High (1.5×)</option>
+              <option value="2">Print (2×)</option>
+            </select>
+          </div>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="compress-run" class="btn" disabled>Compress and download</button>
+          <span id="compress-status" class="status" role="status"></span>
+        </div>
       </section>
 
       <noscript>
