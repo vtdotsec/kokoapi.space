@@ -3,9 +3,62 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QR toolkit — kokoapi.space</title>
-    <meta name="description" content="Generate and scan QR codes in your browser. All processing happens locally on your device." />
-    <meta name="robots" content="noindex,nofollow" />
+    <title>Free QR Code Generator &amp; Scanner — No Sign-up, No Upload</title>
+    <meta
+      name="description"
+      content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device."
+    />
+    <link rel="canonical" href="https://kokoapi.space/qrcode/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="kokoapi.space" />
+    <meta property="og:title" content="Free QR Code Generator &amp; Scanner — No Sign-up, No Upload" />
+    <meta property="og:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device." />
+    <meta property="og:url" content="https://kokoapi.space/qrcode/" />
+    <meta property="og:image" content="https://kokoapi.space/og.svg" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Free QR Code Generator &amp; Scanner — No Sign-up, No Upload" />
+    <meta name="twitter:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device." />
+    <meta name="twitter:image" content="https://kokoapi.space/og.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "kokoapi.space QR code generator and scanner",
+          "description": "Generate QR codes for URLs, text, Wi-Fi networks, vCards, e-mail, SMS and phone numbers, and scan QR codes with the camera or an image in the browser.",
+          "url": "https://kokoapi.space/qrcode/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "QR code generator", "Wi-Fi and vCard support", "Camera scanner", "Image scanner"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is the QR code generator really free?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. The generator is open source and runs entirely in your browser. There are no accounts, no watermarks, no limits and nothing to pay." }
+            },
+            {
+              "@type": "Question",
+              "name": "Does the scanner send my camera feed anywhere?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Video frames are decoded on your device with jsQR and never leave the browser. You can also scan an image file the same way." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I make a QR code for a Wi-Fi network?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Choose Wi-Fi under content type, enter the network name, password and security type, and the code will contain the standard WIFI: format that phones recognize." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/qrcode/qrcode.css" />
     <link rel="stylesheet" href="/_ui/app.css" />
@@ -50,17 +103,23 @@
 
 
     <main class="wrap">
-      <h1>QR toolkit</h1>
+      <h1>QR code</h1>
       <p class="lead">Generate QR codes or scan one with your camera or an image.</p>
       <p class="note">
         Camera processing happens entirely on your device. No video frames or images leave
         your browser.
       </p>
 
-      <div class="seg" role="group" aria-label="Tool">
-        <button type="button" class="seg-btn" data-tool="gen" aria-pressed="true">Generate</button>
-        <button type="button" class="seg-btn" data-tool="scan" aria-pressed="false">Scan</button>
-      </div>
+      <div class="tool-layout">
+        <aside class="tool-side" aria-label="QR code tools">
+          <select class="side-select" aria-label="Choose a QR tool"></select>
+          <h2 class="tool-side-title">Tools</h2>
+          <nav class="tool-nav" aria-label="QR code tools">
+            <button type="button" data-tool="gen" aria-pressed="true">Generate</button>
+            <button type="button" data-tool="scan" aria-pressed="false">Scan</button>
+          </nav>
+        </aside>
+        <div class="tool-main">
 
       <!-- Generate -->
       <section id="tool-gen" data-tool-panel>
@@ -118,6 +177,54 @@
             <p class="size-note" id="scan-status" role="status"></p>
           </div>
         </div>
+        </div>
+      </div>
+
+      <!-- SEO content -->
+      <section class="seo" aria-labelledby="qr-seo-h">
+        <h2 id="qr-seo-h">Generate and scan QR codes without signing up</h2>
+        <p>
+          QR codes are a fast way to move a URL, Wi-Fi credentials, a contact card, an
+          e-mail or an SMS from a screen to a phone. This page generates those codes locally
+          and can also read them back — either with the phone or laptop camera, or from an
+          image you already have. Because the code is drawn in your browser, nothing about
+          its content is sent to a server.
+        </p>
+        <h3>How to create a Wi-Fi QR code</h3>
+        <ol>
+          <li>Open <strong>Generate</strong> and choose <strong>Wi-Fi</strong> as the content type.</li>
+          <li>Enter the network name, password and security type (WPA/WEP or open).</li>
+          <li>Download the PNG and print or display it — scanning it connects the phone.</li>
+        </ol>
+        <h3>Frequently asked questions</h3>
+        <details>
+          <summary>Is the QR code generator really free?</summary>
+          <p>
+            Yes. The generator is open source and runs entirely in your browser. There are no
+            accounts, no watermarks, no usage limits and nothing to pay.
+          </p>
+        </details>
+        <details>
+          <summary>Does the scanner send my camera feed anywhere?</summary>
+          <p>
+            No. Video frames are decoded on your device and never leave the browser. You can
+            also scan an image file the same way — both paths run locally.
+          </p>
+        </details>
+        <details>
+          <summary>Can I make a QR code for a Wi-Fi network?</summary>
+          <p>
+            Yes. Choose <strong>Wi-Fi</strong> as the content type, enter the network name,
+            password and security type, and the code will contain the standard
+            <code>WIFI:</code> format that phones recognize.
+          </p>
+        </details>
+        <p class="related">
+          Related tools:
+          <a href="/image/">Image tools</a>
+          <a href="/pdf/">PDF tools</a>
+          <a href="/secret/">Encrypted note sharing</a>
+        </p>
       </section>
     </main>
 

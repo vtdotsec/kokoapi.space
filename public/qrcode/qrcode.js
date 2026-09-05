@@ -326,18 +326,37 @@
 
   /* ---------------- tabs & init ---------------- */
 
-  var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
+  var TOOLS = ["gen", "scan"];
+  var TOOL_LABELS = { gen: "Generate", scan: "Scan" };
+  var sideButtons = Array.prototype.slice.call(document.querySelectorAll(".tool-nav button[data-tool]"));
+  var sideSelect = document.querySelector(".tool-side .side-select");
+
   function activate(tool) {
-    segButtons.forEach(function (b) {
+    sideButtons.forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.tool === tool));
     });
-    ["gen", "scan"].forEach(function (t) {
+    TOOLS.forEach(function (t) {
       $("tool-" + t).hidden = t !== tool;
     });
+    if (sideSelect) sideSelect.value = tool;
   }
-  segButtons.forEach(function (b) {
+
+  sideButtons.forEach(function (b) {
     b.addEventListener("click", function () { activate(b.dataset.tool); });
   });
+
+  if (sideSelect) {
+    TOOLS.forEach(function (t) {
+      var opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = TOOL_LABELS[t] || t;
+      sideSelect.appendChild(opt);
+    });
+    sideSelect.addEventListener("change", function () {
+      if (sideSelect.value) activate(sideSelect.value);
+    });
+  }
+  activate("gen");
 
   generatorInit();
   scannerInit();

@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   image?: string;
   type?: "website" | "article";
+  noindex?: boolean;
   jsonLd?: Record<string, unknown>;
 }
 
@@ -16,13 +17,14 @@ const {
   description = "Small open-source web apps hosted on kokoapi.space — no accounts, no telemetry, no cookies.",
   image = "/og.svg",
   type = "website",
+  noindex = false,
   jsonLd,
 } = Astro.props;
 
 const site = new URL(Astro.site?.toString() ?? "https://kokoapi.space/");
 const pageUrl = new URL(Astro.url.pathname, site);
 if (!pageUrl.pathname.endsWith("/")) pageUrl.pathname += "/";
-const canonical = pageUrl.toString().replace(/\/$/, "") || site.toString();
+const canonical = pageUrl.toString();
 
 // Brand is kokoapi.space; descriptive titles get it appended as a suffix.
 const fullTitle = title.toLowerCase().startsWith("kokoapi")
@@ -40,6 +42,7 @@ const imageUrl = new URL(image, site).toString();
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/_ui/app.css" />

@@ -3,12 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Image toolkit — kokoapi.space</title>
+    <title>Free Online Image Tools — Convert, Compress, Crop &amp; Remove EXIF</title>
     <meta
       name="description"
-      content="Convert, compress, resize and strip metadata from images in your browser. All processing is local; files never leave your device."
+      content="Convert, compress, resize, crop and watermark images, and strip EXIF or GPS metadata — 100% locally in your browser. No uploads, no sign-up."
     />
-    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="https://kokoapi.space/image/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="kokoapi.space" />
+    <meta property="og:title" content="Free Online Image Tools — Convert, Compress, Crop &amp; Remove EXIF" />
+    <meta property="og:description" content="Convert, compress, resize, crop and watermark images, and strip EXIF or GPS metadata — 100% locally in your browser. No uploads, no sign-up." />
+    <meta property="og:url" content="https://kokoapi.space/image/" />
+    <meta property="og:image" content="https://kokoapi.space/og.svg" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Free Online Image Tools — Convert, Compress, Crop &amp; Remove EXIF" />
+    <meta name="twitter:description" content="Convert, compress, resize, crop and watermark images, and strip EXIF or GPS metadata — 100% locally in your browser. No uploads, no sign-up." />
+    <meta name="twitter:image" content="https://kokoapi.space/og.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "kokoapi.space image tools",
+          "description": "Convert between PNG, JPEG, WebP and AVIF, compress, resize, crop, watermark and apply filters to images, and strip EXIF and GPS metadata in the browser.",
+          "url": "https://kokoapi.space/image/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "Format conversion", "Compress and resize", "Strip metadata", "Interactive crop",
+            "Text or logo watermark", "Color filters", "Batch conversion"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are my images uploaded to a server?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Images are opened, edited and re-encoded inside your browser with the Canvas API. Nothing is uploaded and nothing is stored on a server." }
+            },
+            {
+              "@type": "Question",
+              "name": "Does converting an image remove its metadata?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Every tool re-encodes the pixels, which drops EXIF, GPS and other metadata from the output. The Strip Metadata tool exists to make that explicit." }
+            },
+            {
+              "@type": "Question",
+              "name": "Why does a converted JPEG look slightly different?",
+              "acceptedAnswer": { "@type": "Answer", "text": "JPEG is lossy: each re-encode applies a small amount of compression. Keep the quality slider high (90-100) to minimize visible loss, or use PNG for a lossless copy." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/image/image.css" />
     <link rel="stylesheet" href="/_ui/app.css" />
@@ -53,7 +104,7 @@
 
 
     <main class="wrap">
-      <h1>Image toolkit</h1>
+      <h1>Image tools</h1>
       <p class="lead">
         Convert between formats, compress and resize, or strip metadata from images. All
         processing happens locally, page by page, with no upload.
@@ -62,15 +113,21 @@
         100% local image processing. Your files never leave your browser.
       </p>
 
-      <div class="seg" role="group" aria-label="Tool">
-        <button type="button" class="seg-btn" data-tool="convert" aria-pressed="true">Convert</button>
-        <button type="button" class="seg-btn" data-tool="resize" aria-pressed="false">Compress &amp; Resize</button>
-        <button type="button" class="seg-btn" data-tool="strip" aria-pressed="false">Strip Metadata</button>
-        <button type="button" class="seg-btn" data-tool="crop" aria-pressed="false">Crop</button>
-        <button type="button" class="seg-btn" data-tool="wmark" aria-pressed="false">Watermark</button>
-        <button type="button" class="seg-btn" data-tool="filters" aria-pressed="false">Filters</button>
-        <button type="button" class="seg-btn" data-tool="batch" aria-pressed="false">Batch</button>
-      </div>
+      <div class="tool-layout">
+        <aside class="tool-side" aria-label="Image tools">
+          <select class="side-select" aria-label="Choose an image tool"></select>
+          <h2 class="tool-side-title">Tools</h2>
+          <nav class="tool-nav" aria-label="Image tools">
+            <button type="button" data-tool="convert" aria-pressed="true">Convert</button>
+            <button type="button" data-tool="resize" aria-pressed="false">Compress &amp; Resize</button>
+            <button type="button" data-tool="strip" aria-pressed="false">Strip Metadata</button>
+            <button type="button" data-tool="crop" aria-pressed="false">Crop</button>
+            <button type="button" data-tool="wmark" aria-pressed="false">Watermark</button>
+            <button type="button" data-tool="filters" aria-pressed="false">Filters</button>
+            <button type="button" data-tool="batch" aria-pressed="false">Batch</button>
+          </nav>
+        </aside>
+        <div class="tool-main">
 
       <!-- Convert -->
       <section id="tool-convert" data-tool-panel>
@@ -340,6 +397,55 @@
           <button type="button" id="batch-run" class="btn" disabled>Convert &amp; download ZIP</button>
           <span id="batch-status" class="status" role="status"></span>
         </div>
+        </div>
+      </div>
+
+      <!-- SEO content -->
+      <section class="seo" aria-labelledby="image-seo-h">
+        <h2 id="image-seo-h">Edit and convert images privately, straight from your browser</h2>
+        <p>
+          These tools cover the everyday image tasks without installing software: switch a
+          photo between PNG, JPEG, WebP and AVIF, shrink it for the web with a quality
+          slider, crop a region by dragging on the preview, add a text or logo watermark,
+          adjust brightness, contrast and saturation, or clean the EXIF and GPS data that
+          cameras embed in photos. Batch mode applies one conversion to many files at once.
+        </p>
+        <h3>How to convert or compress an image</h3>
+        <ol>
+          <li>Open <strong>Convert</strong> (or <strong>Compress &amp; Resize</strong>) in the sidebar.</li>
+          <li>Pick an image from your device — it is read locally.</li>
+          <li>Choose the target format and quality, then download the result.</li>
+        </ol>
+        <h3>Frequently asked questions</h3>
+        <details>
+          <summary>Are my images uploaded to a server?</summary>
+          <p>
+            No. Images are opened, edited and re-encoded inside your browser with the
+            Canvas API. Nothing is uploaded and nothing is stored on a server.
+          </p>
+        </details>
+        <details>
+          <summary>Does converting an image remove its metadata?</summary>
+          <p>
+            Every tool re-encodes the pixels, which drops EXIF, GPS and other metadata from
+            the output. The <strong>Strip Metadata</strong> tool makes that explicit for one
+            or many files at once.
+          </p>
+        </details>
+        <details>
+          <summary>Why does a converted JPEG look slightly different?</summary>
+          <p>
+            JPEG is lossy: each re-encode applies a small amount of compression. Keep the
+            quality slider high (90–100) to minimize visible loss, or use PNG for a lossless
+            copy.
+          </p>
+        </details>
+        <p class="related">
+          Related tools:
+          <a href="/pdf/">PDF tools (images to PDF)</a>
+          <a href="/convert/">File converter</a>
+          <a href="/qrcode/">QR code generator</a>
+        </p>
       </section>
 
       <noscript>

@@ -136,7 +136,7 @@ test.describe("qr toolkit", () => {
     const bytes = await readDownload(download);
     expect(bytes.length).toBeGreaterThan(100);
 
-    await page.locator(".seg-btn[data-tool='scan']").click();
+    await page.locator(".tool-nav button[data-tool='scan']").click();
     await expect(page.locator("#scan-start")).toBeVisible();
     await page.locator("#scan-file").setInputFiles({
       name: "pixel.png",

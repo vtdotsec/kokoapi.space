@@ -11,5 +11,19 @@ export default defineConfig({
   build: {
     inlineStylesheets: "never",
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // The tool apps under public/ are not Astro routes, so list them here.
+      // /secret/ is proxied by nginx to the Node service at runtime.
+      customPages: [
+        "https://kokoapi.space/image/",
+        "https://kokoapi.space/pdf/",
+        "https://kokoapi.space/convert/",
+        "https://kokoapi.space/secret/",
+        "https://kokoapi.space/qrcode/",
+      ],
+      // The 404 page is an error document, not an indexable URL.
+      filter: (page) => !page.includes("/404"),
+    }),
+  ],
 });

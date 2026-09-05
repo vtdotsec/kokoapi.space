@@ -51,11 +51,33 @@ const principles = [
     desc: "No payments, no quotas, no paywalls. Hosting is paid for out of pocket.",
   },
 ];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "kokoapi.space",
+      "url": "https://kokoapi.space/",
+      "description": "Open-source web tools that run in your browser: image editing, a PDF toolkit, a file converter, ephemeral encrypted sharing and a QR code generator. No accounts, no telemetry, no ads, no cookies.",
+    },
+    {
+      "@type": "ItemList",
+      "name": "kokoapi.space tools",
+      "itemListElement": tools.map((tool, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: tool.title,
+        url: `https://kokoapi.space${tool.path}`,
+      })),
+    },
+  ],
+};
 ---
 
 <Base
-  title="kokoapi.space — open-source web tools"
-  description="kokoapi.space hosts open-source web tools: image editing, a PDF toolkit, a file converter, ephemeral encrypted sharing and a QR code. No accounts, no telemetry, no ads, no cookies. Files are processed locally."
+  title="kokoapi.space — free online web tools, no sign-up"
+  description="Image editing, PDF tools, a file converter, encrypted note sharing and a QR code generator — all open source and running in your browser. No accounts, no telemetry, no ads, no cookies."
+  jsonLd={jsonLd}
 >
   <section class="container home-intro">
     <h1>Web tools, without the usual baggage</h1>
