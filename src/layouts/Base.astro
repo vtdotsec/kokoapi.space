@@ -12,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = "Self-Hosting Catalog",
-  description = "A curated, searchable and comparison-ready directory of self-hostable software. Filter by RAM, CPU, architecture, license, database and more.",
+  title = "kokoapi.space",
+  description = "Small open-source web apps hosted on kokoapi.space — no accounts, no telemetry, no cookies.",
   image = "/og.svg",
   type = "website",
   jsonLd,
@@ -24,7 +24,10 @@ const pageUrl = new URL(Astro.url.pathname, site);
 if (!pageUrl.pathname.endsWith("/")) pageUrl.pathname += "/";
 const canonical = pageUrl.toString().replace(/\/$/, "") || site.toString();
 
-const fullTitle = title === "Self-Hosting Catalog" ? title : `${title} · Self-Hosting Catalog`;
+// Brand is kokoapi.space; descriptive titles get it appended as a suffix.
+const fullTitle = title.toLowerCase().startsWith("kokoapi")
+  ? title
+  : `${title} · kokoapi.space`;
 const metaDescription = description.slice(0, 200);
 const imageUrl = new URL(image, site).toString();
 ---
@@ -42,7 +45,7 @@ const imageUrl = new URL(image, site).toString();
     <meta name="theme-color" content="#4f46e5" />
 
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content="Self-Hosting Catalog" />
+    <meta property="og:site_name" content="kokoapi.space" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />

@@ -1,12 +1,12 @@
 ---
-import Base from "../../layouts/Base.astro";
-import ProductCard from "../../components/ProductCard.astro";
+import Base from "../../../layouts/Base.astro";
+import ProductCard from "../../../components/ProductCard.astro";
 import {
   getProducts,
   getCategories,
   archLabel,
   cpuLabel,
-} from "../../lib/catalog";
+} from "../../../lib/catalog";
 
 const [products, categories] = await Promise.all([getProducts(), getCategories()]);
 const categoryTitle = new Map(categories.map((c) => [c.id, c.data.title]));
@@ -72,7 +72,7 @@ const jsonLd = {
   name: "Self-hostable software catalog",
   description:
     "Search and filter self-hostable software by category, RAM, CPU, architecture, license, database, SSO, Docker and Kubernetes.",
-  url: "https://kokoapi.space/apps/",
+  url: "https://kokoapi.space/catalog/apps/",
 };
 ---
 
@@ -86,7 +86,7 @@ const jsonLd = {
     <h1>Browse self-hostable apps</h1>
     <p class="lead">
       {products.length} apps, fully static. Use the filters below (or a query like{" "}
-      <code>/apps/?q=vault&amp;docker=1</code>) to shortlist what fits your server.
+      <code>/catalog/apps/?q=vault&amp;docker=1</code>) to shortlist what fits your server.
     </p>
   </div>
 

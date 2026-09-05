@@ -1,9 +1,9 @@
 ---
 import { render } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import Base from "../../layouts/Base.astro";
-import ProductCard from "../../components/ProductCard.astro";
-import { getProducts, getCategories } from "../../lib/catalog";
+import Base from "../../../layouts/Base.astro";
+import ProductCard from "../../../components/ProductCard.astro";
+import { getProducts, getCategories, categoryPath } from "../../../lib/catalog";
 
 export const getStaticPaths = (async () => {
   const categories = await getCategories();
@@ -26,7 +26,7 @@ const jsonLd = {
   "@type": "CollectionPage",
   name: `${category.data.title} self-hosted software`,
   description: `A curated list of self-hostable ${category.data.title.toLowerCase()} software with specs and comparisons.`,
-  url: `https://kokoapi.space/categories/${category.id}/`,
+  url: `https://kokoapi.space${categoryPath(category.id)}`,
   isPartOf: { "@type": "WebSite", url: "https://kokoapi.space/" },
 };
 ---
@@ -40,7 +40,7 @@ const jsonLd = {
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span class="sep" aria-hidden="true">/</span>
-      <a href="/categories/">Categories</a>
+      <a href="/catalog/categories/">Categories</a>
       <span class="sep" aria-hidden="true">/</span>
       <span aria-current="page">{category.data.title}</span>
     </nav>
@@ -73,8 +73,8 @@ const jsonLd = {
       ))}
     </div>
     <p class="mt-2">
-      <a href="/apps/">← Back to the full catalog</a> ·{" "}
-      <a href={products[0] ? `/apps/?category=${category.id}` : "/apps/"}>
+      <a href="/catalog/apps/">← Back to the full catalog</a> ·{" "}
+      <a href={products[0] ? `/catalog/apps/?category=${category.id}` : "/catalog/apps/"}>
         Filter the full catalog by this category
       </a>
     </p>

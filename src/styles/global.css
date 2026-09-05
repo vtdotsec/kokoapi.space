@@ -541,6 +541,85 @@ h4 {
 
 /* End homepage */
 
+/* ---------- Frontpage (site root) ---------------------------------- */
+.app-index {
+  border-top: 1px solid var(--border);
+}
+
+.app-row {
+  display: block;
+  color: var(--text);
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-row:hover {
+  text-decoration: none;
+}
+
+.app-row:hover .app-row-name {
+  color: var(--accent);
+}
+
+.app-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+}
+
+.app-row-name {
+  font-weight: 700;
+  font-size: var(--fs-md);
+}
+
+.app-row-path {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.app-row-desc {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  margin-top: 0.2rem;
+  max-width: 75ch;
+}
+
+.principles {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 3rem;
+}
+
+.principles li {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 0 0.9rem;
+}
+
+.principles strong {
+  font-size: var(--fs-base);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.principles-desc {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 720px) {
+  .principles {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* End frontpage */
+
 .page-head {
   padding-block: 2.25rem 1.25rem;
 }

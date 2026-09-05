@@ -1,6 +1,6 @@
 ---
-import Base from "../../layouts/Base.astro";
-import { getProducts, getCategories, categoryPath } from "../../lib/catalog";
+import Base from "../../../layouts/Base.astro";
+import { getProducts, getCategories, categoryPath } from "../../../lib/catalog";
 
 const [categories, products] = await Promise.all([getCategories(), getProducts()]);
 

@@ -1,168 +1,93 @@
 ---
 import Base from "../layouts/Base.astro";
-import ProductCard from "../components/ProductCard.astro";
-import {
-  getProducts,
-  getCategories,
-  appPath,
-  categoryPath,
-  formatRam,
-} from "../lib/catalog";
 
-const [products, categories] = await Promise.all([getProducts(), getCategories()]);
-
-const categoryById = new Map(categories.map((c) => [c.id, c]));
-const categoryTitle = (id: string) => categoryById.get(id)?.data.title ?? id;
-
-const counts = new Map<string, number>();
-for (const p of products) {
-  counts.set(p.data.category, (counts.get(p.data.category) ?? 0) + 1);
-}
-const categoriesWithCount = categories
-  .map((c) => ({ ...c, count: counts.get(c.id) ?? 0 }))
-  .filter((c) => c.count > 0)
-  .sort((a, b) => b.count - a.count || a.data.title.localeCompare(b.data.title));
-
-const featured = products.filter((p) => p.data.featured);
-const recent = [...products]
-  .sort(
-    (a, b) =>
-      b.data.updated.localeCompare(a.data.updated) ||
-      a.data.title.localeCompare(b.data.title),
-  )
-  .slice(0, 6);
-
-const k8sCount = products.filter((p) => p.data.kubernetes).length;
-const ssoCount = products.filter((p) => p.data.sso).length;
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "Self-Hosting Catalog",
-  description:
-    "A directory of self-hostable software where each entry documents license, architectures, resource footprint, packaging and SSO support.",
-  url: "https://kokoapi.space/",
-  isPartOf: { "@type": "WebSite", name: "kokoapi.space", url: "https://kokoapi.space/" },
-  mainEntity: {
-    "@type": "ItemList",
-    numberOfItems: products.length,
-    itemListElement: featured.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      item: {
-        "@type": "SoftwareApplication",
-        name: p.data.title,
-        url: `https://kokoapi.space${appPath(p.id)}`,
-        applicationCategory: "WebApplication",
-        operatingSystem: "Linux",
-      },
-    })),
+const apps = [
+  {
+    title: "Self-hosting catalog",
+    path: "/catalog/",
+    desc: "A directory of software you can run on your own hardware, with license, resource and packaging data for every entry. Static pages maintained as Markdown.",
   },
-};
+  {
+    title: "Ephemeral sharing",
+    path: "/secret/",
+    desc: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.",
+  },
+  {
+    title: "PDF toolkit",
+    path: "/pdf/",
+    desc: "Merge, split, rotate and delete PDF pages entirely in your browser. Your files never leave your device.",
+  },
+];
+
+const principles = [
+  {
+    term: "Open source",
+    desc: "The code for these apps and for this site is public and can be reviewed, audited or self-hosted.",
+  },
+  {
+    term: "No account",
+    desc: "No sign-up, no login, no profile. Every app works immediately.",
+  },
+  {
+    term: "No telemetry",
+    desc: "No analytics, no tracking pixels, no data collection of any kind.",
+  },
+  {
+    term: "No ads and no cookies",
+    desc: "Nothing is sold or profiled. The pages set no cookies.",
+  },
+  {
+    term: "Free",
+    desc: "No payments, no quotas, no paywalls. Hosting is paid for out of pocket.",
+  },
+];
 ---
 
 <Base
-  jsonLd={jsonLd}
-  description="Directory of self-hostable software. Each entry documents license, architectures, RAM and CPU footprint, database requirements, Docker/Kubernetes packaging and SSO support. Markdown content, static site."
+  title="kokoapi.space — open-source web apps"
+  description="kokoapi.space hosts small open-source web apps: a self-hosting catalog, ephemeral encrypted sharing and a browser-based PDF toolkit. No accounts, no telemetry, no ads, no cookies."
 >
   <section class="container home-intro">
-    <h1>Self-hosting catalog</h1>
+    <h1>Open-source web apps</h1>
     <p class="lead">
-      A directory of software you can install and run on your own hardware. Each entry
-      records the details that decide whether it fits your setup: license, CPU
-      architectures, typical RAM and CPU footprint, database requirements, packaging
-      (Docker/Kubernetes) and SSO support.
+      kokoapi.space hosts a small set of open-source applications on its own hardware.
+      Everything here is free to use and works without an account. There is no telemetry,
+      no ads, no cookies and nothing to pay.
     </p>
     <p class="intro-sub">
-      Content is maintained as Markdown in a Git repository and the site is generated as
-      static HTML. No accounts, no analytics.
+      Some apps run as plain static pages in your browser; the rest are small services
+      with no database and no user accounts. Source code ships with each app.
     </p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="/apps/">Browse all {products.length} apps</a>
-      <a class="btn btn-secondary" href="/categories/">Browse by category</a>
-    </div>
-
-    <dl class="home-stats" aria-label="Catalog summary">
-      <div>
-        <dt>Apps</dt>
-        <dd>{products.length}</dd>
-      </div>
-      <div>
-        <dt>Categories</dt>
-        <dd>{categoriesWithCount.length}</dd>
-      </div>
-      <div>
-        <dt>Kubernetes</dt>
-        <dd>{k8sCount}</dd>
-      </div>
-      <div>
-        <dt>SSO</dt>
-        <dd>{ssoCount}</dd>
-      </div>
-    </dl>
   </section>
 
-  <section class="container home-block" aria-labelledby="featured-heading">
+  <section class="container home-block" aria-labelledby="apps-heading">
     <div class="section-title">
-      <h2 id="featured-heading">Featured apps</h2>
-      <a class="more" href="/apps/">All {products.length} apps →</a>
+      <h2 id="apps-heading">Hosted apps</h2>
     </div>
-    <div class="grid cards-grid">
-      {featured.map((p) => (
-        <ProductCard product={p} categoryTitle={categoryTitle(p.data.category)} />
-      ))}
-    </div>
-  </section>
-
-  <section class="container home-block" aria-labelledby="categories-heading">
-    <div class="section-title">
-      <h2 id="categories-heading">Browse by category</h2>
-      <a class="more" href="/categories/">All categories →</a>
-    </div>
-    <div class="cat-index">
-      {categoriesWithCount.map((c) => (
-        <a class="cat-row" href={categoryPath(c.id)}>
-          <span class="cat-row-top">
-            <span class="cat-row-name">{c.data.title}</span>
-            <span class="cat-row-count">
-              {c.count} app{c.count === 1 ? "" : "s"}
-            </span>
+    <div class="app-index">
+      {apps.map((app) => (
+        <a class="app-row" href={app.path}>
+          <span class="app-row-top">
+            <span class="app-row-name">{app.title}</span>
+            <span class="app-row-path">{app.path}</span>
           </span>
-          <span class="cat-row-tag">{c.data.tagline}</span>
+          <span class="app-row-desc">{app.desc}</span>
         </a>
       ))}
     </div>
   </section>
 
-  <section class="container home-block" aria-labelledby="recent-heading">
+  <section class="container home-block" aria-labelledby="principles-heading">
     <div class="section-title">
-      <h2 id="recent-heading">Recently reviewed</h2>
-      <a class="more" href="/apps/?sort=newest">Newest first →</a>
+      <h2 id="principles-heading">What you can expect here</h2>
     </div>
-    <table class="recent-table">
-      <thead>
-        <tr>
-          <th scope="col">App</th>
-          <th scope="col" class="col-cat">Category</th>
-          <th scope="col" class="col-lic">License</th>
-          <th scope="col" class="col-ram">Typical RAM</th>
-          <th scope="col">Last reviewed</th>
-        </tr>
-      </thead>
-      <tbody>
-        {recent.map((p) => (
-          <tr>
-            <td>
-              <a class="recent-name" href={appPath(p.id)}>{p.data.title}</a>
-              <span class="recent-tagline">{p.data.tagline}</span>
-            </td>
-            <td class="col-cat">{categoryTitle(p.data.category)}</td>
-            <td class="col-lic">{p.data.license}</td>
-            <td class="col-ram">{formatRam(p.data.ramMb)}</td>
-            <td class="col-date">{p.data.updated}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ul class="principles">
+      {principles.map((p) => (
+        <li>
+          <strong>{p.term}</strong>
+          <span class="principles-desc">{p.desc}</span>
+        </li>
+      ))}
+    </ul>
   </section>
 </Base>

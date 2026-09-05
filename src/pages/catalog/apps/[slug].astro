@@ -1,8 +1,8 @@
 ---
 import { render } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import Base from "../../layouts/Base.astro";
-import CompareTable from "../../components/CompareTable.astro";
+import Base from "../../../layouts/Base.astro";
+import CompareTable from "../../../components/CompareTable.astro";
 import {
   getProducts,
   getCategoryById,
@@ -13,7 +13,7 @@ import {
   formatRam,
   lastReviewed,
   archLabel,
-} from "../../lib/catalog";
+} from "../../../lib/catalog";
 
 export const getStaticPaths = (async () => {
   const products = await getProducts();
@@ -94,7 +94,7 @@ const jsonLd = {
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span class="sep" aria-hidden="true">/</span>
-      <a href="/apps/">Apps</a>
+      <a href="/catalog/apps/">Apps</a>
       <span class="sep" aria-hidden="true">/</span>
       <span aria-current="page">{data.title}</span>
     </nav>
@@ -135,7 +135,7 @@ const jsonLd = {
             {data.tags.map((tag, i) => (
               <>
                 {i > 0 && ", "}
-                <a href={`/apps/?q=${encodeURIComponent(tag)}`}>{tag}</a>
+                <a href={`/catalog/apps/?q=${encodeURIComponent(tag)}`}>{tag}</a>
               </>
             ))}
           </p>
@@ -182,7 +182,7 @@ const jsonLd = {
       <CompareTable current={product} peers={peers} />
       <p class="mt-2">
         Prefer a full directory view?{" "}
-        <a href="/apps/">Browse all {all.length} apps</a> and filter by RAM, license,
+        <a href="/catalog/apps/">Browse all {all.length} apps</a> and filter by RAM, license,
         architecture and more.
       </p>
     </section>

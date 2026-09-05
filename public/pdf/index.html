@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PDF toolkit — kokoapi.space</title>
+    <meta
+      name="description"
+      content="Merge, split, rotate and delete pages of PDF files in your browser. All processing is local; your files never leave your device."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/pdf/pdf.css" />
+    <script src="/pdf/vendor/pdf-lib.min.js"></script>
+    <script src="/pdf/vendor/pdf.min.js"></script>
+    <script src="/pdf/vendor/fflate.js"></script>
+    <script src="/pdf/pdf.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="kokoapi.space — home">
+          <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+            <rect class="lg-plate" width="64" height="64" rx="13" />
+            <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+            <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+            <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+            <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+          </svg>
+          <span>kokoapi<span class="space">.space</span></span>
+        </a>
+        <span class="crumb" aria-hidden="true">/</span>
+        <a class="crumb-link" href="/pdf/">pdf</a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <h1>PDF toolkit</h1>
+      <p class="lead">
+        Merge, split, rotate or delete PDF pages. Choose a tool below, pick your files and
+        download the result.
+      </p>
+      <p class="note">
+        Processing is 100% local in your browser. Your files are never uploaded and never
+        leave your device.
+      </p>
+
+      <div class="seg" role="group" aria-label="Tool">
+        <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true">Merge</button>
+        <button type="button" class="seg-btn" data-tool="split" aria-pressed="false">Split</button>
+        <button type="button" class="seg-btn" data-tool="organize" aria-pressed="false">Organize</button>
+      </div>
+
+      <!-- Merge -->
+      <section id="tool-merge" data-tool-panel>
+        <label class="file-drop" for="merge-files">
+          <input type="file" id="merge-files" accept="application/pdf" multiple />
+          <span>Choose PDF files to merge (in any order)</span>
+        </label>
+        <ol id="merge-list" class="file-list" hidden></ol>
+        <div class="form-row">
+          <button type="button" id="merge-run" class="btn" disabled>Merge and download</button>
+          <span id="merge-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Split -->
+      <section id="tool-split" data-tool-panel hidden>
+        <label class="file-drop" for="split-file">
+          <input type="file" id="split-file" accept="application/pdf" />
+          <span>Choose one PDF to split</span>
+        </label>
+        <p class="size-note" id="split-info"></p>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="split-mode" value="range" checked />
+              <span>Selected pages as one PDF</span>
+            </label>
+            <input
+              type="text"
+              id="split-range"
+              class="text-input range-input"
+              spellcheck="false"
+              placeholder="Pages, e.g. 1, 3-5"
+            />
+          </div>
+          <label class="radio">
+            <input type="radio" name="split-mode" value="pages" />
+            <span>Every page as a separate file (downloads a ZIP)</span>
+          </label>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="split-run" class="btn" disabled>Split and download</button>
+          <span id="split-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Organize -->
+      <section id="tool-organize" data-tool-panel hidden>
+        <label class="file-drop" for="org-file">
+          <input type="file" id="org-file" accept="application/pdf" />
+          <span>Choose one PDF, then rotate or remove pages below</span>
+        </label>
+        <div class="form-row org-bar" hidden>
+          <button type="button" id="org-run" class="btn" disabled>Download result</button>
+          <span id="org-status" class="status" role="status"></span>
+          <span class="muted" id="org-count"></span>
+        </div>
+        <div id="org-thumbs" class="thumbs" hidden></div>
+        <p class="size-note" id="org-help" hidden>
+          Rotate a page with the arrows; delete it with the cross. Rotation is applied
+          relative to the original page orientation.
+        </p>
+      </section>
+
+      <noscript>
+        <p class="note">
+          This tool needs JavaScript to read and write PDF files locally in your browser.
+        </p>
+      </noscript>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© 2026 kokoapi.space — MIT licensed.</span>
+        <span>No uploads · Files stay on your device · No cookies</span>
+      </div>
+    </footer>
+  </body>
+</html>

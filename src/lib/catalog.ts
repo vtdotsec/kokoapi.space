@@ -3,8 +3,11 @@ import { getCollection, type CollectionEntry } from "astro:content";
 export type Product = CollectionEntry<"products">;
 export type Category = CollectionEntry<"categories">;
 
-export const SITE_NAME = "Self-Hosting Catalog";
+export const SITE_NAME = "kokoapi.space";
 export const SITE_URL = "https://kokoapi.space";
+
+// The catalog lives under /catalog/; the root of the site is the project frontpage.
+export const CATALOG_BASE = "/catalog";
 
 const ARCH_LABELS: Record<string, string> = {
   amd64: "x86-64",
@@ -44,11 +47,15 @@ export async function getCategoryById(
 }
 
 export function appPath(id: string): string {
-  return `/apps/${id}/`;
+  return `${CATALOG_BASE}/apps/${id}/`;
 }
 
 export function categoryPath(id: string): string {
-  return `/categories/${id}/`;
+  return `${CATALOG_BASE}/categories/${id}/`;
+}
+
+export function catalogPath(): string {
+  return `${CATALOG_BASE}/`;
 }
 
 /* ------------------------------------------------------------------ */
