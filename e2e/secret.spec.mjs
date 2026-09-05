@@ -49,11 +49,21 @@ test.describe("secret sender", () => {
     await expect(page.locator("#reader-error-title")).toHaveText("Secret not found");
   });
 
-  test("expired text cannot be revealed twice via same link navigation", async ({ page }) => {
-    const link = await createSecret(page, "expiry works", "7d");
-    // The first open reveals and starts the countdown; the payload must stay readable.
-    await page.goto(link);
+  test("nonexistent secret shows a clean 404 error screen", async ({ page }) => {
+    await page.goto("/secret/qqqqqqqqqqqqqqqqqqqqqqqq#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    await expect(page.locator("#reader-locked")).toBeVisible();
     await page.locator("#reveal-btn").click();
-    await expect(page.locator("#reader-text")).toContainText("expiry works");
+    await expect(page.locator("#reader-error")).toBeVisible();
+    await expect(page.locator("#reader-error-title")).toHaveText("Secret not found");
+    await expect(page.locator("#reader-text-wrap")).toBeHidden();
+  });
+
+  test("wrong key fails decryption cleanly", async ({ page }) => {
+    const link = await createSecret(page, "decrypt guard", "1h");
+    const wrong = link.slice(0, link.indexOf("#")) + "#" + "A".repeat(43);
+    await page.goto(wrong);
+    await page.locator("#reveal-btn").click();
+    await expect(page.locator("#reader-error")).toBeVisible();
+    await expect(page.locator("#reader-error-title")).toHaveText("Decryption failed");
   });
 });

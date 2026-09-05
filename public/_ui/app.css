@@ -156,3 +156,30 @@ main.wrap {
   margin-inline: auto;
   padding-inline: clamp(1rem, 4vw, 1.5rem);
 }
+
+/* ---------- toasts ---------- */
+#koko-toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+.toast {
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  box-shadow: var(--shadow-md, 0 6px 18px -8px rgb(0 0 0 / 0.5));
+}
+
+.toast-error {
+  border-left-color: var(--danger);
+}

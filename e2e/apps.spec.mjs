@@ -97,6 +97,31 @@ test.describe("file converter", () => {
   });
 });
 
+test.describe("error handling edge cases", () => {
+  test("image convert rejects a corrupt image without crashing", async ({ page }) => {
+    await page.goto("/image/");
+    await page.locator("#convert-file").setInputFiles({
+      name: "broken.png",
+      mimeType: "image/png",
+      buffer: Buffer.from([0x00, 0x01, 0x02, 0x03, 0x04]),
+    });
+    await expect(page.locator("#convert-status")).not.toHaveText("");
+    await expect(page.locator("#convert-run")).toBeDisabled();
+  });
+
+  test("pdf split rejects a non-pdf upload", async ({ page }) => {
+    await page.goto("/pdf/");
+    await page.locator(".seg-btn[data-tool='split']").click();
+    await page.locator("#split-file").setInputFiles({
+      name: "fake.pdf",
+      mimeType: "application/pdf",
+      buffer: PNG,
+    });
+    await expect(page.locator("#split-status")).toContainText("could not be read as a PDF");
+    await expect(page.locator("#split-run")).toBeDisabled();
+    await expect(page.locator("h1").first()).toBeVisible();
+  });
+});
 test.describe("qr toolkit", () => {
   test("generates a QR png and exposes the scanner", async ({ page }) => {
     await page.goto("/qrcode/");

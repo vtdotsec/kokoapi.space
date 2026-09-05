@@ -323,486 +323,6 @@
   var COLORS = makeColors();
   var CW = PAGE_W - 2 * MARGIN;
 
-  function domToBlocks(html) {
-    var tpl = document.createElement("template");
-    tpl.innerHTML = html;
-    var out = [];
-    flowNodes(tpl.content, out, { b: 0, i: 0, m: 0, link: 0 });
-    return out;
-  }
-
-  function cloneSt(st) {
-    return { b: st.b, i: st.i, m: st.m, link: st.link };
-  }
-
-  function styleFor(tag, st) {
-    var s = cloneSt(st);
-    if (tag === "b" || tag === "strong") s.b = 1;
-    if (tag === "i" || tag === "em") s.i = 1;
-    if (tag === "code" || tag === "tt" || tag === "kbd") s.m = 1;
-    if (tag === "a") s.link = 1;
-    return s;
-  }
-
-  function inlineTokens(node, st) {
-    var out = [];
-    for (var i = 0; i < node.childNodes.length; i++) {
-      var ch = node.childNodes[i];
-      if (!ch || ch.nodeType === 8) continue;
-      if (ch.nodeType === 3) {
-        var t = encSafe(ch.data);
-        if (t) out.push({ t: t, st: st });
-        continue;
-      }
-      if (ch.nodeType !== 1) continue;
-      var tag = (ch.tagName || "").toLowerCase();
-      if (tag === "br") {
-        out.push({ br: 1 });
-      } else if (tag === "img") {
-        var alt = ch.getAttribute("alt") || "";
-        if (alt) out.push({ t: encSafe(alt), st: st });
-      } else if (STYLE_INLINE[tag]) {
-        var sub = inlineTokens(ch, styleFor(tag, st));
-        for (var k = 0; k < sub.length; k++) out.push(sub[k]);
-      } else {
-        /* Block-level tag inside an inline context: flatten, but force a break. */
-        if (out.length && !out[out.length - 1].br) out.push({ br: 1 });
-        var flat = inlineTokens(ch, st);
-        for (var j = 0; j < flat.length; j++) out.push(flat[j]);
-      }
-    }
-    return out;
-  }
-
-  function preText(el) {
-    return String(el.textContent || "").replace(/\r\n?/g, "\n").replace(/\n+$/, "");
-  }
-
-  function parseList(el, ordered, st) {
-    var items = [];
-    for (var i = 0; i < el.children.length; i++) {
-      var li = el.children[i];
-      if ((li.tagName || "").toLowerCase() !== "li") continue;
-      items.push(liContent(li, st));
-    }
-    return { kind: "list", ordered: !!ordered, items: items };
-  }
-
-  function liContent(li, st) {
-    var item = { runs: [], sub: [] };
-    for (var i = 0; i < li.childNodes.length; i++) {
-      var ch = li.childNodes[i];
-      if (!ch || ch.nodeType === 8) continue;
-      if (ch.nodeType === 3) {
-        var t = encSafe(ch.data);
-        if (t) item.runs.push({ t: t, st: st });
-        continue;
-      }
-      if (ch.nodeType !== 1) continue;
-      var tag = (ch.tagName || "").toLowerCase();
-      if (tag === "br") {
-        item.runs.push({ br: 1 });
-      } else if (STYLE_INLINE[tag]) {
-        var tok = inlineTokens(ch, styleFor(tag, st));
-        for (var k = 0; k < tok.length; k++) item.runs.push(tok[k]);
-      } else if (tag === "ul" || tag === "ol") {
-        item.sub.push(parseList(ch, tag === "ol", st));
-      } else if (tag === "p" || tag === "div") {
-        if (item.runs.length && !item.runs[item.runs.length - 1].br) {
-          item.runs.push({ br: 1 });
-        }
-        var pTok = inlineTokens(ch, st);
-        for (var m = 0; m < pTok.length; m++) item.runs.push(pTok[m]);
-      } else if (tag === "pre") {
-        item.sub.push({ kind: "pre", text: preText(ch) });
-      } else if (tag === "blockquote") {
-        var inner = [];
-        flowNodes(ch.childNodes, inner, st);
-        item.sub.push({ kind: "quote", blocks: inner });
-      } else if (tag === "img") {
-        var alt2 = ch.getAttribute("alt") || "";
-        if (alt2) item.runs.push({ t: encSafe(alt2), st: st });
-      } else if (tag === "hr") {
-        item.sub.push({ kind: "hr" });
-      } else {
-        /* generic container inside a list item */
-        var gen = liContent(ch, st);
-        for (var g = 0; g < gen.runs.length; g++) item.runs.push(gen.runs[g]);
-        for (var s = 0; s < gen.sub.length; s++) item.sub.push(gen.sub[s]);
-      }
-    }
-    return item;
-  }
-
-  function flowNodes(nodes, sink, st) {
-    var open = null;
-    function para() {
-      if (!open) open = { kind: "p", runs: [] };
-      return open;
-    }
-    function close() {
-      if (open) {
-        if (open.runs.length) sink.push(open);
-        open = null;
-      }
-    }
-    for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
-      if (!node || node.nodeType === 8) continue;
-      if (node.nodeType === 3) {
-        var t = encSafe(node.data);
-        if (t) para().runs.push({ t: t, st: st });
-        continue;
-      }
-      if (node.nodeType !== 1) continue;
-      var tag = (node.tagName || "").toLowerCase();
-      if (tag === "br") {
-        para().runs.push({ br: 1 });
-        continue;
-      }
-      if (STYLE_INLINE[tag]) {
-        var toks = inlineTokens(node, styleFor(tag, st));
-        if (toks.length) {
-          var p = para();
-          for (var m = 0; m < toks.length; m++) p.runs.push(toks[m]);
-        }
-        continue;
-      }
-      close();
-      if (/^h[1-6]$/.test(tag)) {
-        sink.push({ kind: "h", level: parseInt(tag.charAt(1), 10), runs: inlineTokens(node, st) });
-      } else if (tag === "p") {
-        sink.push({ kind: "p", runs: inlineTokens(node, st) });
-      } else if (tag === "pre") {
-        sink.push({ kind: "pre", text: preText(node) });
-      } else if (tag === "blockquote") {
-        var inner = [];
-        flowNodes(node.childNodes, inner, st);
-        if (inner.length) sink.push({ kind: "quote", blocks: inner });
-      } else if (tag === "ul" || tag === "ol") {
-        sink.push(parseList(node, tag === "ol", st));
-      } else if (tag === "hr") {
-        sink.push({ kind: "hr" });
-      } else if (tag === "img") {
-        var alt = node.getAttribute("alt") || "";
-        if (alt) sink.push({ kind: "p", runs: [{ t: encSafe(alt), st: st }] });
-      } else if (tag === "table") {
-        var rows = node.querySelectorAll("tr");
-        var lines = [];
-        for (var r = 0; r < rows.length; r++) {
-          var cells = rows[r].querySelectorAll("th, td");
-          var parts = [];
-          for (var c = 0; c < cells.length; c++) {
-            var cell = String(cells[c].textContent || "").replace(/\s+/g, " ").trim();
-            if (cell) parts.push(cell);
-          }
-          if (parts.length) lines.push(parts.join(" | "));
-        }
-        if (lines.length) sink.push({ kind: "pre", text: lines.join("\n") });
-      } else {
-        /* generic block container — transparent */
-        flowNodes(node.childNodes, sink, st);
-        close();
-      }
-    }
-    close();
-  }
-
-  function firstH1Text(blocks) {
-    for (var i = 0; i < blocks.length; i++) {
-      var b = blocks[i];
-      if (b.kind === "h" && b.level === 1) {
-        var s = "";
-        for (var j = 0; j < b.runs.length; j++) {
-          if (!b.runs[j].br) s += b.runs[j].t;
-        }
-        s = s.replace(/\s+/g, " ").trim();
-        if (s) return s;
-      }
-      if (b.kind === "quote") {
-        var q = firstH1Text(b.blocks || []);
-        if (q) return q;
-      }
-    }
-    return "";
-  }
-
-  function newPage(ctx) {
-    ctx.page = ctx.doc.addPage([PAGE_W, PAGE_H]);
-    ctx.y = PAGE_H - MARGIN;
-  }
-
-  function ensureFit(ctx, lead) {
-    if (ctx.y - lead < MARGIN) newPage(ctx);
-  }
-
-  function fontKeyFor(st) {
-    if (st.m) return st.b ? "mb" : "m";
-    if (st.b && st.i) return "bi";
-    if (st.b) return "b";
-    if (st.i) return "i";
-    return "n";
-  }
-
-  function fitCount(s, font, size, maxW) {
-    if (!s || font.widthOfTextAtSize(s, size) <= maxW) return s.length;
-    var lo = 0;
-    var hi = s.length;
-    while (lo < hi) {
-      var mid = (lo + hi + 1) >> 1;
-      if (font.widthOfTextAtSize(s.slice(0, mid), size) <= maxW) lo = mid;
-      else hi = mid - 1;
-    }
-    return lo;
-  }
-
-  function renderWrapped(ctx, x, w, tokens, opt) {
-    if (!tokens || !tokens.length) return;
-    var size = opt.size;
-    var lead = opt.leading || Math.round(size * 145) / 100;
-    var color = opt.color || COLORS.text;
-    var line = [];
-    var lineW = 0;
-
-    function fontKey(st) {
-      var k = fontKeyFor(st);
-      if (opt.bold) {
-        k = k === "n" ? "b" : k === "i" ? "bi" : k === "m" ? "mb" : k;
-      }
-      return k;
-    }
-    function flush() {
-      if (!line.length) return;
-      ensureFit(ctx, lead);
-      var lx = x;
-      for (var i = 0; i < line.length; i++) {
-        var wd = line[i];
-        var f = ctx.fonts[wd.k];
-        var col = wd.st && wd.st.link ? COLORS.link : color;
-        var ww = f.widthOfTextAtSize(wd.w, size);
-        ctx.page.drawText(wd.w, { x: lx, y: ctx.y, size: size, font: f, color: col });
-        lx += ww + f.widthOfTextAtSize(" ", size);
-      }
-      ctx.y -= lead;
-      line = [];
-      lineW = 0;
-    }
-    function addWord(word, st) {
-      var k = fontKey(st);
-      var f = ctx.fonts[k];
-      var ww = f.widthOfTextAtSize(word, size);
-      var sp = f.widthOfTextAtSize(" ", size);
-      if (line.length && lineW + sp + ww > w) flush();
-      if (!line.length) lineW = ww;
-      else lineW += sp + ww;
-      line.push({ w: word, k: k, st: st });
-    }
-
-    for (var i = 0; i < tokens.length; i++) {
-      var tk = tokens[i];
-      if (tk.br) {
-        if (line.length) flush();
-        continue;
-      }
-      var text = tk.t;
-      if (!text) continue;
-      var parts = text.split(/\s+/);
-      for (var p = 0; p < parts.length; p++) {
-        if (parts[p]) addWord(parts[p], tk.st);
-      }
-    }
-    flush();
-  }
-
-  function renderHeading(ctx, b, x, w) {
-    var map = { 1: [19, 12, 6], 2: [15, 10, 4], 3: [12.5, 8, 3], 4: [10.5, 6, 3], 5: [10.5, 6, 2], 6: [10.5, 6, 2] };
-    var m = map[b.level] || map[3];
-    ensureFit(ctx, m[0] * 1.35);
-    ctx.y -= m[1];
-    renderWrapped(ctx, x, w, b.runs || [], { size: m[0], color: COLORS.text, bold: true });
-    ctx.y -= m[2];
-  }
-
-  function renderPre(ctx, b, x, w) {
-    if (!b.text) return;
-    var size = 8.5;
-    var lead = Math.round(size * 145) / 100;
-    var font = ctx.fonts.m;
-    var color = COLORS.sub;
-    var srcLines = b.text.split("\n");
-    var laid = [];
-    var total = 0;
-    for (var i = 0; i < srcLines.length; i++) {
-      var line = srcLines[i].replace(/\t/g, "    ");
-      if (!line.length) {
-        laid.push("");
-        total += lead;
-        continue;
-      }
-      if (font.widthOfTextAtSize(line, size) <= w) {
-        laid.push(line);
-        total += lead;
-      } else {
-        var rest = line;
-        while (rest.length) {
-          var n = fitCount(rest, font, size, w);
-          if (n === 0) break;
-          laid.push(rest.slice(0, n));
-          total += lead;
-          rest = rest.slice(n);
-        }
-      }
-    }
-    if (ctx.y - total >= MARGIN) {
-      var bottom = ctx.y - total - 1;
-      ctx.page.drawRectangle({ x: x - 6, y: bottom, width: w + 12, height: total + 6, color: COLORS.fade });
-      for (var j = 0; j < laid.length; j++) {
-        if (laid[j]) ctx.page.drawText(laid[j], { x: x, y: ctx.y, size: size, font: font, color: color });
-        ctx.y -= lead;
-      }
-    } else {
-      for (var k = 0; k < laid.length; k++) {
-        ensureFit(ctx, lead);
-        if (laid[k]) ctx.page.drawText(laid[k], { x: x, y: ctx.y, size: size, font: font, color: color });
-        ctx.y -= lead;
-      }
-    }
-  }
-
-  function renderQuote(ctx, b, x, w, qd) {
-    var blocks = b.blocks || [];
-    if (!blocks.length) return;
-    var innerX = x + 14;
-    var innerW = w - 14;
-    var startPg = ctx.page;
-    var startY = ctx.y;
-    renderFlowBlocks(ctx, blocks, innerX, innerW, qd + 1);
-    if (ctx.page === startPg && ctx.y < startY) {
-      ctx.page.drawRectangle({ x: x, y: ctx.y + 2, width: 2.5, height: startY - ctx.y + 4, color: COLORS.rule });
-    }
-    ctx.y -= 8;
-  }
-
-  function renderList(ctx, lst, x, w, qd) {
-    var color = qd ? COLORS.sub : COLORS.text;
-    var size = 10.5;
-    var mf = ctx.fonts.b;
-    var items = lst.items || [];
-    var ordered = !!lst.ordered;
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      if (!item.runs.length && !item.sub.length) continue;
-      var marker = ordered ? i + 1 + ". " : i % 2 === 0 ? "- " : "+ ";
-      var mw = mf.widthOfTextAtSize(marker, size) + 2;
-      if (ctx.y - size * 1.6 < MARGIN) newPage(ctx);
-      ctx.page.drawText(marker, { x: x, y: ctx.y, size: size, font: mf, color: color });
-      if (item.runs.length) {
-        renderWrapped(ctx, x + mw, w - mw, item.runs, { size: size, color: color });
-      }
-      if (item.sub.length) {
-        renderFlowBlocks(ctx, item.sub, x + mw, w - mw, qd);
-      }
-      ctx.y -= 3;
-    }
-    ctx.y -= 4;
-  }
-
-  function renderFlowBlocks(ctx, blocks, x, w, qd) {
-    for (var i = 0; i < blocks.length; i++) {
-      var b = blocks[i];
-      switch (b.kind) {
-        case "p":
-          renderWrapped(ctx, x, w, b.runs || [], { size: 10.5, color: qd ? COLORS.sub : COLORS.text });
-          ctx.y -= 6;
-          break;
-        case "h":
-          renderHeading(ctx, b, x, w);
-          break;
-        case "pre":
-          renderPre(ctx, b, x, w);
-          ctx.y -= 4;
-          break;
-        case "quote":
-          renderQuote(ctx, b, x, w, qd);
-          break;
-        case "hr":
-          if (ctx.y - 20 < MARGIN) newPage(ctx);
-          ctx.page.drawRectangle({ x: x, y: ctx.y - 7, width: w, height: 0.8, color: COLORS.rule });
-          ctx.y -= 14;
-          break;
-        case "list":
-          renderList(ctx, b, x, w, qd);
-          break;
-        default:
-          break;
-      }
-    }
-  }
-
-  async function htmlToPdfBytes(html) {
-    var doc = await PDFLib.PDFDocument.create();
-    var ctx = { doc: doc, page: null, y: 0, fonts: {} };
-    newPage(ctx);
-    var defs = [
-      ["n", PDFLib.StandardFonts.Helvetica],
-      ["b", PDFLib.StandardFonts.HelveticaBold],
-      ["i", PDFLib.StandardFonts.HelveticaOblique],
-      ["bi", PDFLib.StandardFonts.HelveticaBoldOblique],
-      ["m", PDFLib.StandardFonts.Courier],
-      ["mb", PDFLib.StandardFonts.CourierBold]
-    ];
-    for (var i = 0; i < defs.length; i++) {
-      ctx.fonts[defs[i][0]] = await doc.embedFont(defs[i][1]);
-    }
-    var blocks = domToBlocks(html);
-    renderFlowBlocks(ctx, blocks, MARGIN, CW, 0);
-    var title = firstH1Text(blocks);
-    if (title) doc.setTitle(title);
-    doc.setCreator("kokoapi.space File converter");
-    return { bytes: await doc.save(), title: title };
-  }
-
-  var m2pSrc = $("cv-m2p-src");
-  var m2pRun = $("cv-m2p-run");
-  var m2pBusy = false;
-
-  function m2pMode() {
-    var el = $q('input[name="cv-m2p-mode"]:checked');
-    return el ? el.value : "md";
-  }
-  function m2pRefresh() {
-    m2pRun.disabled = m2pBusy || !m2pSrc.value.trim();
-  }
-  m2pSrc.addEventListener("input", m2pRefresh);
-  var m2pRadios = document.querySelectorAll('input[name="cv-m2p-mode"]');
-  for (var m2i = 0; m2i < m2pRadios.length; m2i++) {
-    m2pRadios[m2i].addEventListener("change", function () {
-      setStatus("cv-m2p-status", "");
-    });
-  }
-
-  m2pRun.addEventListener("click", async function () {
-    var src = m2pSrc.value;
-    if (!src.trim() || m2pBusy) return;
-    m2pBusy = true;
-    m2pRefresh();
-    markBusy(m2pRun, true, "Building PDF…");
-    setStatus("cv-m2p-status", "");
-    try {
-      var html = m2pMode() === "md" ? marked.parse(src) : src;
-      var out = await simpleTextPdf(src, m2pMode() === "md");
-      var name = (fileWord(out.title) || "document") + ".pdf";
-      download(new Blob([out.bytes], { type: "application/pdf" }), name);
-      setStatus("cv-m2p-status", "Created " + name + " (" + fmtBytes(out.bytes.length) + ").");
-    } catch (err) {
-      setStatus("cv-m2p-status", (err && err.message) || "PDF export failed.", true);
-    } finally {
-      markBusy(m2pRun, false);
-      m2pBusy = false;
-      m2pRefresh();
-    }
-  });
-
   /* ================================================================ */
   /* 3. PDF → TXT (pdf.js)                                              */
   /* ================================================================ */
@@ -2065,6 +1585,48 @@
       setStatus("cv-unpack-status", (err && err.message) || "Could not build the ZIP.", true);
     } finally {
       markBusy(unAll, false);
+    }
+  });
+
+
+  /* 2. Markdown / HTML -> PDF (m2p) */
+  var m2pSrc = $("cv-m2p-src");
+  var m2pRun = $("cv-m2p-run");
+  var m2pBusy = false;
+
+  function m2pMode() {
+    var el = $q('input[name="cv-m2p-mode"]:checked');
+    return el ? el.value : "md";
+  }
+  function m2pRefresh() {
+    m2pRun.disabled = m2pBusy || !m2pSrc.value.trim();
+  }
+  m2pSrc.addEventListener("input", m2pRefresh);
+  var m2pRadios = document.querySelectorAll('input[name="cv-m2p-mode"]');
+  for (var m2i = 0; m2i < m2pRadios.length; m2i++) {
+    m2pRadios[m2i].addEventListener("change", function () {
+      setStatus("cv-m2p-status", "");
+    });
+  }
+
+  m2pRun.addEventListener("click", async function () {
+    var src = m2pSrc.value;
+    if (!src.trim() || m2pBusy) return;
+    m2pBusy = true;
+    m2pRefresh();
+    markBusy(m2pRun, true, "Building PDF…");
+    setStatus("cv-m2p-status", "");
+    try {
+      var out = await simpleTextPdf(src, m2pMode() === "md");
+      var name = (fileWord(out.title) || "document") + ".pdf";
+      download(new Blob([out.bytes], { type: "application/pdf" }), name);
+      setStatus("cv-m2p-status", "Created " + name + " (" + fmtBytes(out.bytes.length) + ").");
+    } catch (err) {
+      setStatus("cv-m2p-status", (err && err.message) || "PDF export failed.", true);
+    } finally {
+      markBusy(m2pRun, false);
+      m2pBusy = false;
+      m2pRefresh();
     }
   });
 
