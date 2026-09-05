@@ -4,6 +4,14 @@ const pathname = Astro.url.pathname;
 function isActive(href: string): boolean {
   return pathname === href || pathname.startsWith(href);
 }
+
+const links = [
+  { href: "/image/", label: "Image tools" },
+  { href: "/pdf/", label: "PDF tools" },
+  { href: "/convert/", label: "File converter" },
+  { href: "/secret/", label: "Secret Sender" },
+  { href: "/qrcode/", label: "QR toolkit" },
+];
 ---
 
 <header class="topbar">
@@ -20,21 +28,15 @@ function isActive(href: string): boolean {
     </a>
 
     <nav class="main-nav" aria-label="Tools">
-      <a class:list={["main-nav-link", { current: isActive("/image/") }]} data-i18n="nav.image" href="/image/">Image tools</a>
-      <a class:list={["main-nav-link", { current: isActive("/pdf/") }]} data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
-      <a class:list={["main-nav-link", { current: isActive("/convert/") }]} data-i18n="nav.convert" href="/convert/">File converter</a>
-      <a class:list={["main-nav-link", { current: isActive("/secret/") }]} data-i18n="nav.secret" href="/secret/">Secret Sender</a>
-      <a class:list={["main-nav-link", { current: isActive("/qrcode/") }]} data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
+      {links.map((link) => (
+        <a class:list={["main-nav-link", { current: isActive(link.href) }]} href={link.href}>
+          {link.label}
+        </a>
+      ))}
     </nav>
 
     <span class="top-actions">
-      <button
-        type="button"
-        class="nav-btn"
-        id="theme-toggle"
-        aria-label="Switch to light theme"
-        title="Light"
-      >
+      <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
         <span class="theme-ico-light" aria-hidden="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <circle cx="8" cy="8" r="3.2" />
@@ -46,22 +48,6 @@ function isActive(href: string): boolean {
             <path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z" />
           </svg>
         </span>
-      </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar para português" title="Português">
-        <svg class="flag flag-us" viewBox="0 0 21 15" aria-hidden="true">
-          <rect width="21" height="15" fill="#f0f0f0" />
-          <rect y="0" width="21" height="1.5" fill="#b22234" />
-          <rect y="3" width="21" height="1.5" fill="#b22234" />
-          <rect y="6" width="21" height="1.5" fill="#b22234" />
-          <rect y="9" width="21" height="1.5" fill="#b22234" />
-          <rect y="12" width="21" height="1.5" fill="#b22234" />
-          <rect width="8.4" height="7.5" fill="#3c3b6e" />
-        </svg>
-        <svg class="flag flag-br" viewBox="0 0 21 15" aria-hidden="true">
-          <rect width="21" height="15" fill="#009c3b" />
-          <polygon points="10.5,0.5 20.5,7.5 10.5,14.5 0.5,7.5" fill="#ffdf00" />
-          <circle cx="10.5" cy="7.5" r="3.1" fill="#002776" />
-        </svg>
       </button>
     </span>
   </div>

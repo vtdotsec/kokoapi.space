@@ -19,7 +19,6 @@
     <script src="/convert/vendor/marked.umd.js"></script>
     <script src="/convert/vendor/js-yaml.min.js"></script>
     <script src="/convert/convert.js" defer></script>
-    <script is:inline src="/_ui/i18n-pages.js"></script>
     <script src="/_ui/ui.js" defer></script>
   </head>
   <body>
@@ -36,13 +35,13 @@
       <span>kokoapi<span class="space">.space</span></span>
     </a>
     <nav class="main-nav" aria-label="Tools">
-      <a class="main-nav-link" data-i18n="nav.image" href="/image/">Image tools</a>
-      <a class="main-nav-link" data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
-      <a class="main-nav-link" aria-current="page" data-i18n="nav.convert" href="/convert/">File converter</a>
-      <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
-      <a class="main-nav-link" data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
+      <a class="main-nav-link" href="/image/">Image tools</a>
+      <a class="main-nav-link" href="/pdf/">PDF tools</a>
+      <a class="main-nav-link" aria-current="page" href="/convert/">File converter</a>
+      <a class="main-nav-link" href="/secret/">Secret Sender</a>
+      <a class="main-nav-link" href="/qrcode/">QR toolkit</a>
     </nav>
-            <span class="top-actions">
+    <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
         <span class="theme-ico-light" aria-hidden="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
@@ -51,26 +50,19 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
         </span>
       </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar para português" title="Português">
-        <svg class="flag flag-us" viewBox="0 0 21 15" aria-hidden="true"><rect width="21" height="15" fill="#f0f0f0"/><rect y="0" width="21" height="1.5" fill="#b22234"/><rect y="3" width="21" height="1.5" fill="#b22234"/><rect y="6" width="21" height="1.5" fill="#b22234"/><rect y="9" width="21" height="1.5" fill="#b22234"/><rect y="12" width="21" height="1.5" fill="#b22234"/><rect width="8.4" height="7.5" fill="#3c3b6e"/></svg>
-        <svg class="flag flag-br" viewBox="0 0 21 15" aria-hidden="true" hidden><rect width="21" height="15" fill="#009c3b"/><polygon points="10.5,0.5 20.5,7.5 10.5,14.5 0.5,7.5" fill="#ffdf00"/><circle cx="10.5" cy="7.5" r="3.1" fill="#002776"/></svg>
-      </button>
-    </span>
-        <span class="theme-ico-dark" aria-hidden="true">🌙</span>
-      </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">🇺🇸 EN</button>
     </span>
   </div>
 </header>
 
 
+
     <main class="wrap">
-      <h1 data-i18n="convert.title">File converter</h1>
-      <p class="lead" data-i18n="convert.lead">
+      <h1>File converter</h1>
+      <p class="lead">
         Convert between text, PDF, image, data and archive formats. Every tool runs
         entirely in your browser — no server, no upload, no sign-up.
       </p>
-      <p class="note" data-i18n="convert.note">
+      <p class="note">
         100% local conversion in your browser. Your files are never uploaded.
       </p>
 
@@ -409,7 +401,7 @@
 
     <footer class="site-footer">
       <div class="wrap">
-        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer" data-i18n="footer.github">GitHub · Open-source</a></span>
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
         <span>No uploads · Files stay on your device · No cookies</span>
       </div>
     </footer>

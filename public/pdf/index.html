@@ -17,7 +17,6 @@
     <script src="/pdf/vendor/pdf.min.js"></script>
     <script src="/pdf/vendor/fflate.js"></script>
     <script src="/pdf/pdf.js" defer></script>
-    <script is:inline src="/_ui/i18n-pages.js"></script>
     <script src="/_ui/ui.js" defer></script>
   </head>
   <body>
@@ -34,13 +33,13 @@
       <span>kokoapi<span class="space">.space</span></span>
     </a>
     <nav class="main-nav" aria-label="Tools">
-      <a class="main-nav-link" data-i18n="nav.image" href="/image/">Image tools</a>
-      <a class="main-nav-link" aria-current="page" data-i18n="nav.pdf" href="/pdf/">PDF tools</a>
-      <a class="main-nav-link" data-i18n="nav.convert" href="/convert/">File converter</a>
-      <a class="main-nav-link" data-i18n="nav.secret" href="/secret/">Secret Sender</a>
-      <a class="main-nav-link" data-i18n="nav.qrcode" href="/qrcode/">QR toolkit</a>
+      <a class="main-nav-link" href="/image/">Image tools</a>
+      <a class="main-nav-link" aria-current="page" href="/pdf/">PDF tools</a>
+      <a class="main-nav-link" href="/convert/">File converter</a>
+      <a class="main-nav-link" href="/secret/">Secret Sender</a>
+      <a class="main-nav-link" href="/qrcode/">QR toolkit</a>
     </nav>
-            <span class="top-actions">
+    <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
         <span class="theme-ico-light" aria-hidden="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
@@ -49,42 +48,35 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
         </span>
       </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar para português" title="Português">
-        <svg class="flag flag-us" viewBox="0 0 21 15" aria-hidden="true"><rect width="21" height="15" fill="#f0f0f0"/><rect y="0" width="21" height="1.5" fill="#b22234"/><rect y="3" width="21" height="1.5" fill="#b22234"/><rect y="6" width="21" height="1.5" fill="#b22234"/><rect y="9" width="21" height="1.5" fill="#b22234"/><rect y="12" width="21" height="1.5" fill="#b22234"/><rect width="8.4" height="7.5" fill="#3c3b6e"/></svg>
-        <svg class="flag flag-br" viewBox="0 0 21 15" aria-hidden="true" hidden><rect width="21" height="15" fill="#009c3b"/><polygon points="10.5,0.5 20.5,7.5 10.5,14.5 0.5,7.5" fill="#ffdf00"/><circle cx="10.5" cy="7.5" r="3.1" fill="#002776"/></svg>
-      </button>
-    </span>
-        <span class="theme-ico-dark" aria-hidden="true">🌙</span>
-      </button>
-      <button type="button" class="nav-btn" id="lang-toggle" aria-label="Mudar idioma">🇺🇸 EN</button>
     </span>
   </div>
 </header>
 
 
+
     <main class="wrap">
-      <h1 data-i18n="pdf.title">PDF toolkit</h1>
-      <p class="lead" data-i18n="pdf.lead">
+      <h1>PDF toolkit</h1>
+      <p class="lead">
         Merge, split, rotate, convert to or from images, or compress PDF files. Choose a
         tool below, pick your files and download the result.
       </p>
-      <p class="note" data-i18n="pdf.note">
+      <p class="note">
         Processing is 100% local in your browser. Your files are never uploaded and never
         leave your device.
       </p>
 
       <div class="seg" role="group" aria-label="Tool">
-        <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true" data-i18n="pdf.merge">Merge</button>
-        <button type="button" class="seg-btn" data-tool="split" aria-pressed="false" data-i18n="pdf.split">Split</button>
-        <button type="button" class="seg-btn" data-tool="reorder" aria-pressed="false" data-i18n="pdf.reorganize">Reorganize</button>
-        <button type="button" class="seg-btn" data-tool="organize" aria-pressed="false" data-i18n="pdf.rotatedelete">Rotate / Delete</button>
-        <button type="button" class="seg-btn" data-tool="pagenum" aria-pressed="false" data-i18n="pdf.pagenums">Page numbers</button>
-        <button type="button" class="seg-btn" data-tool="watermark" aria-pressed="false" data-i18n="pdf.watermark">Watermark</button>
-        <button type="button" class="seg-btn" data-tool="compress" aria-pressed="false" data-i18n="pdf.compress">Compress</button>
-        <button type="button" class="seg-btn" data-tool="unlock" aria-pressed="false" data-i18n="pdf.unlock">Protect / Unlock</button>
-        <button type="button" class="seg-btn" data-tool="extract" aria-pressed="false" data-i18n="pdf.extract">Extract text</button>
-        <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false" data-i18n="pdf.imgs2pdf">Images to PDF</button>
-        <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false" data-i18n="pdf.pdf2img">PDF to Images</button>
+        <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true">Merge</button>
+        <button type="button" class="seg-btn" data-tool="split" aria-pressed="false">Split</button>
+        <button type="button" class="seg-btn" data-tool="reorder" aria-pressed="false">Reorganize</button>
+        <button type="button" class="seg-btn" data-tool="organize" aria-pressed="false">Rotate / Delete</button>
+        <button type="button" class="seg-btn" data-tool="pagenum" aria-pressed="false">Page numbers</button>
+        <button type="button" class="seg-btn" data-tool="watermark" aria-pressed="false">Watermark</button>
+        <button type="button" class="seg-btn" data-tool="compress" aria-pressed="false">Compress</button>
+        <button type="button" class="seg-btn" data-tool="unlock" aria-pressed="false">Protect / Unlock</button>
+        <button type="button" class="seg-btn" data-tool="extract" aria-pressed="false">Extract text</button>
+        <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false">Images to PDF</button>
+        <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false">PDF to Images</button>
       </div>
 
       <!-- Merge -->
@@ -449,7 +441,7 @@
 
     <footer class="site-footer">
       <div class="wrap">
-        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer" data-i18n="footer.github">GitHub · Open-source</a></span>
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
         <span>No uploads · Files stay on your device · No cookies</span>
       </div>
     </footer>
