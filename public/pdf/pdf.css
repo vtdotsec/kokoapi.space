@@ -713,3 +713,48 @@ main.wrap {
     margin-top: 0.4rem;
   }
 }
+
+/* ---------- mobile: native tool select replaces the sidebar ---------- */
+.side-select {
+  display: none;
+  width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .side-select {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .side-toggle,
+  .pdf-side .seg {
+    display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  main.wrap {
+    padding-inline: 0.85rem;
+  }
+  textarea,
+  input[type="text"],
+  .text-input,
+  .select {
+    max-width: 100% !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .thumbs {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  .recent-table,
+  .compare-wrap {
+    overflow-x: auto;
+  }
+}

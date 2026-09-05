@@ -76,6 +76,7 @@
 
   var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress", "watermark", "pagenum", "unlock", "extract", "reorder"];
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
+  var pdfSelect = document.querySelector(".pdf-side .side-select");
 
   function activate(tool) {
     segButtons.forEach(function (b) {
@@ -84,11 +85,25 @@
     TOOLS.forEach(function (t) {
       $("tool-" + t).hidden = t !== tool;
     });
+    if (pdfSelect) pdfSelect.value = tool;
   }
 
   segButtons.forEach(function (b) {
     b.addEventListener("click", function () { activate(b.dataset.tool); });
   });
+
+  if (pdfSelect) {
+    segButtons.forEach(function (b) {
+      var opt = document.createElement("option");
+      opt.value = b.dataset.tool;
+      opt.textContent = b.textContent.trim();
+      pdfSelect.appendChild(opt);
+    });
+    pdfSelect.addEventListener("change", function () {
+      if (pdfSelect.value) activate(pdfSelect.value);
+    });
+    activate("merge");
+  }
 
   /* ================================================================ */
   /* Merge                                                             */

@@ -1644,14 +1644,26 @@
   /* Convert sidebar switcher: one tool visible at a time. */
   var cvSideBtns = Array.prototype.slice.call(document.querySelectorAll(".cv-side-nav [data-target]"));
   var cvTools = Array.prototype.slice.call(document.querySelectorAll(".cv-main .tool"));
+  var cvSelect = document.querySelector(".cv-side .side-select");
 
   function cvShowTool(id) {
-    cvTools.forEach(function (t) { t.hidden = t.id !== id; });
+    var activeCat = null;
+    cvTools.forEach(function (t) {
+      var on = t.id === id;
+      t.hidden = !on;
+      if (on) activeCat = t.closest(".cat");
+    });
     cvSideBtns.forEach(function (b) {
       var on = b.getAttribute("data-target") === id;
       b.classList.toggle("active", on);
       b.setAttribute("aria-pressed", String(on));
     });
+    // Reveal only the category that holds the active tool so the right
+    // column shows a single panel instead of empty section headers.
+    Array.prototype.forEach.call(document.querySelectorAll(".cv-main > .cat"), function (cat) {
+      cat.hidden = cat !== activeCat;
+    });
+    if (cvSelect) cvSelect.value = id;
   }
   cvSideBtns.forEach(function (b) {
     b.addEventListener("click", function () {
@@ -1660,6 +1672,18 @@
     });
   });
   cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
+  if (cvSelect) {
+    cvSideBtns.forEach(function (b) {
+      var opt = document.createElement("option");
+      opt.value = b.getAttribute("data-target");
+      opt.textContent = b.textContent.trim();
+      cvSelect.appendChild(opt);
+    });
+    cvSelect.addEventListener("change", function () {
+      if (cvSelect.value) cvShowTool(cvSelect.value);
+    });
+    cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
+  }
 
   /* Deterministic text->PDF export (fix: previously blank output).
      Parses markdown (or strips HTML), wraps words, and draws with pdf-lib
