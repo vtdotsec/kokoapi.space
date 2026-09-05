@@ -8,6 +8,9 @@ services:
 
     read_only: true
 
+    depends_on:
+      - secret
+
     tmpfs:
       - /var/cache/nginx:uid=101,gid=101,mode=0755
       - /var/run:uid=101,gid=101,mode=0755
@@ -30,3 +33,36 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+  # Ephemeral sharing app (/secret/). Plain Node, zero deps; encrypted blobs on disk.
+  secret:
+    build: ./secret
+    container_name: kokoapi-secret
+
+    environment:
+      - DATA_DIR=/data
+
+    volumes:
+      - secret-data:/data
+
+    mem_limit: 128m
+
+    read_only: true
+
+    restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8787/secret/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  secret-data:
