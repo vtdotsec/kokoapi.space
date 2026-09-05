@@ -43,6 +43,19 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      # Requires the following repository secrets: DEPLOY_HOST, DEPLOY_USER,
+      # DEPLOY_SSH_KEY, DEPLOY_PORT (optional), DEPLOY_PATH.
+      - name: Check deploy secrets
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          test -n "$HOST" || { echo "Missing secret: DEPLOY_HOST"; exit 1; }
+          test -n "$USER" || { echo "Missing secret: DEPLOY_USER"; exit 1; }
+          test -n "$KEY" || { echo "Missing secret: DEPLOY_SSH_KEY"; exit 1; }
+          echo "Deploy secrets are configured."
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -51,10 +64,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || '22' }}
           script: |
-            set -e
-            cd "$DEPLOY_PATH"
+            cd ${{ secrets.DEPLOY_PATH }}
             git pull --ff-only origin main
             docker compose up -d --build
-            docker compose ps
-        env:
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+            docker compose prune -f
