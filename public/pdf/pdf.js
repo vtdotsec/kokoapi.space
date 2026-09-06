@@ -476,7 +476,8 @@
   }
 
   async function renderOrgThumb(item) {
-    var page = await org.doc.getPage(item.idx);
+    // pdf.js page numbers are 1-based; org item indices are 0-based.
+    var page = await org.doc.getPage(item.idx + 1);
     var base = page.getViewport({ scale: 1 });
     var scale = THUMB_W / base.width;
     var rotation = (rotationBase(page) + item.rot) % 360;
@@ -859,7 +860,7 @@
 
       var zipFiles = mode === "zip" ? {} : null;
       for (var i = 0; i < p2i.doc.numPages; i++) {
-        var canvas = await renderPdfCanvas(p2i.doc, i, scale);
+        var canvas = await renderPdfCanvas(p2i.doc, i + 1, scale);
         var blob = await canvasToBlob(canvas, mime, quality);
         if (zipFiles) {
           zipFiles[base + "-p" + pad(i + 1, p2i.doc.numPages) + "." + ext] = new Uint8Array(await blob.arrayBuffer());
@@ -945,7 +946,7 @@
       var scale = Number($("compress-scale").value);
       var out = await PDFLib.PDFDocument.create();
       for (var i = 0; i < cstate.doc.numPages; i++) {
-        var canvas = await renderPdfCanvas(cstate.doc, i, scale);
+        var canvas = await renderPdfCanvas(cstate.doc, i + 1, scale);
         var blob = await canvasToBlob(canvas, "image/jpeg", quality);
         var jpeg = new Uint8Array(await blob.arrayBuffer());
         var img = await out.embedJpg(jpeg);
@@ -1248,7 +1249,7 @@
       pdf = await pdfjsLib.getDocument(opts).promise;
       var out = await PDFLib.PDFDocument.create();
       for (var i = 0; i < pdf.numPages; i++) {
-        var canvas = await renderPdfCanvas(pdf, i, UNLOCK_SCALE);
+        var canvas = await renderPdfCanvas(pdf, i + 1, UNLOCK_SCALE);
         var blob = await canvasToBlob(canvas, "image/jpeg", 0.92);
         var jpeg = new Uint8Array(await blob.arrayBuffer());
         var img = await out.embedJpg(jpeg);
@@ -1314,7 +1315,8 @@
 
       var chunks = [];
       for (var i = 0; i < pdf.numPages; i++) {
-        var content = await pdf.getPage(i).getTextContent();
+        // pdf.js page numbers are 1-based; 0-based access throws "Invalid page request.".
+        var content = await pdf.getPage(i + 1).getTextContent();
         var line = [];
         for (var k = 0; k < content.items.length; k++) {
           var it = content.items[k];
@@ -1470,7 +1472,8 @@
 
   async function rrDrawThumb(item) {
     if (!rrState) return;
-    var page = await rrState.pdf.getPage(item.idx);
+    // pdf.js page numbers are 1-based; rr item indices are 0-based.
+    var page = await rrState.pdf.getPage(item.idx + 1);
     var base = page.getViewport({ scale: 1 });
     var scale = THUMB_W / base.width;
     var vp = page.getViewport({ scale: scale });
