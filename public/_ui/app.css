@@ -457,3 +457,89 @@ main.wrap {
     padding: 0.3rem 0.6rem;
   }
 }
+
+/* ---------- shared site footer (mainpage + tool pages) ------------ */
+.site-footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.site-footer .wrap {
+  display: block;
+  padding-block: 2.25rem 2.75rem;
+  color: var(--text);
+}
+
+.footer-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 3rem;
+  justify-content: space-between;
+}
+
+.footer-about {
+  max-width: 34ch;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.footer-about .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+
+.footer-about .brand .logo {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex: none;
+}
+
+.footer-about .brand .lg-plate {
+  fill: currentColor;
+}
+
+.footer-about .brand .lg-screen {
+  fill: var(--bg-elevated);
+}
+
+.footer-about .brand .lg-ink {
+  fill: currentColor;
+}
+
+.footer-about .brand .lg-cursor {
+  fill: var(--accent);
+}
+
+.footer-links h3 {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+}
+
+.footer-bottom {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: space-between;
+}
