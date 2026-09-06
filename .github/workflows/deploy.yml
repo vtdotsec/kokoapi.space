@@ -76,5 +76,6 @@ jobs:
             git pull --ff-only origin main
             git rev-parse --short HEAD
             docker compose down --remove-orphans
+            docker builder prune -f || true
             docker compose up -d --build --remove-orphans
             docker image prune -f
