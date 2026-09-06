@@ -10,6 +10,10 @@ interface Props {
   type?: "website" | "article";
   noindex?: boolean;
   jsonLd?: Record<string, unknown>;
+  /** Extra stylesheets to inject into <head>, e.g. a tool page's own CSS. */
+  styles?: string[];
+  /** Extra deferred scripts to inject into <head>, e.g. a tool page's own JS. */
+  scripts?: string[];
 }
 
 const {
@@ -19,6 +23,8 @@ const {
   type = "website",
   noindex = false,
   jsonLd,
+  styles = [],
+  scripts = [],
 } = Astro.props;
 
 const site = new URL(Astro.site?.toString() ?? "https://kokoapi.space/");
@@ -46,7 +52,9 @@ const imageUrl = new URL(image, site).toString();
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/_ui/app.css" />
+    {styles.map((href) => <link rel="stylesheet" href={href} />)}
     <script is:inline src="/_ui/ui.js" defer></script>
+    {scripts.map((src) => <script is:inline src={src} defer></script>)}
     <meta name="theme-color" content="#0e0f13" />
 
     <meta property="og:type" content={type} />

@@ -183,10 +183,16 @@
   var sideButtons = Array.prototype.slice.call(document.querySelectorAll(".tool-nav button[data-tool]"));
   var sideSelect = document.querySelector(".tool-side .side-select");
 
-  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  // Dedicated tool pages render the app inline and mark the active panel with
+  // data-koko-tool on the layout; the iframe embed variant uses ?tool=<name>.
   var embedParams = new URLSearchParams(location.search);
-  var embedTool =
-    TOOLS.indexOf(embedParams.get("tool") || "") !== -1 ? embedParams.get("tool") : "convert";
+  var embedTool = embedParams.get("tool") || "";
+  if (TOOLS.indexOf(embedTool) === -1) {
+    var appHost = document.querySelector(".tool-layout[data-koko-tool]");
+    var fromAttr = appHost ? appHost.getAttribute("data-koko-tool") || "" : "";
+    if (TOOLS.indexOf(fromAttr) !== -1) embedTool = fromAttr;
+  }
+  if (TOOLS.indexOf(embedTool) === -1) embedTool = "convert";
   if (embedParams.get("embed") === "1") document.body.classList.add("embed");
 
   function activate(tool) {

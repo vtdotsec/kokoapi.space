@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import ToolLanding from "../../components/ToolLanding.astro";
+import ToolCopy from "../../components/ToolCopy.astro";
+import ImageTools from "../../components/ImageTools.astro";
 import { TOOL_LANDINGS, toolLandingJsonLd } from "../../data/toolLandings";
 import type { ToolLandingEntry } from "../../data/toolLandings";
 
@@ -8,18 +9,35 @@ interface Props {
   entry: ToolLandingEntry;
 }
 
+// Slug of the landing page -> internal panel id used by image.js / image.css.
+const PANEL_BY_SLUG: Record<string, string> = {
+  convert: "convert",
+  compress: "resize",
+  crop: "crop",
+  "remove-exif": "strip",
+  watermark: "wmark",
+  filters: "filters",
+  batch: "batch",
+  qrcode: "qrcode",
+};
+
 export function getStaticPaths() {
   return TOOL_LANDINGS.filter((entry) => entry.parentPath === "/image/")
     .map((entry) => ({ params: { tool: entry.slug }, props: { entry } }));
 }
 
 const { entry } = Astro.props;
+const activeTool = PANEL_BY_SLUG[entry.slug] ?? entry.slug;
 ---
 
 <Base
   title={entry.title}
   description={entry.description}
   jsonLd={toolLandingJsonLd(entry)}
+  styles={["/image/image.css"]}
+  scripts={["/image/image.js"]}
 >
-  <ToolLanding entry={entry} />
+  <ToolCopy entry={entry}>
+    <ImageTools active={activeTool} />
+  </ToolCopy>
 </Base>

@@ -7,7 +7,7 @@ const PNG = fixture("pixel.png");
 
 test.describe("image tools", () => {
   test("convert upload and download", async ({ page }) => {
-    await page.goto("/image/");
+    await page.goto("/image/convert");
     await page.locator("#convert-file").setInputFiles({
       name: "pixel.png",
       mimeType: "image/png",
@@ -22,17 +22,18 @@ test.describe("image tools", () => {
   });
 
   test("drag & drop on a file-drop label processes the file", async ({ page }) => {
-    await page.goto("/image/");
+    await page.goto("/image/compress");
     await dropFile(page, "#resize-file", "dropped.png", PNG, "image/png");
     await expect(page.locator("#resize-info")).toContainText("dropped.png");
   });
 
-  test("crop landing page embeds the crop tool pre-selected", async ({ page }) => {
+  test("crop page renders the crop tool inline with a sidebar link", async ({ page }) => {
     await page.goto("/image/crop");
     await expect(page).toHaveTitle(/Crop/);
-    const frame = page.frameLocator("iframe[data-koko-widget]");
-    await expect(frame.locator("#tool-crop")).toBeVisible();
-    await expect(frame.locator("#tool-convert")).toBeHidden();
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await expect(page.locator("#tool-crop")).toBeVisible();
+    await expect(page.locator("#tool-convert")).toBeHidden();
+    await expect(page.locator('.tool-side a[href="/image/crop/"]')).toHaveAttribute("aria-current", "page");
   });
 });
 
@@ -153,11 +154,10 @@ test.describe("qr code generator (image tools)", () => {
   test("generates a QR PNG on /image/qrcode", async ({ page }) => {
     await page.goto("/image/qrcode");
     await expect(page).toHaveTitle(/QR code/i);
-    const frame = page.frameLocator("iframe[data-koko-widget]");
-    await frame.locator("#qr-url").fill("https://example.com");
-    await expect(frame.locator("#qr-canvas")).not.toHaveJSProperty("width", 0);
+    await expect(page.locator("#qr-url")).toBeVisible();
+    await page.locator("#qr-url").fill("https://example.com");
     const downloadPromise = page.waitForEvent("download");
-    await frame.locator("#qr-download").click();
+    await page.locator("#qr-download").click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe("qrcode.png");
     const bytes = await readDownload(download);

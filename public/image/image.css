@@ -657,3 +657,39 @@ body.embed main.wrap {
 body.embed .tool-layout {
   display: block;
 }
+
+/* ---------- dedicated tool pages (inline render, no iframe) ---------- */
+.tool-layout[data-koko-tool] section[data-tool-panel] {
+  display: none;
+}
+.tool-layout[data-koko-tool="convert"] #tool-convert,
+.tool-layout[data-koko-tool="resize"] #tool-resize,
+.tool-layout[data-koko-tool="strip"] #tool-strip,
+.tool-layout[data-koko-tool="crop"] #tool-crop,
+.tool-layout[data-koko-tool="wmark"] #tool-wmark,
+.tool-layout[data-koko-tool="filters"] #tool-filters,
+.tool-layout[data-koko-tool="batch"] #tool-batch,
+.tool-layout[data-koko-tool="qrcode"] #tool-qrcode {
+  display: block;
+}
+
+.tool-side .tool-nav a {
+  display: block;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.tool-side .tool-nav a:hover {
+  background: var(--bg-muted);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tool-side .tool-nav a[aria-current="page"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
