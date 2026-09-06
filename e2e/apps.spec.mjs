@@ -27,8 +27,8 @@ test.describe("image tools", () => {
     await expect(page.locator("#resize-info")).toContainText("dropped.png");
   });
 
-  test("crop-image landing page embeds the crop tool pre-selected", async ({ page }) => {
-    await page.goto("/image/crop-image");
+  test("crop landing page embeds the crop tool pre-selected", async ({ page }) => {
+    await page.goto("/image/crop");
     await expect(page).toHaveTitle(/Crop/);
     const frame = page.frameLocator("iframe[data-koko-widget]");
     await expect(frame.locator("#tool-crop")).toBeVisible();

@@ -197,7 +197,7 @@
       $("tool-" + t).hidden = t !== tool;
     });
     if (sideSelect) sideSelect.value = tool;
-    if (tool === "qrcode") qrStart();
+    if (tool === "qrcode") setTimeout(qrStart, 0);
   }
 
   sideButtons.forEach(function (b) {
