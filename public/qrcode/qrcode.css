@@ -27,8 +27,6 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);
 .range{accent-color:var(--accent);width:100%}
 .select{max-width:280px}
 canvas#qr-canvas{border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;max-width:100%;height:auto}
-.scan-box{min-height:220px;border:1px dashed var(--border-strong);border-radius:var(--radius);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;padding:1rem;overflow:hidden}
-.scan-box video{width:100%;border-radius:var(--radius-sm)}
 .file-drop{display:block;border:1px dashed var(--border-strong);border-radius:var(--radius);background:var(--bg-elevated);padding:1rem;cursor:pointer;font-size:.9rem}
 .file-drop input{display:none}
 .form-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-top:.4rem}

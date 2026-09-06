@@ -233,23 +233,7 @@
     draw();
   }
 
-  /* ---------------- scanner ---------------- */
-
-  var stream = null;
-  var raf = 0;
-
-  function stopCamera() {
-    cancelAnimationFrame(raf);
-    if (stream) {
-      stream.getTracks().forEach(function (t) { t.stop(); });
-      stream = null;
-    }
-    $("scan-video").hidden = true;
-    $("scan-idle").hidden = false;
-    $("scan-idle").textContent = "Camera is off.";
-    $("scan-start").disabled = false;
-    $("scan-stop").disabled = true;
-  }
+  /* ---------------- scanner (image files only) ---------------- */
 
   async function decodeFromImageData(imageData) {
     try {
@@ -264,83 +248,67 @@
     return code ? code.data : null;
   }
 
-  async function scanLoop(video, canvas) {
-    if (!stream) return;
-    var w = 480;
-    var h = Math.round(video.videoHeight * (w / video.videoWidth));
-    canvas.width = w;
-    canvas.height = h || 1;
-    canvas.getContext("2d").drawImage(video, 0, 0, w, h);
-    var data = canvas.getContext("2d").getImageData(0, 0, w, h);
-    var text = await decodeFromImageData(data);
-    if (!stream) return; // camera was stopped while decoding
-    if (text) {
-      $("scan-result").value = text;
-      setStatus("scan-status", "Code detected.");
-      stopCamera();
+  function decodeImageFile(file) {
+    if (!file) return;
+    if (file.type && file.type.indexOf("image/") !== 0) {
+      setStatus("scan-status", "Please use an image file (PNG, JPEG, WebP, …).", true);
       return;
     }
-    raf = requestAnimationFrame(function () { scanLoop(video, canvas); });
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = async function () {
+      var c = document.createElement("canvas");
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      c.getContext("2d").drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      var text = await decodeFromImageData(
+        c.getContext("2d").getImageData(0, 0, c.width, c.height)
+      );
+      if (text) {
+        $("scan-result").value = text;
+        setStatus("scan-status", "Code detected in the image.");
+      } else {
+        $("scan-result").value = "";
+        setStatus("scan-status", "No QR code found in the image.", true);
+      }
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      setStatus("scan-status", "The file could not be read as an image.", true);
+    };
+    img.src = url;
   }
 
   function scannerInit() {
-    var video = $("scan-video");
-    var canvas = document.createElement("canvas");
+    var picker = $("scan-file");
 
-    $("scan-start").addEventListener("click", function () {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setStatus("scan-status", "Camera is not available in this browser/context.", true);
-        return;
-      }
-      navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "environment" }, audio: false })
-        .then(function (s) {
-          stream = s;
-          video.srcObject = s;
-          video.hidden = false;
-          $("scan-idle").hidden = true;
-          $("scan-start").disabled = true;
-          $("scan-stop").disabled = false;
-          setStatus("scan-status", "Point the camera at a QR code.");
-          video.play();
-          raf = requestAnimationFrame(function () { scanLoop(video, canvas); });
-        })
-        .catch(function () {
-          setStatus("scan-status", "Camera access was denied or unavailable.", true);
-        });
+    // File picker clicks and shared drag & drop (ui.js) both end up here.
+    picker.addEventListener("change", function (e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      e.target.value = "";
+      decodeImageFile(file);
     });
 
-    $("scan-stop").addEventListener("click", stopCamera);
     $("scan-copy").addEventListener("click", function () {
       copyText($("scan-result").value, $("scan-copy"));
     });
 
-    $("scan-file").addEventListener("change", function (e) {
-      var file = e.target.files && e.target.files[0];
-      if (!file) return;
-      e.target.value = "";
-      var url = URL.createObjectURL(file);
-      var img = new Image();
-      img.onload = async function () {
-        var c = document.createElement("canvas");
-        c.width = img.naturalWidth;
-        c.height = img.naturalHeight;
-        c.getContext("2d").drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        var text = await decodeFromImageData(c.getContext("2d").getImageData(0, 0, c.width, c.height));
-        if (text) {
-          $("scan-result").value = text;
-          setStatus("scan-status", "Code detected in the image.");
-        } else {
-          $("scan-result").value = "";
-          setStatus("scan-status", "No QR code found in the image.", true);
+    // Paste a screenshot or copied QR image anywhere on the page (Ctrl+V / Cmd+V).
+    document.addEventListener("paste", function (e) {
+      var items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].kind === "file" && items[i].type.indexOf("image/") === 0) {
+          var file = items[i].getAsFile();
+          if (file) {
+            decodeImageFile(file);
+            activate("scan");
+          }
+          return;
         }
-      };
-      img.onerror = function () {
-        URL.revokeObjectURL(url);
-        setStatus("scan-status", "The file could not be read as an image.", true);
-      };
-      img.src = url;
+      }
     });
   }
 

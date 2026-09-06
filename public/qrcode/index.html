@@ -6,19 +6,19 @@
     <title>Free QR Code Generator &amp; Scanner — No Sign-up, No Upload</title>
     <meta
       name="description"
-      content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device."
+      content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or read a QR code from an image or screenshot (upload, drag &amp; drop or paste). Everything stays on your device."
     />
     <link rel="canonical" href="https://kokoapi.space/qrcode/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="kokoapi.space" />
     <meta property="og:title" content="Free QR Code Generator &amp; Scanner — No Sign-up, No Upload" />
-    <meta property="og:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device." />
+    <meta property="og:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or read a QR code from an image or screenshot (upload, drag &amp; drop or paste). Everything stays on your device." />
     <meta property="og:url" content="https://kokoapi.space/qrcode/" />
     <meta property="og:image" content="https://kokoapi.space/og.svg" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Free QR Code Generator &amp; Scanner — No Sign-up, No Upload" />
-    <meta name="twitter:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or scan a QR code with your camera or an image. Everything stays on your device." />
+    <meta name="twitter:description" content="Create QR codes for URLs, Wi-Fi, vCards, e-mail, SMS and phone numbers, or read a QR code from an image or screenshot (upload, drag &amp; drop or paste). Everything stays on your device." />
     <meta name="twitter:image" content="https://kokoapi.space/og.svg" />
     <script type="application/ld+json">
     {
@@ -27,13 +27,13 @@
         {
           "@type": "WebApplication",
           "name": "kokoapi.space QR code generator and scanner",
-          "description": "Generate QR codes for URLs, text, Wi-Fi networks, vCards, e-mail, SMS and phone numbers, and scan QR codes with the camera or an image in the browser.",
+          "description": "Generate QR codes for URLs, text, Wi-Fi networks, vCards, e-mail, SMS and phone numbers, and read QR codes from images or screenshots in the browser.",
           "url": "https://kokoapi.space/qrcode/",
           "applicationCategory": "UtilitiesApplication",
           "operatingSystem": "All",
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
           "featureList": [
-            "QR code generator", "Wi-Fi and vCard support", "Camera scanner", "Image scanner"
+            "QR code generator", "Wi-Fi and vCard support", "Image scanner", "Paste screenshots"
           ]
         },
         {
@@ -46,8 +46,13 @@
             },
             {
               "@type": "Question",
-              "name": "Does the scanner send my camera feed anywhere?",
-              "acceptedAnswer": { "@type": "Answer", "text": "No. Video frames are decoded on your device with jsQR and never leave the browser. You can also scan an image file the same way." }
+              "name": "How do I scan a QR code from a screenshot or photo?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Open the Scan tool, then pick an image, drag and drop one onto the page, or paste a screenshot with Ctrl+V (Cmd+V on Mac). The code is decoded locally in your browser with jsQR." }
+            },
+            {
+              "@type": "Question",
+              "name": "Are my images uploaded to a server?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Uploaded, dropped or pasted images are decoded on your device and never leave the browser." }
             },
             {
               "@type": "Question",
@@ -103,10 +108,10 @@
 
     <main class="wrap">
       <h1>QR code</h1>
-      <p class="lead">Generate QR codes or scan one with your camera or an image.</p>
+      <p class="lead">Generate QR codes, or read one from an image or screenshot you already have.</p>
       <p class="note">
-        Camera processing happens entirely on your device. No video frames or images leave
-        your browser.
+        Images are decoded entirely on your device with jsQR — nothing is uploaded. Use the file
+        picker, drag &amp; drop an image, or paste a screenshot with Ctrl+V / Cmd+V.
       </p>
 
       <div class="tool-layout">
@@ -154,18 +159,13 @@
       <section id="tool-scan" data-tool-panel hidden>
         <div class="cols">
           <div class="col">
-            <div class="scan-box" id="scan-box">
-              <video id="scan-video" playsinline muted hidden></video>
-              <p class="muted" id="scan-idle">Camera is off.</p>
-            </div>
-            <div class="form-row">
-              <button type="button" id="scan-start" class="btn">Start camera</button>
-              <button type="button" id="scan-stop" class="btn ghost" disabled>Stop</button>
-            </div>
-            <label class="file-drop">
+            <label class="file-drop" for="scan-file">
               <input type="file" id="scan-file" accept="image/*" />
-              <span>…or scan an image file</span>
+              <span>Choose an image that contains a QR code</span>
             </label>
+            <p class="size-note">
+              You can also drop the image here, or paste a screenshot with Ctrl+V / Cmd+V.
+            </p>
           </div>
           <div class="col">
             <p class="field-label">Result</p>
@@ -176,18 +176,20 @@
             <p class="size-note" id="scan-status" role="status"></p>
           </div>
         </div>
+      </section>
         </div>
       </div>
 
       <!-- SEO content -->
       <section class="seo" aria-labelledby="qr-seo-h">
-        <h2 id="qr-seo-h">Generate and scan QR codes without signing up</h2>
+        <h2 id="qr-seo-h">Generate and read QR codes without signing up</h2>
         <p>
           QR codes are a fast way to move a URL, Wi-Fi credentials, a contact card, an
           e-mail or an SMS from a screen to a phone. This page generates those codes locally
-          and can also read them back — either with the phone or laptop camera, or from an
-          image you already have. Because the code is drawn in your browser, nothing about
-          its content is sent to a server.
+          and can also read them back from a photo or screenshot: choose an image, drag and
+          drop one onto the page, or paste it with Ctrl+V / Cmd+V. Because both the code and
+          the image are processed in your browser, nothing about their content is sent to a
+          server.
         </p>
         <h3>How to create a Wi-Fi QR code</h3>
         <ol>
@@ -204,10 +206,18 @@
           </p>
         </details>
         <details>
-          <summary>Does the scanner send my camera feed anywhere?</summary>
+          <summary>How do I scan a QR code from a screenshot or photo?</summary>
           <p>
-            No. Video frames are decoded on your device and never leave the browser. You can
-            also scan an image file the same way — both paths run locally.
+            Open the <strong>Scan</strong> tool and either pick an image, drop one onto the
+            page, or paste a screenshot with <code>Ctrl+V</code> (<code>Cmd+V</code> on Mac).
+            The code is decoded locally — your image never leaves your device.
+          </p>
+        </details>
+        <details>
+          <summary>Are my images uploaded to a server?</summary>
+          <p>
+            No. Images you choose, drop or paste are decoded in your browser with jsQR and
+            are never uploaded anywhere.
           </p>
         </details>
         <details>
@@ -230,7 +240,7 @@
     <footer class="site-footer">
       <div class="wrap">
         <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
-        <span>No uploads · Camera stays on your device · No cookies</span>
+        <span>No uploads · Images stay on your device · No cookies</span>
       </div>
     </footer>
   </body>
