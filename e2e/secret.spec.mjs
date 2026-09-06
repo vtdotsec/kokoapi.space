@@ -66,4 +66,15 @@ test.describe("secret sender", () => {
     await expect(page.locator("#reader-error")).toBeVisible();
     await expect(page.locator("#reader-error-title")).toHaveText("Decryption failed");
   });
+
+  test("share pages are noindex while the composer page stays indexable", async ({ request }) => {
+    const share = await request.get("/secret/qqqqqqqqqqqqqqqqqqqqqqqq");
+    expect(share.status()).toBe(200);
+    expect(share.headers()["x-robots-tag"] || "").toContain("noindex");
+    expect(await share.text()).toContain('name="robots" content="noindex, nofollow"');
+
+    const home = await request.get("/secret/");
+    expect(home.status()).toBe(200);
+    expect(home.headers()["x-robots-tag"] || "").not.toContain("noindex");
+  });
 });

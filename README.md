@@ -12,7 +12,7 @@ cookies. Source: <https://github.com/vtdotsec/kokoapi.space>.
 | `/image/`   | Image tools      | Convert between PNG/JPEG/WebP/AVIF, resize keeping the aspect ratio, crop, rotate/flip, compress (quality slider), strip EXIF/GPS metadata, color filters, image palette, base64, favicon and social presets. |
 | `/pdf/`     | PDF tools        | Merge, split, visual reorder, rotate/delete pages, page numbers, watermark, compress, protect with a password / unlock, extract text, and images ⇄ PDF. |
 | `/convert/` | File converter   | Markdown → HTML/PDF, HTML → PDF, PDF → TXT, batch image conversion, JSON ⇄ CSV, JSON ⇄ YAML, XML → JSON, and ZIP / TAR / GZIP creation and extraction. |
-| `/secret/`  | Secret Sender    | Share a note, password or small file (≤ 10 MB) through a link that expires after 1 hour / 24 hours / 7 days or burns after the first read. AES-GCM encryption happens in the browser and the key stays in the URL fragment (`/secret/…​#key`); content is only decrypted after an explicit click and the countdown starts on that reveal. |
+| `/secret/`  | Secret Sender    | Share a note, password or small file (≤ 10 MB) through a link that expires after 1 hour / 24 hours / 7 days or burns after the first read. AES-GCM encryption happens in the browser and the key stays in the URL fragment (`/secret/…#key`); content is only decrypted after an explicit click and the countdown starts on that reveal. Share links are served with a `noindex` robots tag, so ephemeral pages never accumulate in search results. |
 | `/qrcode/`  | QR code          | Generate QR codes for URLs, plain text, Wi-Fi networks, vCards, e-mails, SMS and phone numbers, and scan them with the camera or an uploaded image (jsQR). Camera frames never leave the device. |
 
 The interface has dark and light themes; the choice is saved in `localStorage`. The site
@@ -109,6 +109,11 @@ docker compose up -d --build
   nginx runtime files, all capabilities dropped except `NET_BIND_SERVICE`.
 - `secret` — the ephemeral sharing service with a `128m` memory limit, read-only root,
   dropped capabilities and a named volume for the encrypted blobs at `/data`.
+
+Two services on purpose, not one: the static nginx front end and the Node service have
+different runtimes, security contexts and resource limits, and only `secret` touches the
+encrypted-blob volume. Merging them into one container would require a process supervisor
+(or dropping the per-service hardening) for no practical gain.
 
 ## Adding or editing content
 

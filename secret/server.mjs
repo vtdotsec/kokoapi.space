@@ -6,6 +6,7 @@
 //
 // Routes (all under /secret/):
 //   GET  /secret/                  -> composer/reader page
+//   GET  /secret/<id>              -> reader shell, served with noindex
 //   GET  /secret/app.css|app.js    -> static assets
 //   POST /secret/api/blob          -> store an encrypted payload
 //   GET  /secret/api/blob/<id>/meta    -> metadata (non-destructive)
@@ -151,7 +152,9 @@ async function readBody(req, limit) {
 /* Handlers                                                            */
 /* ------------------------------------------------------------------ */
 
-function staticFile(res, rel) {
+// Serves the static UI. Share pages (/secret/<id>) get the same shell but with a
+// robots noindex, because ephemeral links must never accumulate in search results.
+function staticFile(res, rel, { noindex = false } = {}) {
   const file = path.join(PUBLIC_DIR, rel);
   // Only known files may be served.
   if (rel !== "index.html" && rel !== "app.js" && rel !== "app.css") {
@@ -167,11 +170,20 @@ function staticFile(res, rel) {
       rel.endsWith(".css") ? "text/css; charset=utf-8"
       : rel.endsWith(".js") ? "text/javascript; charset=utf-8"
       : "text/html; charset=utf-8";
-    res.writeHead(200, {
+    const headers = {
       "content-type": type,
       "cache-control": rel === "index.html" ? "no-cache" : "public, max-age=300",
       "x-content-type-options": "nosniff",
-    });
+    };
+    if (noindex) {
+      headers["x-robots-tag"] = "noindex, nofollow";
+      data = Buffer.from(
+        data
+          .toString("utf8")
+          .replace("</head>", '<meta name="robots" content="noindex, nofollow" />\n  </head>'),
+      );
+    }
+    res.writeHead(200, headers);
     res.end(data);
   });
 }
@@ -403,6 +415,12 @@ export function createApp() {
       // Unknown API paths get a proper 404, not the SPA fallback.
       if (p.startsWith("/secret/api/")) {
         return fail(res, 404, "Not found");
+      }
+
+      // A shared link (/secret/<id>) is a client-side reader route. Keep it out of
+      // search indexes: the shell holds no content and the blob is gone in minutes.
+      if (req.method === "GET" && /^\/secret\/[^/]+\/?$/.test(p)) {
+        return staticFile(res, "index.html", { noindex: true });
       }
 
       // Anything else under /secret is a client-side route (composer/reader).

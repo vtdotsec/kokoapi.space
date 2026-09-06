@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Self-hosting catalog for kokoapi.space - a static, Markdown-driven directory of self-hostable software.",
+  "description": "kokoapi.space - open-source web tools that run in the browser: PDF, images, file conversion, QR codes and encrypted sharing.",
   "engines": {
     "node": ">=20"
   },
