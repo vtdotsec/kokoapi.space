@@ -1,0 +1,41 @@
+<section class="tool" id="tool-yamljson">
+          <div class="tool-head">
+            <h3>YAML ↔ JSON</h3>
+            <p class="size-note">Convert between YAML and JSON text.</p>
+          </div>
+          <fieldset class="options">
+            <legend>Direction</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-yamljson-dir" value="yaml2json" checked /><span>YAML → JSON</span></label>
+              <label class="radio"><input type="radio" name="cv-yamljson-dir" value="json2yaml" /><span>JSON → YAML</span></label>
+            </div>
+          </fieldset>
+          <div class="duo">
+            <div class="pane">
+              <label class="pane-label" for="cv-yamljson-in">Input</label>
+              <textarea
+                id="cv-yamljson-in"
+                class="ta mono"
+                rows="10"
+                spellcheck="false"
+                placeholder="name: Ada&#10;born: 1815"
+              ></textarea>
+            </div>
+            <div class="pane">
+              <label class="pane-label" for="cv-yamljson-out">Output</label>
+              <textarea
+                id="cv-yamljson-out"
+                class="ta mono"
+                rows="10"
+                readonly
+                spellcheck="false"
+                placeholder="Converted output appears here."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button type="button" id="cv-yamljson-run" class="btn" disabled>Convert</button>
+            <button type="button" id="cv-yamljson-dl" class="btn btn-ghost" disabled>Download</button>
+            <span id="cv-yamljson-status" class="status" role="status"></span>
+          </div>
+        </section>

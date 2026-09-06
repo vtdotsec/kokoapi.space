@@ -1,0 +1,33 @@
+<section id="tool-unlock" data-tool-panel hidden>
+        <label class="file-drop" for="unlock-file">
+          <input type="file" id="unlock-file" accept="application/pdf" />
+          <span>Choose a password-protected PDF to unlock</span>
+        </label>
+        <p class="size-note" id="unlock-info"></p>
+
+        <fieldset class="options">
+          <legend>Password</legend>
+          <div class="option">
+            <label class="radio" for="unlock-password">Password</label>
+            <input
+              type="password"
+              id="unlock-password"
+              class="text-input range-input"
+              autocomplete="current-password"
+              placeholder="Password required by the file"
+            />
+          </div>
+        </fieldset>
+
+        <p class="note" id="unlock-note" hidden>
+          The unlocked PDF is rebuilt from rendered pages, so its text becomes non-selectable.
+        </p>
+        <p class="note">
+          Adding an open password is not supported by the client-side PDF libraries used here; you can only remove a password you already know.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="unlock-run" class="btn" disabled>Unlock and download</button>
+          <span id="unlock-status" class="status" role="status"></span>
+        </div>
+      </section>

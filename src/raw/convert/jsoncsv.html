@@ -1,0 +1,45 @@
+<section class="tool" id="tool-jsoncsv">
+          <div class="tool-head">
+            <h3>JSON ↔ CSV</h3>
+            <p class="size-note">
+              JSON → CSV accepts an array of flat objects or an object of arrays (rows are
+              aligned by index). CSV → JSON parses the header row and quoted fields.
+            </p>
+          </div>
+          <fieldset class="options">
+            <legend>Direction</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-jsoncsv-dir" value="json2csv" checked /><span>JSON → CSV</span></label>
+              <label class="radio"><input type="radio" name="cv-jsoncsv-dir" value="csv2json" /><span>CSV → JSON</span></label>
+            </div>
+          </fieldset>
+          <div class="duo">
+            <div class="pane">
+              <label class="pane-label" for="cv-jsoncsv-in">Input</label>
+              <textarea
+                id="cv-jsoncsv-in"
+                class="ta mono"
+                rows="10"
+                spellcheck="false"
+                placeholder='[&#10;  { "name": "Ada", "year": 1815 },&#10;  { "name": "Alan", "year": 1912 }&#10;]'
+              ></textarea>
+            </div>
+            <div class="pane">
+              <label class="pane-label" for="cv-jsoncsv-out">Output</label>
+              <textarea
+                id="cv-jsoncsv-out"
+                class="ta mono"
+                rows="10"
+                readonly
+                spellcheck="false"
+                placeholder="Converted output appears here."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button type="button" id="cv-jsoncsv-run" class="btn" disabled>Convert</button>
+            <button type="button" id="cv-jsoncsv-swap" class="btn btn-ghost" disabled>Swap sides</button>
+            <button type="button" id="cv-jsoncsv-dl" class="btn btn-ghost" disabled>Download .csv</button>
+            <span id="cv-jsoncsv-status" class="status" role="status"></span>
+          </div>
+        </section>

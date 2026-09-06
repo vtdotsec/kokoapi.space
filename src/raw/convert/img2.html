@@ -1,0 +1,41 @@
+<section class="tool" id="tool-img2">
+          <div class="tool-head">
+            <h3>Convert images (batch)</h3>
+            <p class="size-note">
+              Re-encode several images at once and download them as one ZIP. SVG files are
+              rasterized, so “SVG → PNG” works too.
+            </p>
+          </div>
+          <label class="file-drop" for="cv-img2-files">
+            <input type="file" id="cv-img2-files" accept="image/*,.svg" multiple />
+            <span>Choose one or more images (PNG, JPEG, WebP, GIF, SVG, …)</span>
+          </label>
+          <p class="size-note" id="cv-img2-files-note" hidden></p>
+          <ul id="cv-img2-list" class="file-list" hidden></ul>
+          <fieldset class="options">
+            <legend>Output</legend>
+            <div class="opt-stack">
+              <div class="opts">
+                <span class="opt-label">Format</span>
+                <select class="select" id="cv-img2-fmt">
+                  <option value="png">PNG</option>
+                  <option value="jpeg" selected>JPEG</option>
+                  <option value="webp">WebP</option>
+                </select>
+              </div>
+              <label class="range-row" id="cv-img2-quality-row" hidden>
+                <span>Quality (JPEG / WebP)</span>
+                <input type="range" id="cv-img2-quality" min="10" max="100" value="85" />
+                <output for="cv-img2-quality">85</output>
+              </label>
+            </div>
+          </fieldset>
+          <p class="size-note">
+            Every image is fully re-encoded (metadata is dropped). PNG ignores the quality
+            setting; converting JPEG → JPEG re-compresses and loses a little quality.
+          </p>
+          <div class="form-row">
+            <button type="button" id="cv-img2-run" class="btn" disabled>Convert &amp; download ZIP</button>
+            <span id="cv-img2-status" class="status" role="status"></span>
+          </div>
+        </section>

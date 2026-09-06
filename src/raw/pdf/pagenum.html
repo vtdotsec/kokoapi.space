@@ -1,0 +1,48 @@
+<section id="tool-pagenum" data-tool-panel hidden>
+        <label class="file-drop" for="pagenum-file">
+          <input type="file" id="pagenum-file" accept="application/pdf" />
+          <span>Choose one PDF to number</span>
+        </label>
+        <p class="size-note" id="pagenum-info"></p>
+
+        <fieldset class="options">
+          <legend>Format</legend>
+          <div class="option">
+            <label class="radio" for="pagenum-template">Template</label>
+            <input
+              type="text"
+              id="pagenum-template"
+              class="text-input range-input"
+              spellcheck="false"
+              value="Page {n} of {total}"
+            />
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-pos">Position</label>
+            <select id="pagenum-pos" class="select">
+              <option value="bottom" selected>Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-align">Align</label>
+            <select id="pagenum-align" class="select">
+              <option value="center" selected>Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Font size</span>
+              <input type="range" id="pagenum-size" min="6" max="72" value="10" />
+              <output for="pagenum-size">10</output>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="pagenum-run" class="btn" disabled>Add page numbers and download</button>
+          <span id="pagenum-status" class="status" role="status"></span>
+        </div>
+      </section>

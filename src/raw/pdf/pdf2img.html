@@ -1,0 +1,41 @@
+<section id="tool-pdf2img" data-tool-panel hidden>
+        <label class="file-drop" for="pdf2img-file">
+          <input type="file" id="pdf2img-file" accept="application/pdf" />
+          <span>Choose a PDF to turn into images</span>
+        </label>
+        <p class="size-note" id="pdf2img-info"></p>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="png" checked />
+              <span>PNG (lossless)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="jpeg" />
+              <span>JPEG</span>
+            </label>
+            <label class="range-row" id="pdf2img-quality-row" hidden>
+              <span>Quality</span>
+              <input type="range" id="pdf2img-quality" min="20" max="100" value="90" />
+              <output for="pdf2img-quality">90</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="zip" checked />
+              <span>All pages as a ZIP</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="links" />
+              <span>Show individual download links</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="pdf2img-run" class="btn" disabled>Convert pages</button>
+          <span id="pdf2img-status" class="status" role="status"></span>
+        </div>
+        <ul id="pdf2img-links" class="file-list" hidden></ul>
+      </section>

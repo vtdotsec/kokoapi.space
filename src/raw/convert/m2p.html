@@ -1,0 +1,31 @@
+<section class="tool" id="tool-m2p">
+          <div class="tool-head">
+            <h3>Markdown / HTML → PDF</h3>
+            <p class="size-note">
+              Renders a simple text layout into a PDF using standard fonts. Good for notes
+              and documents; not a browser print engine.
+            </p>
+          </div>
+          <fieldset class="options">
+            <legend>Source</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-m2p-mode" value="md" checked /><span>Markdown</span></label>
+              <label class="radio"><input type="radio" name="cv-m2p-mode" value="html" /><span>Raw HTML</span></label>
+            </div>
+          </fieldset>
+          <textarea
+            id="cv-m2p-src"
+            class="ta mono"
+            rows="10"
+            spellcheck="false"
+            placeholder="# Title&#10;&#10;Write Markdown (or raw HTML) here, then create the PDF."
+          ></textarea>
+          <div class="form-row">
+            <button type="button" id="cv-m2p-run" class="btn" disabled>Create PDF</button>
+            <span id="cv-m2p-status" class="status" role="status"></span>
+          </div>
+          <p class="size-note">
+            Simple text layout; pixel-perfect HTML rendering is not supported. Supported
+            elements: h1–h3, p, ul/ol, blockquote, pre/code, strong, em, a, hr.
+          </p>
+        </section>

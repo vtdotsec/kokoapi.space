@@ -1,0 +1,16 @@
+<section id="tool-organize" data-tool-panel hidden>
+        <label class="file-drop" for="org-file">
+          <input type="file" id="org-file" accept="application/pdf" />
+          <span>Choose one PDF, then rotate or remove pages below</span>
+        </label>
+        <div class="form-row org-bar" hidden>
+          <button type="button" id="org-run" class="btn" disabled>Download result</button>
+          <span id="org-status" class="status" role="status"></span>
+          <span class="muted" id="org-count"></span>
+        </div>
+        <div id="org-thumbs" class="thumbs" hidden></div>
+        <p class="size-note" id="org-help" hidden>
+          Rotate a page with the arrows; delete it with the cross. Rotation is applied
+          relative to the original page orientation.
+        </p>
+      </section>

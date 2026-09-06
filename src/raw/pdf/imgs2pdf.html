@@ -1,0 +1,22 @@
+<section id="tool-imgs2pdf" data-tool-panel hidden>
+        <label class="file-drop" for="imgs2pdf-files">
+          <input type="file" id="imgs2pdf-files" accept="image/png,image/jpeg,image/webp" multiple />
+          <span>Choose images (PNG, JPEG, WebP) — reorder below</span>
+        </label>
+        <ol id="imgs2pdf-list" class="file-list" hidden></ol>
+        <fieldset class="options">
+          <legend>Page size</legend>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="fit" checked />
+            <span>Fit each image on an A4 page</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="original" />
+            <span>Keep the image pixel size (96 dpi)</span>
+          </label>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="imgs2pdf-run" class="btn" disabled>Create PDF</button>
+          <span id="imgs2pdf-status" class="status" role="status"></span>
+        </div>
+      </section>
