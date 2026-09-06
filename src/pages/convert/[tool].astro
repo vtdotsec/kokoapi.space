@@ -1,0 +1,25 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolLanding from "../../components/ToolLanding.astro";
+import { TOOL_LANDINGS, toolLandingJsonLd } from "../../data/toolLandings";
+import type { ToolLandingEntry } from "../../data/toolLandings";
+
+interface Props {
+  entry: ToolLandingEntry;
+}
+
+export function getStaticPaths() {
+  return TOOL_LANDINGS.filter((entry) => entry.parentPath === "/convert/")
+    .map((entry) => ({ params: { tool: entry.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<Base
+  title={entry.title}
+  description={entry.description}
+  jsonLd={toolLandingJsonLd(entry)}
+>
+  <ToolLanding entry={entry} />
+</Base>

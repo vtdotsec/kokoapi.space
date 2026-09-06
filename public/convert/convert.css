@@ -533,3 +533,22 @@ main.wrap { padding-block: 2.5rem 3rem; }
     box-sizing: border-box;
   }
 }
+
+/* ---------- focused landing embed (?tool=<name>&embed=1) ---------- */
+body.embed .topbar,
+body.embed .cv-side,
+body.embed .site-footer,
+body.embed .seo,
+body.embed main.wrap > h1,
+body.embed main.wrap > .lead,
+body.embed main.wrap > .note {
+  display: none !important;
+}
+
+body.embed main.wrap {
+  padding-block: 0;
+}
+
+body.embed .cv-layout {
+  display: block;
+}

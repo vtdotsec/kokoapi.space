@@ -74,8 +74,8 @@ test.describe("pdf tools", () => {
     expect(bytes.slice(0, 5).toString()).toBe("%PDF-");
   });
 
-  test("merge-pdf landing page embeds the merge tool pre-selected", async ({ page }) => {
-    await page.goto("/pdf/merge-pdf");
+  test("merge landing page embeds the merge tool pre-selected", async ({ page }) => {
+    await page.goto("/pdf/merge");
     await expect(page).toHaveTitle(/Merge PDF/);
     await expect(page.locator("h1")).toContainText("Merge PDF");
     const frame = page.frameLocator("iframe[data-koko-widget]");
@@ -83,8 +83,8 @@ test.describe("pdf tools", () => {
     await expect(frame.locator("#tool-compress")).toBeHidden();
   });
 
-  test("compress-pdf landing page embeds the compress tool pre-selected", async ({ page }) => {
-    await page.goto("/pdf/compress-pdf");
+  test("compress landing page embeds the compress tool pre-selected", async ({ page }) => {
+    await page.goto("/pdf/compress");
     await expect(page).toHaveTitle(/Compress PDF/);
     const frame = page.frameLocator("iframe[data-koko-widget]");
     await expect(frame.locator("#tool-compress")).toBeVisible();

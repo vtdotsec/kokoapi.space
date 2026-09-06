@@ -1677,6 +1677,13 @@
   var cvTools = Array.prototype.slice.call(document.querySelectorAll(".cv-main .tool"));
   var cvSelect = document.querySelector(".cv-side .side-select");
 
+  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  var cvParams = new URLSearchParams(location.search);
+  var cvRequested = "tool-" + (cvParams.get("tool") || "");
+  var cvHasRequested = cvTools.some(function (t) { return t.id === cvRequested; });
+  var cvInitial = cvHasRequested ? cvRequested : cvTools.length ? cvTools[0].id : "tool-md2html";
+  if (cvParams.get("embed") === "1") document.body.classList.add("embed");
+
   function cvShowTool(id) {
     var activeCat = null;
     cvTools.forEach(function (t) {
@@ -1702,7 +1709,7 @@
       if (t) cvShowTool(t);
     });
   });
-  cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
+  cvShowTool(cvInitial);
   if (cvSelect) {
     cvSideBtns.forEach(function (b) {
       var opt = document.createElement("option");
@@ -1713,7 +1720,26 @@
     cvSelect.addEventListener("change", function () {
       if (cvSelect.value) cvShowTool(cvSelect.value);
     });
-    cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
+    cvShowTool(cvInitial);
+  }
+
+  // In embed mode only the active panel is visible; keep the host iframe sized
+  // to the content as textareas, previews and status lines change height.
+  if (document.body.classList.contains("embed")) {
+    var cvWidget = document.querySelector(".cv-main");
+    var reportCvHeight = function () {
+      if (!cvWidget) return;
+      window.parent.postMessage(
+        { type: "koko-widget-height", height: Math.ceil(cvWidget.offsetHeight) + 16 },
+        "*"
+      );
+    };
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(reportCvHeight).observe(cvWidget);
+    }
+    window.addEventListener("resize", reportCvHeight);
+    window.addEventListener("load", reportCvHeight);
+    reportCvHeight();
   }
 
   /* Deterministic text->PDF export (fix: previously blank output).
