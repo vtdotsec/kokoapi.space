@@ -183,17 +183,21 @@
   var sideButtons = Array.prototype.slice.call(document.querySelectorAll(".tool-nav button[data-tool]"));
   var sideSelect = document.querySelector(".tool-side .side-select");
 
-  // Dedicated tool pages render the app inline and mark the active panel with
-  // data-koko-tool on the layout; the iframe embed variant uses ?tool=<name>.
-  var embedParams = new URLSearchParams(location.search);
-  var embedTool = embedParams.get("tool") || "";
-  if (TOOLS.indexOf(embedTool) === -1) {
-    var appHost = document.querySelector(".tool-layout[data-koko-tool]");
-    var fromAttr = appHost ? appHost.getAttribute("data-koko-tool") || "" : "";
-    if (TOOLS.indexOf(fromAttr) !== -1) embedTool = fromAttr;
+  // One toolbox page per service; the URL follows the active tool
+  // (/image/convert, /image/crop, ...) via the History API, no new pages.
+  var TOOL_URL = { convert: "/image/convert/", resize: "/image/compress/", strip: "/image/remove-exif/", crop: "/image/crop/", wmark: "/image/watermark/", filters: "/image/filters/", batch: "/image/batch/", qrcode: "/image/qrcode/" };
+  function toolByUrl() {
+    var segs = location.pathname.split("/").filter(Boolean);
+    if (segs.length < 2) return "";
+    var full = "/" + segs.join("/") + "/";
+    for (var t in TOOL_URL) if (TOOL_URL[t] === full) return t;
+    return "";
   }
-  if (TOOLS.indexOf(embedTool) === -1) embedTool = "convert";
-  if (embedParams.get("embed") === "1") document.body.classList.add("embed");
+  function pushToolUrl(tool) {
+    var url = TOOL_URL[tool];
+    if (url && history && history.pushState) history.pushState(null, "", url);
+  }
+  var embedTool = toolByUrl() || "convert";
 
   function activate(tool) {
     sideButtons.forEach(function (b) {
@@ -203,11 +207,14 @@
       $("tool-" + t).hidden = t !== tool;
     });
     if (sideSelect) sideSelect.value = tool;
-    if (tool === "qrcode") setTimeout(qrStart, 0);
+    if (tool === "qrcode") qrStart();
   }
 
   sideButtons.forEach(function (b) {
-    b.addEventListener("click", function () { activate(b.dataset.tool); });
+    b.addEventListener("click", function () {
+      activate(b.dataset.tool);
+      pushToolUrl(b.dataset.tool);
+    });
   });
 
   if (sideSelect) {
@@ -218,10 +225,17 @@
       sideSelect.appendChild(opt);
     });
     sideSelect.addEventListener("change", function () {
-      if (sideSelect.value) activate(sideSelect.value);
+      if (sideSelect.value) {
+        activate(sideSelect.value);
+        pushToolUrl(sideSelect.value);
+      }
     });
   }
   activate(embedTool);
+  window.addEventListener("popstate", function () {
+    var t = toolByUrl();
+    if (t) activate(t);
+  });
 
   // In embed mode only the active panel is visible; keep the host iframe sized
   // to the content as previews, thumbnails and status lines change height.

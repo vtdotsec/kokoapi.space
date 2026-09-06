@@ -85,6 +85,13 @@ http
     }
     const file = resolveStatic(url.pathname);
     if (file) return sendFile(res, file);
+    // Deep tool URLs (/image/crop, /pdf/split, ...) are served by the service
+    // toolbox page and activate the tool client-side (History API routing).
+    const first = url.pathname.split("/").filter(Boolean)[0];
+    if (first) {
+      const fallback = resolveStatic("/" + first + "/");
+      if (fallback) return sendFile(res, fallback);
+    }
     res.writeHead(404);
     res.end("Not found");
   })

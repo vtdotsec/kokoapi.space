@@ -1677,20 +1677,6 @@
   var cvTools = Array.prototype.slice.call(document.querySelectorAll(".cv-main .tool"));
   var cvSelect = document.querySelector(".cv-side .side-select");
 
-  // Dedicated pages mark the active panel with data-koko-tool; the iframe
-  // embed variant passes ?tool=<name>&embed=1 instead.
-  var cvParams = new URLSearchParams(location.search);
-  var cvRequested = "tool-" + (cvParams.get("tool") || "");
-  var cvHasRequested = cvTools.some(function (t) { return t.id === cvRequested; });
-  if (!cvHasRequested) {
-    var cvHost = document.querySelector("[data-koko-tool]");
-    var cvFromAttr = cvHost ? cvHost.getAttribute("data-koko-tool") || "" : "";
-    cvRequested = "tool-" + cvFromAttr;
-    cvHasRequested = cvTools.some(function (t) { return t.id === cvRequested; });
-  }
-  var cvInitial = cvHasRequested ? cvRequested : cvTools.length ? cvTools[0].id : "tool-md2html";
-  if (cvParams.get("embed") === "1") document.body.classList.add("embed");
-
   function cvShowTool(id) {
     var activeCat = null;
     cvTools.forEach(function (t) {
@@ -1716,7 +1702,7 @@
       if (t) cvShowTool(t);
     });
   });
-  cvShowTool(cvInitial);
+  cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
   if (cvSelect) {
     cvSideBtns.forEach(function (b) {
       var opt = document.createElement("option");
@@ -1727,27 +1713,46 @@
     cvSelect.addEventListener("change", function () {
       if (cvSelect.value) cvShowTool(cvSelect.value);
     });
-    cvShowTool(cvInitial);
+    cvShowTool(cvTools.length ? cvTools[0].id : "tool-md2html");
   }
 
-  // In embed mode only the active panel is visible; keep the host iframe sized
-  // to the content as textareas, previews and status lines change height.
-  if (document.body.classList.contains("embed")) {
-    var cvWidget = document.querySelector(".cv-main");
-    var reportCvHeight = function () {
-      if (!cvWidget) return;
-      window.parent.postMessage(
-        { type: "koko-widget-height", height: Math.ceil(cvWidget.offsetHeight) + 16 },
-        "*"
-      );
-    };
-    if (typeof ResizeObserver !== "undefined") {
-      new ResizeObserver(reportCvHeight).observe(cvWidget);
-    }
-    window.addEventListener("resize", reportCvHeight);
-    window.addEventListener("load", reportCvHeight);
-    reportCvHeight();
+  // One toolbox page per service; the URL follows the active tool
+  // (/convert/json-to-csv, ...) via the History API, no new pages.
+  var TOOL_URL = { md2html: "/convert/markdown-to-html/", m2p: "/convert/markdown-to-pdf/", pdf2txt: "/convert/pdf-to-text/", img2: "/convert/convert-images/", jsoncsv: "/convert/json-to-csv/", yamljson: "/convert/json-to-yaml/", xml2json: "/convert/xml-to-json/", mkzip: "/convert/create-archive/", unpack: "/convert/extract-archive/" };
+  function suffixByUrl() {
+    var segs = location.pathname.split("/").filter(Boolean);
+    if (segs.length < 2) return "";
+    var full = "/" + segs.join("/") + "/";
+    for (var s in TOOL_URL) if (TOOL_URL[s] === full) return s;
+    return "";
   }
+  function pushCvUrl(suffix) {
+    var url = TOOL_URL[suffix];
+    if (url && history && history.pushState) history.pushState(null, "", url);
+  }
+  cvSideBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-target");
+      if (t) pushCvUrl(t.slice("tool-".length));
+    });
+  });
+  if (cvSelect) {
+    cvSelect.addEventListener("change", function () {
+      if (cvSelect.value) pushCvUrl(cvSelect.value.slice("tool-".length));
+    });
+  }
+  var initialSuffix = suffixByUrl();
+  if (initialSuffix) {
+    var initBtn = document.querySelector('.cv-side-nav [data-target="tool-' + initialSuffix + '"]');
+    if (initBtn) initBtn.click();
+  }
+  window.addEventListener("popstate", function () {
+    var s = suffixByUrl();
+    if (s) {
+      var back = document.querySelector('.cv-side-nav [data-target="tool-' + s + '"]');
+      if (back) back.click();
+    }
+  });
 
   /* Deterministic text->PDF export (fix: previously blank output).
      Parses markdown (or strips HTML), wraps words, and draws with pdf-lib

@@ -92,17 +92,20 @@
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
   var pdfSelect = document.querySelector(".pdf-side .side-select");
 
-  // Dedicated pages mark the active panel with data-koko-tool; the iframe
-  // embed variant passes ?tool=<name>&embed=1 instead.
-  var urlParams = new URLSearchParams(location.search);
-  var initialTool = urlParams.get("tool") || "";
-  if (TOOLS.indexOf(initialTool) === -1) {
-    var hostEl = document.querySelector("[data-koko-tool]");
-    var fromAttr = hostEl ? hostEl.getAttribute("data-koko-tool") || "" : "";
-    if (TOOLS.indexOf(fromAttr) !== -1) initialTool = fromAttr;
+  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  var TOOL_URL = { merge: "/pdf/merge/", compress: "/pdf/compress/", split: "/pdf/split/", reorder: "/pdf/reorder/", organize: "/pdf/rotate/", pagenum: "/pdf/page-numbers/", watermark: "/pdf/watermark/", unlock: "/pdf/unlock/", extract: "/pdf/extract-text/", imgs2pdf: "/pdf/images-to-pdf/", pdf2img: "/pdf/pdf-to-images/" };
+  function toolByUrl() {
+    var segs = location.pathname.split("/").filter(Boolean);
+    if (segs.length < 2) return "";
+    var full = "/" + segs.join("/") + "/";
+    for (var t in TOOL_URL) if (TOOL_URL[t] === full) return t;
+    return "";
   }
-  if (TOOLS.indexOf(initialTool) === -1) initialTool = "merge";
-  if (urlParams.get("embed") === "1") document.body.classList.add("embed");
+  function pushToolUrl(tool) {
+    var url = TOOL_URL[tool];
+    if (url && history && history.pushState) history.pushState(null, "", url);
+  }
+  var initialTool = toolByUrl() || "merge";
 
   function activate(tool) {
     segButtons.forEach(function (b) {
@@ -115,7 +118,10 @@
   }
 
   segButtons.forEach(function (b) {
-    b.addEventListener("click", function () { activate(b.dataset.tool); });
+    b.addEventListener("click", function () {
+      activate(b.dataset.tool);
+      pushToolUrl(b.dataset.tool);
+    });
   });
 
   if (pdfSelect) {
@@ -126,11 +132,18 @@
       pdfSelect.appendChild(opt);
     });
     pdfSelect.addEventListener("change", function () {
-      if (pdfSelect.value) activate(pdfSelect.value);
+      if (pdfSelect.value) {
+        activate(pdfSelect.value);
+        pushToolUrl(pdfSelect.value);
+      }
     });
+    activate(initialTool);
   }
 
-  activate(initialTool);
+  window.addEventListener("popstate", function () {
+    var t = toolByUrl();
+    if (t) activate(t);
+  });
 
   // In embed mode only the active panel is visible; keep the host iframe sized
   // to the content as file lists, thumbnails and status lines change height.
