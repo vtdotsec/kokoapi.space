@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import ToolLanding from "../../components/ToolLanding.astro";
+import ToolCopy from "../../components/ToolCopy.astro";
+import ConvertSuite from "../../components/ConvertSuite.astro";
 import { TOOL_LANDINGS, toolLandingJsonLd } from "../../data/toolLandings";
 import type { ToolLandingEntry } from "../../data/toolLandings";
 
@@ -20,6 +21,10 @@ const { entry } = Astro.props;
   title={entry.title}
   description={entry.description}
   jsonLd={toolLandingJsonLd(entry)}
+  styles={["/convert/convert.css"]}
+  scripts={["/convert/convert.js"]}
 >
-  <ToolLanding entry={entry} />
+  <ToolCopy entry={entry}>
+    <ConvertSuite slug={entry.slug} />
+  </ToolCopy>
 </Base>

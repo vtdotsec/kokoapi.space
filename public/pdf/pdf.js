@@ -92,10 +92,16 @@
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
   var pdfSelect = document.querySelector(".pdf-side .side-select");
 
-  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  // Dedicated pages mark the active panel with data-koko-tool; the iframe
+  // embed variant passes ?tool=<name>&embed=1 instead.
   var urlParams = new URLSearchParams(location.search);
-  var initialTool =
-    TOOLS.indexOf(urlParams.get("tool") || "") !== -1 ? urlParams.get("tool") : "merge";
+  var initialTool = urlParams.get("tool") || "";
+  if (TOOLS.indexOf(initialTool) === -1) {
+    var hostEl = document.querySelector("[data-koko-tool]");
+    var fromAttr = hostEl ? hostEl.getAttribute("data-koko-tool") || "" : "";
+    if (TOOLS.indexOf(fromAttr) !== -1) initialTool = fromAttr;
+  }
+  if (TOOLS.indexOf(initialTool) === -1) initialTool = "merge";
   if (urlParams.get("embed") === "1") document.body.classList.add("embed");
 
   function activate(tool) {
@@ -122,8 +128,9 @@
     pdfSelect.addEventListener("change", function () {
       if (pdfSelect.value) activate(pdfSelect.value);
     });
-    activate(initialTool);
   }
+
+  activate(initialTool);
 
   // In embed mode only the active panel is visible; keep the host iframe sized
   // to the content as file lists, thumbnails and status lines change height.

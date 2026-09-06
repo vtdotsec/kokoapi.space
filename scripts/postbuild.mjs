@@ -11,7 +11,6 @@ const dist = path.join(here, "..", "dist");
 
 const targets = [
   "_ui/ui.js",
-  "_ui/landing.js",
   "image/image.js",
   "pdf/pdf.js",
   "convert/convert.js",

@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import ToolLanding from "../../components/ToolLanding.astro";
+import ToolCopy from "../../components/ToolCopy.astro";
+import PdfSuite from "../../components/PdfSuite.astro";
 import { TOOL_LANDINGS, toolLandingJsonLd } from "../../data/toolLandings";
 import type { ToolLandingEntry } from "../../data/toolLandings";
 
@@ -20,6 +21,10 @@ const { entry } = Astro.props;
   title={entry.title}
   description={entry.description}
   jsonLd={toolLandingJsonLd(entry)}
+  styles={["/pdf/pdf.css"]}
+  scripts={["/pdf/pdf.js"]}
 >
-  <ToolLanding entry={entry} />
+  <ToolCopy entry={entry}>
+    <PdfSuite slug={entry.slug} />
+  </ToolCopy>
 </Base>

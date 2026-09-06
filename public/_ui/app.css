@@ -358,3 +358,102 @@ main.wrap {
   margin-right: 0.9rem;
   white-space: nowrap;
 }
+
+/* ---------- tool suites (dedicated native routes, no iframe) ---------- */
+.suite-wrap {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+.suite-side {
+  position: sticky;
+  top: 72px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  padding: 0.5rem;
+}
+
+.suite-side .suite-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  padding: 0.3rem 0.55rem 0.5rem;
+}
+
+.suite-side nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suite-side a {
+  display: block;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.suite-side a:hover {
+  background: var(--bg-muted);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.suite-side a[aria-current="page"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Only the panel matching the route is shown before/without the app JS. */
+.suite-wrap[data-koko-tool] section[data-tool-panel],
+.suite-wrap[data-koko-tool] section.tool {
+  display: none;
+}
+.suite-wrap[data-koko-tool="merge"] #tool-merge,
+.suite-wrap[data-koko-tool="compress"] #tool-compress,
+.suite-wrap[data-koko-tool="split"] #tool-split,
+.suite-wrap[data-koko-tool="reorder"] #tool-reorder,
+.suite-wrap[data-koko-tool="organize"] #tool-organize,
+.suite-wrap[data-koko-tool="pagenum"] #tool-pagenum,
+.suite-wrap[data-koko-tool="watermark"] #tool-watermark,
+.suite-wrap[data-koko-tool="unlock"] #tool-unlock,
+.suite-wrap[data-koko-tool="extract"] #tool-extract,
+.suite-wrap[data-koko-tool="imgs2pdf"] #tool-imgs2pdf,
+.suite-wrap[data-koko-tool="pdf2img"] #tool-pdf2img,
+.suite-wrap[data-koko-tool="md2html"] #tool-md2html,
+.suite-wrap[data-koko-tool="m2p"] #tool-m2p,
+.suite-wrap[data-koko-tool="pdf2txt"] #tool-pdf2txt,
+.suite-wrap[data-koko-tool="img2"] #tool-img2,
+.suite-wrap[data-koko-tool="jsoncsv"] #tool-jsoncsv,
+.suite-wrap[data-koko-tool="yamljson"] #tool-yamljson,
+.suite-wrap[data-koko-tool="xml2json"] #tool-xml2json,
+.suite-wrap[data-koko-tool="mkzip"] #tool-mkzip,
+.suite-wrap[data-koko-tool="unpack"] #tool-unpack {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .suite-wrap {
+    grid-template-columns: 1fr;
+  }
+  .suite-side {
+    position: static;
+  }
+  .suite-side nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px 6px;
+  }
+  .suite-side a {
+    padding: 0.3rem 0.6rem;
+  }
+}

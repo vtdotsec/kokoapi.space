@@ -1677,10 +1677,17 @@
   var cvTools = Array.prototype.slice.call(document.querySelectorAll(".cv-main .tool"));
   var cvSelect = document.querySelector(".cv-side .side-select");
 
-  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  // Dedicated pages mark the active panel with data-koko-tool; the iframe
+  // embed variant passes ?tool=<name>&embed=1 instead.
   var cvParams = new URLSearchParams(location.search);
   var cvRequested = "tool-" + (cvParams.get("tool") || "");
   var cvHasRequested = cvTools.some(function (t) { return t.id === cvRequested; });
+  if (!cvHasRequested) {
+    var cvHost = document.querySelector("[data-koko-tool]");
+    var cvFromAttr = cvHost ? cvHost.getAttribute("data-koko-tool") || "" : "";
+    cvRequested = "tool-" + cvFromAttr;
+    cvHasRequested = cvTools.some(function (t) { return t.id === cvRequested; });
+  }
   var cvInitial = cvHasRequested ? cvRequested : cvTools.length ? cvTools[0].id : "tool-md2html";
   if (cvParams.get("embed") === "1") document.body.classList.add("embed");
 

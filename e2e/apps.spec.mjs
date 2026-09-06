@@ -39,8 +39,7 @@ test.describe("image tools", () => {
 
 test.describe("pdf tools", () => {
   test("merge two pdfs into one file", async ({ page }) => {
-    await page.goto("/pdf/");
-    await page.locator(".seg-btn[data-tool='merge']").click();
+    await page.goto("/pdf/merge");
     await page.locator("#merge-files").setInputFiles([
       { name: "a.pdf", mimeType: "application/pdf", buffer: PDF1 },
       { name: "b.pdf", mimeType: "application/pdf", buffer: PDF2 },
@@ -58,8 +57,7 @@ test.describe("pdf tools", () => {
   });
 
   test("split keeps the selected page range", async ({ page }) => {
-    await page.goto("/pdf/");
-    await page.locator(".seg-btn[data-tool='split']").click();
+    await page.goto("/pdf/split");
     await page.locator("#split-file").setInputFiles({
       name: "two-pages.pdf",
       mimeType: "application/pdf",
@@ -75,28 +73,27 @@ test.describe("pdf tools", () => {
     expect(bytes.slice(0, 5).toString()).toBe("%PDF-");
   });
 
-  test("merge landing page embeds the merge tool pre-selected", async ({ page }) => {
+  test("merge page renders the merge tool inline", async ({ page }) => {
     await page.goto("/pdf/merge");
     await expect(page).toHaveTitle(/Merge PDF/);
-    await expect(page.locator("h1")).toContainText("Merge PDF");
-    const frame = page.frameLocator("iframe[data-koko-widget]");
-    await expect(frame.locator("#tool-merge")).toBeVisible();
-    await expect(frame.locator("#tool-compress")).toBeHidden();
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await expect(page.locator("#tool-merge")).toBeVisible();
+    await expect(page.locator("#tool-compress")).toBeHidden();
+    await expect(page.locator('.suite-side a[href="/pdf/merge/"]')).toHaveAttribute("aria-current", "page");
   });
 
-  test("compress landing page embeds the compress tool pre-selected", async ({ page }) => {
+  test("compress page renders the compress tool inline", async ({ page }) => {
     await page.goto("/pdf/compress");
     await expect(page).toHaveTitle(/Compress PDF/);
-    const frame = page.frameLocator("iframe[data-koko-widget]");
-    await expect(frame.locator("#tool-compress")).toBeVisible();
-    await expect(frame.locator("#tool-merge")).toBeHidden();
+    await expect(page.locator("iframe")).toHaveCount(0);
+    await expect(page.locator("#tool-compress")).toBeVisible();
+    await expect(page.locator("#tool-merge")).toBeHidden();
   });
 });
 
 test.describe("file converter", () => {
   test("markdown produces a non-empty PDF", async ({ page }) => {
-    await page.goto("/convert/");
-    await page.locator('.cv-side-nav [data-target="tool-m2p"]').click();
+    await page.goto("/convert/markdown-to-pdf");
     await page.locator("#cv-m2p-src").fill("## Heading\n\nHello world. This is a paragraph with several words for wrapping.");
     await expect(page.locator("#cv-m2p-run")).toBeEnabled();
     const downloadPromise = page.waitForEvent("download");
@@ -110,8 +107,7 @@ test.describe("file converter", () => {
   });
 
   test("json to csv", async ({ page }) => {
-    await page.goto("/convert/");
-    await page.locator('.cv-side-nav [data-target="tool-jsoncsv"]').click();
+    await page.goto("/convert/json-to-csv");
     await page.locator('input[name="cv-jsoncsv-dir"][value="json2csv"]').check();
     await page
       .locator("#cv-jsoncsv-in")
@@ -127,7 +123,7 @@ test.describe("file converter", () => {
 
 test.describe("error handling edge cases", () => {
   test("image convert rejects a corrupt image without crashing", async ({ page }) => {
-    await page.goto("/image/");
+    await page.goto("/image/convert");
     await page.locator("#convert-file").setInputFiles({
       name: "broken.png",
       mimeType: "image/png",
@@ -138,8 +134,7 @@ test.describe("error handling edge cases", () => {
   });
 
   test("pdf split rejects a non-pdf upload", async ({ page }) => {
-    await page.goto("/pdf/");
-    await page.locator(".seg-btn[data-tool='split']").click();
+    await page.goto("/pdf/split");
     await page.locator("#split-file").setInputFiles({
       name: "fake.pdf",
       mimeType: "application/pdf",
