@@ -26,6 +26,14 @@ test.describe("image tools", () => {
     await dropFile(page, "#resize-file", "dropped.png", PNG, "image/png");
     await expect(page.locator("#resize-info")).toContainText("dropped.png");
   });
+
+  test("crop-image landing page embeds the crop tool pre-selected", async ({ page }) => {
+    await page.goto("/image/crop-image");
+    await expect(page).toHaveTitle(/Crop/);
+    const frame = page.frameLocator("iframe[data-koko-widget]");
+    await expect(frame.locator("#tool-crop")).toBeVisible();
+    await expect(frame.locator("#tool-convert")).toBeHidden();
+  });
 });
 
 test.describe("pdf tools", () => {
@@ -141,25 +149,18 @@ test.describe("error handling edge cases", () => {
     await expect(page.locator("h1").first()).toBeVisible();
   });
 });
-test.describe("qr toolkit", () => {
-  test("generates a QR png and exposes the scanner", async ({ page }) => {
-    await page.goto("/qrcode/");
-    await page.locator("#qr-url").fill("https://example.com");
-    await expect(page.locator("#qr-canvas")).not.toHaveJSProperty("width", 0);
+test.describe("qr code generator (image tools)", () => {
+  test("generates a QR PNG on /image/qrcode", async ({ page }) => {
+    await page.goto("/image/qrcode");
+    await expect(page).toHaveTitle(/QR code/i);
+    const frame = page.frameLocator("iframe[data-koko-widget]");
+    await frame.locator("#qr-url").fill("https://example.com");
+    await expect(frame.locator("#qr-canvas")).not.toHaveJSProperty("width", 0);
     const downloadPromise = page.waitForEvent("download");
-    await page.locator("#qr-download").click();
+    await frame.locator("#qr-download").click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe("qrcode.png");
     const bytes = await readDownload(download);
     expect(bytes.length).toBeGreaterThan(100);
-
-    await page.locator(".tool-nav button[data-tool='scan']").click();
-    await expect(page.locator("#scan-start")).toBeVisible();
-    await page.locator("#scan-file").setInputFiles({
-      name: "pixel.png",
-      mimeType: "image/png",
-      buffer: PNG,
-    });
-    await expect(page.locator("#scan-status")).toContainText("No QR code found");
   });
 });

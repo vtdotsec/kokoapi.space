@@ -13,7 +13,7 @@ cookies. Source: <https://github.com/vtdotsec/kokoapi.space>.
 | `/pdf/`     | PDF tools        | Merge, split, visual reorder, rotate/delete pages, page numbers, watermark, compress, protect with a password / unlock, extract text, and images ⇄ PDF. |
 | `/convert/` | File converter   | Markdown → HTML/PDF, HTML → PDF, PDF → TXT, batch image conversion, JSON ⇄ CSV, JSON ⇄ YAML, XML → JSON, and ZIP / TAR / GZIP creation and extraction. |
 | `/secret/`  | Secret Sender    | Share a note, password or small file (≤ 10 MB) through a link that expires after 1 hour / 24 hours / 7 days or burns after the first read. AES-GCM encryption happens in the browser and the key stays in the URL fragment (`/secret/…#key`); content is only decrypted after an explicit click and the countdown starts on that reveal. Share links are served with a `noindex` robots tag, so ephemeral pages never accumulate in search results. |
-| `/qrcode/`  | QR code          | Generate QR codes for URLs, plain text, Wi-Fi networks, vCards, e-mails, SMS and phone numbers, and scan them with the camera or an uploaded image (jsQR). Camera frames never leave the device. |
+| `/image/qrcode/` | QR code    | Generate QR codes for URLs, plain text, Wi-Fi networks, vCards, e-mails, SMS and phone numbers. Codes are drawn locally in the browser (qrcode-generator) and downloaded as PNG. |
 
 The interface has dark and light themes; the choice is saved in `localStorage`. The site
 is written in English.
@@ -27,7 +27,7 @@ is the tiny Node service that stores encrypted blobs for `/secret/`.
 
 - **Astro** (static output) for the `/` home page and `/404`; TypeScript for the Astro
   components and `astro check` for validation. `@astrojs/sitemap` generates the sitemap.
-- The tools under `/image/`, `/pdf/`, `/convert/` and `/qrcode/` are plain HTML/CSS/JS
+- The tools under `/image/`, `/pdf/` and `/convert/` are plain HTML/CSS/JS
   pages (no front-end framework). Astro copies `public/` into the build output as-is.
 - **CSS is hand-written** (no Tailwind and no CSS framework): `public/_ui/app.css` holds
   the shared layout/header/footer, `public/_ui/theme.css` the color tokens (dark
@@ -40,10 +40,9 @@ so the strict `script-src 'self'` CSP holds):
 
 | App        | Vendor libraries |
 | ---------- | ---------------- |
-| `/image/`  | `fflate` (batch ZIP download); image codecs are the native Canvas/Blob APIs |
+| `/image/`  | `fflate` (batch ZIP download), `qrcode` (QR generator, lazy); image codecs are the native Canvas/Blob APIs |
 | `/pdf/`    | `pdf-lib`, `pdf.js` (+ worker), `fflate` |
 | `/convert/`| `marked`, `js-yaml`, `pdf-lib`, `pdf.js` (+ worker), `fflate` |
-| `/qrcode/` | `qrcode` (generator), `jsQR` (scanner) |
 
 **Runtime / infra**
 
@@ -75,7 +74,7 @@ so the strict `script-src 'self'` CSP holds):
 │   ├── components/                # Header, Footer, ToolLanding
 ├── public/
 │   ├── _ui/                       # shared CSS/JS (base, theme tokens, ui.js, landing.js)
-│   ├── image/  pdf/  convert/  qrcode/   # static tool apps (+ own vendor/)
+│   ├── image/  pdf/  convert/   # static tool apps (+ own vendor/)
 ├── secret/                        # Secret Sender: node service, UI, Dockerfile
 ├── e2e/                           # Playwright specs, fixtures and serve helper
 └── README.md

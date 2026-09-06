@@ -568,3 +568,92 @@ main.wrap {
   background: var(--accent-soft);
   color: var(--accent);
 }
+
+/* ---------- QR code generator (migrated from /qrcode) ---------- */
+#tool-qrcode .qr-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+#tool-qrcode .fields {
+  display: grid;
+  gap: 0.35rem 1rem;
+  margin: 0.9rem 0 1.1rem;
+}
+
+#tool-qrcode .field-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+}
+
+#tool-qrcode select,
+#tool-qrcode input[type="text"],
+#tool-qrcode textarea {
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+#tool-qrcode textarea {
+  font-family: var(--font-mono);
+  resize: vertical;
+}
+
+#tool-qrcode .range {
+  accent-color: var(--accent);
+  width: 100%;
+  max-width: 360px;
+  margin: 0.4rem 0 0.5rem;
+}
+
+#tool-qrcode canvas#qr-canvas {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  max-width: 100%;
+  height: auto;
+}
+
+#tool-qrcode .qr-preview {
+  justify-self: center;
+}
+
+@media (max-width: 720px) {
+  #tool-qrcode .qr-grid {
+    grid-template-columns: 1fr;
+  }
+  #tool-qrcode .qr-preview {
+    justify-self: start;
+  }
+}
+
+/* ---------- focused landing embed (?tool=<name>&embed=1) ---------- */
+body.embed .topbar,
+body.embed .tool-side,
+body.embed .site-footer,
+body.embed .seo,
+body.embed main.wrap > h1,
+body.embed main.wrap > .lead,
+body.embed main.wrap > .note {
+  display: none !important;
+}
+
+body.embed main.wrap {
+  padding-block: 0;
+}
+
+body.embed .tool-layout {
+  display: block;
+}

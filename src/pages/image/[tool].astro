@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function getStaticPaths() {
-  return TOOL_LANDINGS.filter((entry) => entry.parentPath === "/pdf/")
+  return TOOL_LANDINGS.filter((entry) => entry.parentPath === "/image/")
     .map((entry) => ({ params: { tool: entry.slug }, props: { entry } }));
 }
 

@@ -5,14 +5,13 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-export const ROUTES = ["/", "/image/", "/pdf/", "/convert/", "/secret/", "/qrcode/"];
+export const ROUTES = ["/", "/image/", "/pdf/", "/convert/", "/secret/", "/image/qrcode/"];
 
 export const NAV_LABELS = [
   "Image tools",
   "PDF tools",
   "File converter",
   "Secret Sender",
-  "QR code",
 ];
 
 export function fixture(name) {

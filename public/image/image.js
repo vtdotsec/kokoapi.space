@@ -169,7 +169,7 @@
   /* Tab switching                                                     */
   /* ================================================================ */
 
-  var TOOLS = ["convert", "resize", "strip", "crop", "wmark", "filters", "batch"];
+  var TOOLS = ["convert", "resize", "strip", "crop", "wmark", "filters", "batch", "qrcode"];
   var TOOL_LABELS = {
     convert: "Convert",
     resize: "Compress & Resize",
@@ -178,9 +178,16 @@
     wmark: "Watermark",
     filters: "Filters",
     batch: "Batch",
+    qrcode: "QR code",
   };
   var sideButtons = Array.prototype.slice.call(document.querySelectorAll(".tool-nav button[data-tool]"));
   var sideSelect = document.querySelector(".tool-side .side-select");
+
+  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  var embedParams = new URLSearchParams(location.search);
+  var embedTool =
+    TOOLS.indexOf(embedParams.get("tool") || "") !== -1 ? embedParams.get("tool") : "convert";
+  if (embedParams.get("embed") === "1") document.body.classList.add("embed");
 
   function activate(tool) {
     sideButtons.forEach(function (b) {
@@ -190,6 +197,7 @@
       $("tool-" + t).hidden = t !== tool;
     });
     if (sideSelect) sideSelect.value = tool;
+    if (tool === "qrcode") qrStart();
   }
 
   sideButtons.forEach(function (b) {
@@ -207,7 +215,26 @@
       if (sideSelect.value) activate(sideSelect.value);
     });
   }
-  activate("convert");
+  activate(embedTool);
+
+  // In embed mode only the active panel is visible; keep the host iframe sized
+  // to the content as previews, thumbnails and status lines change height.
+  if (document.body.classList.contains("embed")) {
+    var embedWidget = document.querySelector(".tool-main");
+    var reportEmbedHeight = function () {
+      if (!embedWidget) return;
+      window.parent.postMessage(
+        { type: "koko-widget-height", height: Math.ceil(embedWidget.offsetHeight) + 16 },
+        "*"
+      );
+    };
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(reportEmbedHeight).observe(embedWidget);
+    }
+    window.addEventListener("resize", reportEmbedHeight);
+    window.addEventListener("load", reportEmbedHeight);
+    reportEmbedHeight();
+  }
 
   /* ================================================================ */
   /* Convert                                                           */
@@ -1006,4 +1033,203 @@
     }
   });
   updateConvertQualityVisibility();
+
+  /* ================================================================ */
+  /* QR code generator (part of the image tools)                       */
+  /* ================================================================ */
+
+  var QR_FIELDS = {
+    url: [["qr-url", "text", "URL"]],
+    text: [["qr-text", "textarea", "Text"]],
+    wifi: [
+      ["qr-wifi-ssid", "text", "Network name (SSID)"],
+      ["qr-wifi-pass", "text", "Password"],
+      ["qr-wifi-sec", "select", "Security", ["WPA", "WEP", "WPA2", "nopass"]],
+    ],
+    vcard: [
+      ["qr-vc-name", "text", "Full name"],
+      ["qr-vc-phone", "text", "Phone"],
+      ["qr-vc-email", "text", "E-mail"],
+      ["qr-vc-org", "text", "Organization (optional)"],
+    ],
+    email: [
+      ["qr-em-to", "text", "To"],
+      ["qr-em-subject", "text", "Subject"],
+      ["qr-em-body", "textarea", "Body"],
+    ],
+    sms: [
+      ["qr-sms-num", "text", "Phone number"],
+      ["qr-sms-body", "text", "Message"],
+    ],
+    tel: [["qr-tel-num", "text", "Phone number"]],
+  };
+
+  function qrFieldValue(id) {
+    var el = $(id);
+    return el ? el.value.trim() : "";
+  }
+
+  function qrClean(v) {
+    return String(v).replace(/[\\;,:"\n]/g, " ").trim();
+  }
+
+  function qrBuildContent(type) {
+    if (type === "url") return qrFieldValue("qr-url") || "https://";
+    if (type === "text") return $("qr-text") ? $("qr-text").value : "";
+    if (type === "wifi") {
+      var ssid = qrClean(qrFieldValue("qr-wifi-ssid"));
+      var pass = qrClean(qrFieldValue("qr-wifi-pass"));
+      var sec = qrFieldValue("qr-wifi-sec");
+      if (!ssid) return "";
+      var out = "WIFI:T:" + (sec === "nopass" ? "nopass" : sec) + ";S:" + ssid + ";";
+      if (sec !== "nopass" && pass) out += "P:" + pass + ";";
+      return out + ";";
+    }
+    if (type === "vcard") {
+      var lines = ["BEGIN:VCARD", "VERSION:3.0"];
+      var name = qrFieldValue("qr-vc-name");
+      if (name) lines.push("FN:" + name);
+      var phone = qrFieldValue("qr-vc-phone");
+      if (phone) lines.push("TEL:" + phone);
+      var email = qrFieldValue("qr-vc-email");
+      if (email) lines.push("EMAIL:" + email);
+      var org = qrFieldValue("qr-vc-org");
+      if (org) lines.push("ORG:" + org);
+      lines.push("END:VCARD");
+      return lines.join("\n");
+    }
+    if (type === "email") {
+      var to = qrFieldValue("qr-em-to");
+      if (!to) return "";
+      var subject = qrFieldValue("qr-em-subject");
+      var body = qrFieldValue("qr-em-body");
+      var mail = "mailto:" + to;
+      var parts = [];
+      if (subject) parts.push("subject=" + encodeURIComponent(subject));
+      if (body) parts.push("body=" + encodeURIComponent(body));
+      if (parts.length) mail += "?" + parts.join("&");
+      return mail;
+    }
+    if (type === "sms") {
+      var num = qrFieldValue("qr-sms-num");
+      if (!num) return "";
+      var msg = qrFieldValue("qr-sms-body");
+      return msg ? "SMSTO:" + num + ":" + msg : "SMSTO:" + num;
+    }
+    if (type === "tel") {
+      var t = qrFieldValue("qr-tel-num");
+      return t ? "TEL:" + t : "";
+    }
+    return "";
+  }
+
+  function qrRenderFields(type) {
+    var host = $("qr-fields");
+    if (!host) return;
+    host.textContent = "";
+    (QR_FIELDS[type] || []).forEach(function (def) {
+      var id = def[0], kind = def[1], label = def[2];
+      var l = document.createElement("label");
+      l.className = "field-label";
+      l.textContent = label;
+      host.appendChild(l);
+      var el;
+      if (kind === "textarea") {
+        el = document.createElement("textarea");
+        el.rows = 3;
+      } else if (kind === "select") {
+        el = document.createElement("select");
+        (def[3] || []).forEach(function (opt) {
+          var o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          el.appendChild(o);
+        });
+      } else {
+        el = document.createElement("input");
+        el.type = kind;
+        el.autocomplete = "off";
+        el.spellcheck = false;
+      }
+      el.id = id;
+      el.addEventListener("input", qrDraw);
+      el.addEventListener("change", qrDraw);
+      host.appendChild(el);
+    });
+  }
+
+  var qrLibPromise = null;
+  function qrLoadLib() {
+    if (!qrLibPromise) qrLibPromise = loadScript("/image/vendor/qrcode.js");
+    return qrLibPromise;
+  }
+
+  function qrPaint() {
+    var typeEl = $("qr-type");
+    var canvas = $("qr-canvas");
+    if (!typeEl || !canvas) return;
+    var content = qrBuildContent(typeEl.value);
+    var size = Number($("qr-size").value);
+    canvas.width = size;
+    canvas.height = size;
+    canvas.style.maxWidth = Math.min(size, 320) + "px";
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, size, size);
+    if (!content) {
+      setStatus("qr-status", "Fill in the fields to generate a code.");
+      return;
+    }
+    var qr;
+    try {
+      qr = window.qrcode(0, "M");
+      qr.addData(content, "Byte");
+      qr.make();
+    } catch (err) {
+      setStatus("qr-status", "Content is too large for a QR code.", true);
+      return;
+    }
+    var count = qr.getModuleCount();
+    var cell = size / (count + 8); // quiet zone of 4 modules per side
+    ctx.fillStyle = "#000000";
+    var off = 4 * cell;
+    for (var r = 0; r < count; r++) {
+      for (var c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          ctx.fillRect(Math.round(off + c * cell), Math.round(off + r * cell), Math.ceil(cell), Math.ceil(cell));
+        }
+      }
+    }
+    setStatus("qr-status", "");
+  }
+
+  function qrDraw() {
+    qrLoadLib().then(qrPaint).catch(function () {
+      setStatus("qr-status", "The QR generator could not be loaded.", true);
+    });
+  }
+
+  // Wired once, the first time the QR tool is shown (activate() calls this).
+  function qrStart() {
+    var typeEl = $("qr-type");
+    if (!typeEl || typeEl._qrWired) return;
+    typeEl._qrWired = true;
+    typeEl.addEventListener("change", function () {
+      qrRenderFields(typeEl.value);
+      qrDraw();
+    });
+    var size = $("qr-size");
+    if (size) size.addEventListener("input", qrDraw);
+    var dl = $("qr-download");
+    if (dl) {
+      dl.addEventListener("click", function () {
+        var canvas = $("qr-canvas");
+        canvas.toBlob(function (blob) {
+          if (blob) download(blob, "qrcode.png");
+        }, "image/png");
+      });
+    }
+    qrRenderFields(typeEl.value);
+    qrDraw();
+  }
 })();

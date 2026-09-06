@@ -34,7 +34,7 @@
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
           "featureList": [
             "Format conversion", "Compress and resize", "Strip metadata", "Interactive crop",
-            "Text or logo watermark", "Color filters", "Batch conversion"
+            "Text or logo watermark", "Color filters", "Batch conversion", "QR code generator"
           ]
         },
         {
@@ -85,7 +85,6 @@
       <a class="main-nav-link" href="/pdf/">PDF tools</a>
       <a class="main-nav-link" href="/convert/">File converter</a>
       <a class="main-nav-link" href="/secret/">Secret Sender</a>
-      <a class="main-nav-link" href="/qrcode/">QR code</a>
     </nav>
     <span class="top-actions">
       <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
@@ -124,6 +123,7 @@
             <button type="button" data-tool="wmark" aria-pressed="false">Watermark</button>
             <button type="button" data-tool="filters" aria-pressed="false">Filters</button>
             <button type="button" data-tool="batch" aria-pressed="false">Batch</button>
+            <button type="button" data-tool="qrcode" aria-pressed="false">QR code</button>
           </nav>
         </aside>
         <div class="tool-main">
@@ -396,6 +396,35 @@
           <button type="button" id="batch-run" class="btn" disabled>Convert &amp; download ZIP</button>
           <span id="batch-status" class="status" role="status"></span>
         </div>
+      </section>
+
+      <!-- QR code generator -->
+      <section id="tool-qrcode" data-tool-panel hidden>
+        <div class="qr-grid">
+          <div class="qr-fields-col">
+            <label class="field-label" for="qr-type">Content type</label>
+            <select id="qr-type" class="select">
+              <option value="url" selected>URL</option>
+              <option value="text">Text</option>
+              <option value="wifi">Wi-Fi</option>
+              <option value="vcard">vCard</option>
+              <option value="email">E-mail</option>
+              <option value="sms">SMS</option>
+              <option value="tel">Phone</option>
+            </select>
+            <div class="fields" id="qr-fields"></div>
+            <label class="field-label" for="qr-size">Size</label>
+            <input type="range" id="qr-size" class="range" min="160" max="640" step="16" value="320" />
+          </div>
+          <div class="qr-preview">
+            <canvas id="qr-canvas" width="320" height="320" aria-label="Generated QR code"></canvas>
+            <div class="form-row">
+              <button type="button" id="qr-download" class="btn">Download PNG</button>
+              <span id="qr-status" class="status" role="status"></span>
+            </div>
+          </div>
+        </div>
+      </section>
         </div>
       </div>
 
@@ -443,7 +472,7 @@
           Related tools:
           <a href="/pdf/">PDF tools (images to PDF)</a>
           <a href="/convert/">File converter</a>
-          <a href="/qrcode/">QR code generator</a>
+          <a href="/image/qrcode/">QR code generator</a>
         </p>
       </section>
 

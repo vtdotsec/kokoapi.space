@@ -20,7 +20,6 @@ export default defineConfig({
         "https://kokoapi.space/pdf/",
         "https://kokoapi.space/convert/",
         "https://kokoapi.space/secret/",
-        "https://kokoapi.space/qrcode/",
       ],
       // The 404 page is an error document, not an indexable URL.
       filter: (page) => !page.includes("/404"),

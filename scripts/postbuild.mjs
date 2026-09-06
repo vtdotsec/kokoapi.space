@@ -15,7 +15,6 @@ const targets = [
   "image/image.js",
   "pdf/pdf.js",
   "convert/convert.js",
-  "qrcode/qrcode.js",
 ];
 
 let failed = false;
