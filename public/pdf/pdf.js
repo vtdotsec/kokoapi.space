@@ -92,6 +92,12 @@
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
   var pdfSelect = document.querySelector(".pdf-side .side-select");
 
+  // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
+  var urlParams = new URLSearchParams(location.search);
+  var initialTool =
+    TOOLS.indexOf(urlParams.get("tool") || "") !== -1 ? urlParams.get("tool") : "merge";
+  if (urlParams.get("embed") === "1") document.body.classList.add("embed");
+
   function activate(tool) {
     segButtons.forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.tool === tool));
@@ -116,7 +122,28 @@
     pdfSelect.addEventListener("change", function () {
       if (pdfSelect.value) activate(pdfSelect.value);
     });
-    activate("merge");
+    activate(initialTool);
+  }
+
+  // In embed mode only the active panel is visible; keep the host iframe sized
+  // to the content as file lists, thumbnails and status lines change height.
+  if (document.body.classList.contains("embed")) {
+    var widget = document.querySelector(".pdf-main");
+    var reportHeight = function () {
+      if (!widget) return;
+      window.parent.postMessage(
+        { type: "koko-widget-height", height: Math.ceil(widget.offsetHeight) + 16 },
+        "*"
+      );
+    };
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(reportHeight).observe(widget);
+    }
+    window.addEventListener("resize", reportHeight);
+    // The host page may attach its listener after this frame finished loading;
+    // resend once more so the initial size is never lost.
+    window.addEventListener("load", reportHeight);
+    reportHeight();
   }
 
   /* ================================================================ */

@@ -1,7 +1,7 @@
 # Deploys kokoapi.space on every push to main.
 # 1) CI validates that the Astro site builds cleanly.
 # 2) The production VM is notified over SSH to pull and rebuild the Docker
-#    containers (catalog nginx + secret node service).
+#    containers (static web nginx + secret Node service).
 
 name: deploy
 

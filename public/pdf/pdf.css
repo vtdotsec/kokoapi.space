@@ -758,3 +758,24 @@ main.wrap {
     overflow-x: auto;
   }
 }
+
+/* ---------- focused landing embed (?tool=<name>&embed=1) ---------- */
+/* When this page runs inside a landing-page iframe, keep only the active
+   tool panel and drop the site chrome around it. */
+body.embed .topbar,
+body.embed .pdf-side,
+body.embed .site-footer,
+body.embed .seo,
+body.embed main.wrap > h1,
+body.embed main.wrap > .lead,
+body.embed main.wrap > .note {
+  display: none !important;
+}
+
+body.embed main.wrap {
+  padding-block: 0;
+}
+
+body.embed .pdf-layout {
+  display: block;
+}

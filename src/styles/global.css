@@ -896,7 +896,7 @@ h4 {
   font-weight: 600;
 }
 
-/* ---------- Filters panel (catalog page) ------------------------------ */
+/* ---------- Filters panel (legacy catalog UI, unused by tool pages) ---- */
 .filters {
   display: flex;
   flex-direction: column;
@@ -1460,4 +1460,125 @@ h4 {
   --accent-contrast: #ffffff;
   --focus-ring: 0 0 0 3px rgb(79 70 229 / 0.35);
   color-scheme: light;
+}
+
+/* ---------- Tool landing pages (focused sub-routes) ----------------- */
+.tool-landing {
+  padding-block: 2rem 0.5rem;
+}
+
+.crumbs {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.crumbs li + li::before {
+  content: "/";
+  margin-right: 0.4rem;
+  color: var(--border-strong);
+}
+
+.crumbs a {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.crumbs a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.tool-landing h1 {
+  font-size: clamp(var(--fs-xl), 4vw, var(--fs-2xl));
+  letter-spacing: -0.02em;
+  max-width: 24ch;
+  margin-bottom: 1rem;
+}
+
+.tool-landing .lead {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  max-width: 74ch;
+  margin-bottom: 0.7rem;
+}
+
+.tool-landing .intro-sub {
+  margin-bottom: 1.5rem;
+}
+
+.tool-widget {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.tool-widget iframe {
+  display: block;
+  width: 100%;
+  height: 480px;
+  border: 0;
+}
+
+.tool-widget .note {
+  margin: 0;
+}
+
+.tool-landing .tool-section {
+  margin-top: 2.25rem;
+}
+
+.tool-landing ol.howto {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin: 0.75rem 0 0;
+  display: grid;
+  gap: 0.6rem;
+  max-width: 74ch;
+}
+
+.tool-landing .faq details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  padding: 0.7rem 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.tool-landing .faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tool-landing .faq details p {
+  margin-top: 0.6rem;
+  color: var(--text-secondary);
+  max-width: 74ch;
+}
+
+.tool-landing .related {
+  margin-top: 2.25rem;
+  padding-bottom: 2.5rem;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.4rem;
+  align-items: baseline;
+}
+
+.tool-landing .related a {
+  font-weight: 600;
 }

@@ -1,7 +1,7 @@
 services:
-  catalog:
+  kokoapi-tools-web:
     build: .
-    container_name: kokoapi-catalog
+    container_name: kokoapi-tools-web
 
     ports:
       - "8080:80"
@@ -9,7 +9,7 @@ services:
     read_only: true
 
     depends_on:
-      - secret
+      - kokoapi-tools-secret
 
     tmpfs:
       - /var/cache/nginx:uid=101,gid=101,mode=0755
@@ -35,9 +35,9 @@ services:
       start_period: 5s
 
   # Ephemeral sharing app (/secret/). Plain Node, zero deps; encrypted blobs on disk.
-  secret:
+  kokoapi-tools-secret:
     build: ./secret
-    container_name: kokoapi-secret
+    container_name: kokoapi-tools-secret
 
     environment:
       - DATA_DIR=/data
