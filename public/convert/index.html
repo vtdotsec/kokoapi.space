@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Free Online File Converter — Markdown to PDF, JSON to CSV &amp; ZIP</title>
+    <meta
+      name="description"
+      content="Convert Markdown or HTML to PDF, PDF to text, images, JSON to CSV/YAML, XML to JSON and ZIP/TAR/GZIP archives — all in your browser, with no uploads."
+    />
+    <link rel="canonical" href="https://kokoapi.space/convert/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="kokoapi.space" />
+    <meta property="og:title" content="Free Online File Converter — Markdown to PDF, JSON to CSV &amp; ZIP" />
+    <meta property="og:description" content="Convert Markdown or HTML to PDF, PDF to text, images, JSON to CSV/YAML, XML to JSON and ZIP/TAR/GZIP archives — all in your browser, with no uploads." />
+    <meta property="og:url" content="https://kokoapi.space/convert/" />
+    <meta property="og:image" content="https://kokoapi.space/og.svg" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Free Online File Converter — Markdown to PDF, JSON to CSV &amp; ZIP" />
+    <meta name="twitter:description" content="Convert Markdown or HTML to PDF, PDF to text, images, JSON to CSV/YAML, XML to JSON and ZIP/TAR/GZIP archives — all in your browser, with no uploads." />
+    <meta name="twitter:image" content="https://kokoapi.space/og.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "kokoapi.space file converter",
+          "description": "Convert Markdown or HTML to PDF, PDF to text, images, JSON to CSV or YAML, XML to JSON and create or extract ZIP, TAR and GZIP archives in the browser.",
+          "url": "https://kokoapi.space/convert/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "Markdown to HTML or PDF", "HTML to PDF", "PDF to text",
+            "Image conversion", "JSON to CSV", "JSON to YAML", "XML to JSON",
+            "ZIP / TAR / GZIP create and extract"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are the files I convert uploaded anywhere?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Every conversion runs locally in your browser with client-side libraries. Your files and text never leave your device." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which formats can I convert?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Markdown and HTML to PDF, PDF to plain text, images between PNG/JPEG/WebP, JSON to CSV or YAML, CSV to JSON, XML to JSON, and ZIP, TAR and GZIP archives." }
+            },
+            {
+              "@type": "Question",
+              "name": "How is the PDF created from Markdown?",
+              "acceptedAnswer": { "@type": "Answer", "text": "The text is parsed into headings, paragraphs and lists, then drawn page by page into a PDF with standard fonts. It is a clean text layout, not a pixel-perfect copy of a rendered page." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/convert/convert.css" />
+    <link rel="stylesheet" href="/_ui/app.css" />
+    <link rel="stylesheet" href="/_ui/theme.css" />
+    <script src="/convert/convert.js" defer></script>
+    <script src="/_ui/ui.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="kokoapi.space — home">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect class="lg-plate" width="64" height="64" rx="13" />
+        <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+        <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+        <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+        <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+      </svg>
+      <span>kokoapi<span class="space">.space</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Tools">
+      <a class="main-nav-link" href="/image/">Image tools</a>
+      <a class="main-nav-link" href="/pdf/">PDF tools</a>
+      <a class="main-nav-link" aria-current="page" href="/convert/">File converter</a>
+      <a class="main-nav-link" href="/secret/">Secret Sender</a>
+    </nav>
+    <span class="top-actions">
+      <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
+        <span class="theme-ico-light" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
+        </span>
+        <span class="theme-ico-dark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
+        </span>
+      </button>
+    </span>
+  </div>
+</header>
+
+
+
+    <main class="wrap">
+      <h1>File converter</h1>
+      <p class="lead">
+        Convert between text, PDF, image, data and archive formats. Every tool runs
+        entirely in your browser — no server, no upload, no sign-up.
+      </p>
+      <p class="note">
+        100% local conversion in your browser. Your files are never uploaded.
+      </p>
+
+      <!-- ============ Documents ============ -->
+      <div class="cv-layout">
+  <aside class="cv-side" aria-label="Tools">
+    <select class="side-select" aria-label="Choose a tool"></select>
+    <button type="button" class="side-toggle" aria-expanded="false">Tools</button>
+    <h2 class="cv-side-title">Tools</h2>
+    <nav class="cv-side-nav">
+      <button type="button" data-target="tool-md2html" class="active">Markdown to HTML</button>
+      <button type="button" data-target="tool-m2p">Markdown / HTML to PDF</button>
+      <button type="button" data-target="tool-pdf2txt">PDF to text</button>
+      <button type="button" data-target="tool-img2">Convert images</button>
+      <button type="button" data-target="tool-jsoncsv">JSON &harr; CSV</button>
+      <button type="button" data-target="tool-yamljson">JSON &harr; YAML</button>
+      <button type="button" data-target="tool-xml2json">XML to JSON</button>
+      <button type="button" data-target="tool-mkzip">Create ZIP / TAR / GZIP</button>
+      <button type="button" data-target="tool-unpack">Extract archive</button>
+    </nav>
+  </aside>
+  <div class="cv-main">
+<section class="cat" id="cat-documents">
+        <h2 class="cat-title">Documents</h2>
+
+        <section class="tool" id="tool-md2html">
+          <div class="tool-head">
+            <h3>Markdown → HTML</h3>
+            <p class="size-note">
+              Paste Markdown, preview it as HTML, then download a standalone page.
+            </p>
+          </div>
+          <textarea
+            id="cv-md2html-src"
+            class="ta mono"
+            rows="10"
+            spellcheck="false"
+            placeholder="# Hello&#10;&#10;Write **Markdown** here and press “Convert &amp; preview”."
+          ></textarea>
+          <div class="form-row">
+            <button type="button" id="cv-md2html-run" class="btn" disabled>Convert &amp; preview</button>
+            <button type="button" id="cv-md2html-dl" class="btn btn-ghost" disabled>Download .html</button>
+            <span id="cv-md2html-status" class="status" role="status"></span>
+          </div>
+          <div id="cv-md2html-out" class="md-preview" hidden></div>
+          <details id="cv-md2html-raw" class="raw-details" hidden>
+            <summary>Show HTML</summary>
+            <pre class="raw" id="cv-md2html-raw-pre"></pre>
+          </details>
+        </section>
+
+        <section class="tool" id="tool-m2p">
+          <div class="tool-head">
+            <h3>Markdown / HTML → PDF</h3>
+            <p class="size-note">
+              Renders a simple text layout into a PDF using standard fonts. Good for notes
+              and documents; not a browser print engine.
+            </p>
+          </div>
+          <fieldset class="options">
+            <legend>Source</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-m2p-mode" value="md" checked /><span>Markdown</span></label>
+              <label class="radio"><input type="radio" name="cv-m2p-mode" value="html" /><span>Raw HTML</span></label>
+            </div>
+          </fieldset>
+          <textarea
+            id="cv-m2p-src"
+            class="ta mono"
+            rows="10"
+            spellcheck="false"
+            placeholder="# Title&#10;&#10;Write Markdown (or raw HTML) here, then create the PDF."
+          ></textarea>
+          <div class="form-row">
+            <button type="button" id="cv-m2p-run" class="btn" disabled>Create PDF</button>
+            <span id="cv-m2p-status" class="status" role="status"></span>
+          </div>
+          <p class="size-note">
+            Simple text layout; pixel-perfect HTML rendering is not supported. Supported
+            elements: h1–h3, p, ul/ol, blockquote, pre/code, strong, em, a, hr.
+          </p>
+        </section>
+
+        <section class="tool" id="tool-pdf2txt">
+          <div class="tool-head">
+            <h3>PDF → TXT</h3>
+            <p class="size-note">Extract the selectable text layer of a PDF.</p>
+          </div>
+          <label class="file-drop" for="cv-pdf2txt-file">
+            <input type="file" id="cv-pdf2txt-file" accept="application/pdf" />
+            <span>Choose a PDF to extract text from</span>
+          </label>
+          <p class="size-note" id="cv-pdf2txt-info" hidden></p>
+          <div class="form-row">
+            <button type="button" id="cv-pdf2txt-copy" class="btn btn-ghost" disabled>Copy</button>
+            <button type="button" id="cv-pdf2txt-dl" class="btn" disabled>Download .txt</button>
+            <span id="cv-pdf2txt-status" class="status" role="status"></span>
+          </div>
+          <textarea
+            id="cv-pdf2txt-out"
+            class="ta mono"
+            rows="14"
+            readonly
+            spellcheck="false"
+            placeholder="Extracted text appears here."
+          ></textarea>
+        </section>
+      </section>
+
+      <!-- ============ Images ============ -->
+      <section class="cat" id="cat-images">
+        <h2 class="cat-title">Images</h2>
+
+        <section class="tool" id="tool-img2">
+          <div class="tool-head">
+            <h3>Convert images (batch)</h3>
+            <p class="size-note">
+              Re-encode several images at once and download them as one ZIP. SVG files are
+              rasterized, so “SVG → PNG” works too.
+            </p>
+          </div>
+          <label class="file-drop" for="cv-img2-files">
+            <input type="file" id="cv-img2-files" accept="image/*,.svg" multiple />
+            <span>Choose one or more images (PNG, JPEG, WebP, GIF, SVG, …)</span>
+          </label>
+          <p class="size-note" id="cv-img2-files-note" hidden></p>
+          <ul id="cv-img2-list" class="file-list" hidden></ul>
+          <fieldset class="options">
+            <legend>Output</legend>
+            <div class="opt-stack">
+              <div class="opts">
+                <span class="opt-label">Format</span>
+                <select class="select" id="cv-img2-fmt">
+                  <option value="png">PNG</option>
+                  <option value="jpeg" selected>JPEG</option>
+                  <option value="webp">WebP</option>
+                </select>
+              </div>
+              <label class="range-row" id="cv-img2-quality-row" hidden>
+                <span>Quality (JPEG / WebP)</span>
+                <input type="range" id="cv-img2-quality" min="10" max="100" value="85" />
+                <output for="cv-img2-quality">85</output>
+              </label>
+            </div>
+          </fieldset>
+          <p class="size-note">
+            Every image is fully re-encoded (metadata is dropped). PNG ignores the quality
+            setting; converting JPEG → JPEG re-compresses and loses a little quality.
+          </p>
+          <div class="form-row">
+            <button type="button" id="cv-img2-run" class="btn" disabled>Convert &amp; download ZIP</button>
+            <span id="cv-img2-status" class="status" role="status"></span>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Data ============ -->
+      <section class="cat" id="cat-data">
+        <h2 class="cat-title">Data</h2>
+
+        <section class="tool" id="tool-jsoncsv">
+          <div class="tool-head">
+            <h3>JSON ↔ CSV</h3>
+            <p class="size-note">
+              JSON → CSV accepts an array of flat objects or an object of arrays (rows are
+              aligned by index). CSV → JSON parses the header row and quoted fields.
+            </p>
+          </div>
+          <fieldset class="options">
+            <legend>Direction</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-jsoncsv-dir" value="json2csv" checked /><span>JSON → CSV</span></label>
+              <label class="radio"><input type="radio" name="cv-jsoncsv-dir" value="csv2json" /><span>CSV → JSON</span></label>
+            </div>
+          </fieldset>
+          <div class="duo">
+            <div class="pane">
+              <label class="pane-label" for="cv-jsoncsv-in">Input</label>
+              <textarea
+                id="cv-jsoncsv-in"
+                class="ta mono"
+                rows="10"
+                spellcheck="false"
+                placeholder='[&#10;  { "name": "Ada", "year": 1815 },&#10;  { "name": "Alan", "year": 1912 }&#10;]'
+              ></textarea>
+            </div>
+            <div class="pane">
+              <label class="pane-label" for="cv-jsoncsv-out">Output</label>
+              <textarea
+                id="cv-jsoncsv-out"
+                class="ta mono"
+                rows="10"
+                readonly
+                spellcheck="false"
+                placeholder="Converted output appears here."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button type="button" id="cv-jsoncsv-run" class="btn" disabled>Convert</button>
+            <button type="button" id="cv-jsoncsv-swap" class="btn btn-ghost" disabled>Swap sides</button>
+            <button type="button" id="cv-jsoncsv-dl" class="btn btn-ghost" disabled>Download .csv</button>
+            <span id="cv-jsoncsv-status" class="status" role="status"></span>
+          </div>
+        </section>
+
+        <section class="tool" id="tool-yamljson">
+          <div class="tool-head">
+            <h3>YAML ↔ JSON</h3>
+            <p class="size-note">Convert between YAML and JSON text.</p>
+          </div>
+          <fieldset class="options">
+            <legend>Direction</legend>
+            <div class="opts">
+              <label class="radio"><input type="radio" name="cv-yamljson-dir" value="yaml2json" checked /><span>YAML → JSON</span></label>
+              <label class="radio"><input type="radio" name="cv-yamljson-dir" value="json2yaml" /><span>JSON → YAML</span></label>
+            </div>
+          </fieldset>
+          <div class="duo">
+            <div class="pane">
+              <label class="pane-label" for="cv-yamljson-in">Input</label>
+              <textarea
+                id="cv-yamljson-in"
+                class="ta mono"
+                rows="10"
+                spellcheck="false"
+                placeholder="name: Ada&#10;born: 1815"
+              ></textarea>
+            </div>
+            <div class="pane">
+              <label class="pane-label" for="cv-yamljson-out">Output</label>
+              <textarea
+                id="cv-yamljson-out"
+                class="ta mono"
+                rows="10"
+                readonly
+                spellcheck="false"
+                placeholder="Converted output appears here."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button type="button" id="cv-yamljson-run" class="btn" disabled>Convert</button>
+            <button type="button" id="cv-yamljson-dl" class="btn btn-ghost" disabled>Download</button>
+            <span id="cv-yamljson-status" class="status" role="status"></span>
+          </div>
+        </section>
+
+        <section class="tool" id="tool-xml2json">
+          <div class="tool-head">
+            <h3>XML → JSON</h3>
+            <p class="size-note">
+              One direction: elements become { tag, attrs?, children/text }. Text inside
+              mixed content is kept as { tag: “#text” } nodes; CDATA is treated as text.
+            </p>
+          </div>
+          <div class="duo">
+            <div class="pane">
+              <label class="pane-label" for="cv-xml2json-in">Input</label>
+              <textarea
+                id="cv-xml2json-in"
+                class="ta mono"
+                rows="10"
+                spellcheck="false"
+                placeholder="&lt;book id=&quot;1&quot;&gt;&#10;  &lt;title&gt;Notes&lt;/title&gt;&#10;  &lt;tag&gt;a&lt;/tag&gt;&#10;  &lt;tag&gt;b&lt;/tag&gt;&#10;&lt;/book&gt;"
+              ></textarea>
+            </div>
+            <div class="pane">
+              <label class="pane-label" for="cv-xml2json-out">Output</label>
+              <textarea
+                id="cv-xml2json-out"
+                class="ta mono"
+                rows="10"
+                readonly
+                spellcheck="false"
+                placeholder="Converted output appears here."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <button type="button" id="cv-xml2json-run" class="btn" disabled>Convert</button>
+            <button type="button" id="cv-xml2json-dl" class="btn btn-ghost" disabled>Download .json</button>
+            <span id="cv-xml2json-status" class="status" role="status"></span>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ Archive ============ -->
+      <section class="cat" id="cat-archive">
+        <h2 class="cat-title">Archive</h2>
+
+        <section class="tool" id="tool-mkzip">
+          <div class="tool-head">
+            <h3>Create archive</h3>
+            <p class="size-note">
+              Pack files into a ZIP or TAR archive, or gzip a single file.
+            </p>
+          </div>
+          <label class="file-drop" for="cv-mkzip-files">
+            <input type="file" id="cv-mkzip-files" multiple />
+            <span>Choose files to pack (GZIP takes exactly one file)</span>
+          </label>
+          <p class="size-note" id="cv-mkzip-files-note" hidden></p>
+          <ul id="cv-mkzip-list" class="file-list" hidden></ul>
+          <fieldset class="options">
+            <legend>Format</legend>
+            <div class="opts">
+              <span class="opt-label">Container</span>
+              <select class="select" id="cv-mkzip-mode">
+                <option value="zip">ZIP</option>
+                <option value="tar">TAR (ustar)</option>
+                <option value="gzip">GZIP (single file)</option>
+              </select>
+            </div>
+          </fieldset>
+          <p class="size-note">
+            TAR does not compress, it only bundles. GZIP needs exactly one selected file
+            and names the result <span class="mono">name.gz</span>.
+          </p>
+          <div class="form-row">
+            <button type="button" id="cv-mkzip-run" class="btn" disabled>Create archive</button>
+            <span id="cv-mkzip-status" class="status" role="status"></span>
+          </div>
+        </section>
+
+        <section class="tool" id="tool-unpack">
+          <div class="tool-head">
+            <h3>Extract archive</h3>
+            <p class="size-note">
+              Open a ZIP, TAR or GZIP file. The format is detected from the file’s magic
+              bytes; a .tar.gz (or .tgz) is unpacked as a TAR.
+            </p>
+          </div>
+          <label class="file-drop" for="cv-unpack-file">
+            <input type="file" id="cv-unpack-file" accept=".zip,.tar,.tgz,.gz,application/zip,application/x-tar,application/gzip" />
+            <span>Choose a ZIP, TAR or GZIP file</span>
+          </label>
+          <p class="size-note" id="cv-unpack-info" hidden></p>
+          <div class="form-row">
+            <button type="button" id="cv-unpack-all" class="btn" disabled hidden>Download all as ZIP</button>
+            <span id="cv-unpack-status" class="status" role="status"></span>
+          </div>
+          <ul id="cv-unpack-list" class="file-list" hidden></ul>
+        </section>
+      </section>
+
+      </div>
+  </div>
+
+      <!-- SEO content -->
+      <section class="seo" aria-labelledby="convert-seo-h">
+        <h2 id="convert-seo-h">A file converter that runs on your own device</h2>
+        <p>
+          Instead of uploading a file to a server and downloading the result, this converter
+          processes everything in your browser: Markdown and HTML become PDFs, PDFs become
+          plain text, images are re-encoded, JSON is reshaped into CSV or YAML, XML becomes
+          JSON, and archives are created or unpacked. Because nothing is uploaded, there are
+          no file size limits and no copies of your data left on a server.
+        </p>
+        <h3>How to convert a document to PDF</h3>
+        <ol>
+          <li>Open <strong>Markdown / HTML to PDF</strong> in the sidebar.</li>
+          <li>Pick the source type and paste your Markdown or HTML text.</li>
+          <li>Press <strong>Create PDF</strong> and save the generated file.</li>
+        </ol>
+        <h3>Frequently asked questions</h3>
+        <details>
+          <summary>Are the files I convert uploaded anywhere?</summary>
+          <p>
+            No. Every conversion runs locally in your browser with client-side libraries.
+            Your files and pasted text never leave your device.
+          </p>
+        </details>
+        <details>
+          <summary>Which formats can I convert?</summary>
+          <p>
+            Markdown and HTML to PDF, PDF to plain text, images between PNG/JPEG/WebP,
+            JSON to CSV or YAML, CSV to JSON, XML to JSON, and ZIP, TAR and GZIP archives.
+          </p>
+        </details>
+        <details>
+          <summary>How is the PDF created from Markdown?</summary>
+          <p>
+            The text is parsed into headings, paragraphs and lists, then drawn page by page
+            into a PDF with standard fonts. It is a clean text layout, not a pixel-perfect
+            copy of a rendered web page.
+          </p>
+        </details>
+        <p class="related">
+          Related tools:
+          <a href="/pdf/">PDF tools</a>
+          <a href="/image/">Image tools</a>
+          <a href="/secret/">Encrypted note sharing</a>
+        </p>
+      </section>
+
+  <noscript>
+        <p class="note">
+          This tool needs JavaScript: every conversion runs locally in your browser with
+          client-side libraries.
+        </p>
+      </noscript>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
+        <span>No uploads · Files stay on your device · No cookies</span>
+      </div>
+    </footer>
+  </body>
+</html>

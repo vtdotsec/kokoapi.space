@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Free Online PDF Tools — Merge, Split, Compress &amp; Edit Locally</title>
+    <meta
+      name="description"
+      content="Merge, split, rotate, compress, watermark and unlock PDF files online for free. All processing is local — your documents never leave your device."
+    />
+    <link rel="canonical" href="https://kokoapi.space/pdf/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="kokoapi.space" />
+    <meta property="og:title" content="Free Online PDF Tools — Merge, Split, Compress &amp; Edit Locally" />
+    <meta property="og:description" content="Merge, split, rotate, compress, watermark and unlock PDF files online for free. All processing is local — your documents never leave your device." />
+    <meta property="og:url" content="https://kokoapi.space/pdf/" />
+    <meta property="og:image" content="https://kokoapi.space/og.svg" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Free Online PDF Tools — Merge, Split, Compress &amp; Edit Locally" />
+    <meta name="twitter:description" content="Merge, split, rotate, compress, watermark and unlock PDF files online for free. All processing is local — your documents never leave your device." />
+    <meta name="twitter:image" content="https://kokoapi.space/og.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "kokoapi.space PDF tools",
+          "description": "Merge, split, reorder, rotate, compress, watermark, protect or unlock PDF files entirely in the browser.",
+          "url": "https://kokoapi.space/pdf/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "Merge PDFs", "Split page ranges", "Visual reorder", "Rotate or delete pages",
+            "Page numbers", "Watermark", "Compress", "Protect or unlock", "Extract text",
+            "Images to PDF", "PDF to images"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Are my PDF files uploaded to a server?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Every tool reads and writes the PDF inside your browser with client-side libraries. Nothing is sent over the network and nothing is stored afterwards." }
+            },
+            {
+              "@type": "Question",
+              "name": "What happens when I compress a PDF?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Each page is re-rendered as an optimized JPEG inside a new PDF. The file gets smaller but text becomes part of the image, which is best for scans and image-heavy documents." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I remove a PDF password I don't know?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Unlock only works when you already know the password: the file is decrypted locally with the password you type. There is no server that could try passwords for you." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/pdf/pdf.css" />
+    <link rel="stylesheet" href="/_ui/app.css" />
+    <link rel="stylesheet" href="/_ui/theme.css" />
+    <script src="/pdf/pdf.js" defer></script>
+    <script src="/_ui/ui.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="kokoapi.space — home">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect class="lg-plate" width="64" height="64" rx="13" />
+        <rect class="lg-screen" x="12" y="14" width="40" height="36" rx="5" />
+        <rect class="lg-ink" x="18" y="24" width="19" height="4.5" rx="2" />
+        <rect class="lg-cursor" x="40.5" y="22.5" width="5" height="7.5" rx="1.5" />
+        <rect class="lg-ink" x="18" y="33" width="12" height="4.5" rx="2" />
+      </svg>
+      <span>kokoapi<span class="space">.space</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Tools">
+      <a class="main-nav-link" href="/image/">Image tools</a>
+      <a class="main-nav-link" aria-current="page" href="/pdf/">PDF tools</a>
+      <a class="main-nav-link" href="/convert/">File converter</a>
+      <a class="main-nav-link" href="/secret/">Secret Sender</a>
+    </nav>
+    <span class="top-actions">
+      <button type="button" class="nav-btn" id="theme-toggle" aria-label="Switch to light theme" title="Light">
+        <span class="theme-ico-light" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13"/></svg>
+        </span>
+        <span class="theme-ico-dark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7Z"/></svg>
+        </span>
+      </button>
+    </span>
+  </div>
+</header>
+
+
+
+    <main class="wrap">
+      <h1>PDF tools</h1>
+      <p class="lead">
+        Merge, split, rotate, convert to or from images, or compress PDF files. Choose a
+        tool below, pick your files and download the result.
+      </p>
+      <p class="note">
+        Processing is 100% local in your browser. Your files are never uploaded and never
+        leave your device.
+      </p>
+
+      <div class="pdf-layout">
+  <aside class="pdf-side" aria-label="PDF tools">
+    <select class="side-select" aria-label="Choose a PDF tool"></select>
+    <button type="button" class="side-toggle" aria-expanded="false">Tools</button>
+    <div class="seg" role="group" aria-label="Tool">
+        <button type="button" class="seg-btn" data-tool="merge" aria-pressed="true">Merge</button>
+        <button type="button" class="seg-btn" data-tool="split" aria-pressed="false">Split</button>
+        <button type="button" class="seg-btn" data-tool="reorder" aria-pressed="false">Reorganize</button>
+        <button type="button" class="seg-btn" data-tool="organize" aria-pressed="false">Rotate / Delete</button>
+        <button type="button" class="seg-btn" data-tool="pagenum" aria-pressed="false">Page numbers</button>
+        <button type="button" class="seg-btn" data-tool="watermark" aria-pressed="false">Watermark</button>
+        <button type="button" class="seg-btn" data-tool="compress" aria-pressed="false">Compress</button>
+        <button type="button" class="seg-btn" data-tool="unlock" aria-pressed="false">Protect / Unlock</button>
+        <button type="button" class="seg-btn" data-tool="extract" aria-pressed="false">Extract text</button>
+        <button type="button" class="seg-btn" data-tool="imgs2pdf" aria-pressed="false">Images to PDF</button>
+        <button type="button" class="seg-btn" data-tool="pdf2img" aria-pressed="false">PDF to Images</button>
+      </div>
+  </aside>
+  <div class="pdf-main">
+
+
+      <!-- Merge -->
+      <section id="tool-merge" data-tool-panel>
+        <label class="file-drop" for="merge-files">
+          <input type="file" id="merge-files" accept="application/pdf" multiple />
+          <span>Choose PDF files to merge (in any order)</span>
+        </label>
+        <ol id="merge-list" class="file-list" hidden></ol>
+        <div class="form-row">
+          <button type="button" id="merge-run" class="btn" disabled>Merge and download</button>
+          <span id="merge-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Split -->
+      <section id="tool-split" data-tool-panel hidden>
+        <label class="file-drop" for="split-file">
+          <input type="file" id="split-file" accept="application/pdf" />
+          <span>Choose one PDF to split</span>
+        </label>
+        <p class="size-note" id="split-info"></p>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="split-mode" value="range" checked />
+              <span>Selected pages as one PDF</span>
+            </label>
+            <input
+              type="text"
+              id="split-range"
+              class="text-input range-input"
+              spellcheck="false"
+              placeholder="Pages, e.g. 1, 3-5"
+            />
+          </div>
+          <label class="radio">
+            <input type="radio" name="split-mode" value="pages" />
+            <span>Every page as a separate file (downloads a ZIP)</span>
+          </label>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="split-run" class="btn" disabled>Split and download</button>
+          <span id="split-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Organize -->
+      <section id="tool-organize" data-tool-panel hidden>
+        <label class="file-drop" for="org-file">
+          <input type="file" id="org-file" accept="application/pdf" />
+          <span>Choose one PDF, then rotate or remove pages below</span>
+        </label>
+        <div class="form-row org-bar" hidden>
+          <button type="button" id="org-run" class="btn" disabled>Download result</button>
+          <span id="org-status" class="status" role="status"></span>
+          <span class="muted" id="org-count"></span>
+        </div>
+        <div id="org-thumbs" class="thumbs" hidden></div>
+        <p class="size-note" id="org-help" hidden>
+          Rotate a page with the arrows; delete it with the cross. Rotation is applied
+          relative to the original page orientation.
+        </p>
+      </section>
+
+      <!-- Images to PDF -->
+      <section id="tool-imgs2pdf" data-tool-panel hidden>
+        <label class="file-drop" for="imgs2pdf-files">
+          <input type="file" id="imgs2pdf-files" accept="image/png,image/jpeg,image/webp" multiple />
+          <span>Choose images (PNG, JPEG, WebP) — reorder below</span>
+        </label>
+        <ol id="imgs2pdf-list" class="file-list" hidden></ol>
+        <fieldset class="options">
+          <legend>Page size</legend>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="fit" checked />
+            <span>Fit each image on an A4 page</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="imgs2pdf-size" value="original" />
+            <span>Keep the image pixel size (96 dpi)</span>
+          </label>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="imgs2pdf-run" class="btn" disabled>Create PDF</button>
+          <span id="imgs2pdf-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- PDF to Images -->
+      <section id="tool-pdf2img" data-tool-panel hidden>
+        <label class="file-drop" for="pdf2img-file">
+          <input type="file" id="pdf2img-file" accept="application/pdf" />
+          <span>Choose a PDF to turn into images</span>
+        </label>
+        <p class="size-note" id="pdf2img-info"></p>
+
+        <fieldset class="options">
+          <legend>Output</legend>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="png" checked />
+              <span>PNG (lossless)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-format" value="jpeg" />
+              <span>JPEG</span>
+            </label>
+            <label class="range-row" id="pdf2img-quality-row" hidden>
+              <span>Quality</span>
+              <input type="range" id="pdf2img-quality" min="20" max="100" value="90" />
+              <output for="pdf2img-quality">90</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="zip" checked />
+              <span>All pages as a ZIP</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="pdf2img-mode" value="links" />
+              <span>Show individual download links</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="pdf2img-run" class="btn" disabled>Convert pages</button>
+          <span id="pdf2img-status" class="status" role="status"></span>
+        </div>
+        <ul id="pdf2img-links" class="file-list" hidden></ul>
+      </section>
+
+      <!-- Compress PDF -->
+      <section id="tool-compress" data-tool-panel hidden>
+        <label class="file-drop" for="compress-file">
+          <input type="file" id="compress-file" accept="application/pdf" />
+          <span>Choose a PDF to compress</span>
+        </label>
+        <p class="size-note" id="compress-info"></p>
+        <p class="note" id="compress-note" hidden>
+          Pages are re-rendered as JPEG images inside a new PDF. Text becomes non-selectable;
+          this works best for scans and image-heavy documents.
+        </p>
+
+        <fieldset class="options">
+          <legend>Compression</legend>
+          <div class="option">
+            <label class="range-row">
+              <span>Quality</span>
+              <input type="range" id="compress-quality" min="10" max="90" value="50" />
+              <output for="compress-quality">50</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio">
+              <span>Resolution</span>
+            </label>
+            <select class="select" id="compress-scale">
+              <option value="1">Screen (1×)</option>
+              <option value="1.5">High (1.5×)</option>
+              <option value="2">Print (2×)</option>
+            </select>
+          </div>
+        </fieldset>
+        <div class="form-row">
+          <button type="button" id="compress-run" class="btn" disabled>Compress and download</button>
+          <span id="compress-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Watermark -->
+      <section id="tool-watermark" data-tool-panel hidden>
+        <label class="file-drop" for="watermark-file">
+          <input type="file" id="watermark-file" accept="application/pdf" />
+          <span>Choose one PDF to watermark</span>
+        </label>
+        <p class="size-note" id="watermark-info"></p>
+
+        <fieldset class="options">
+          <legend>Markup</legend>
+          <div class="option">
+            <label class="radio" for="watermark-text">Text</label>
+            <input
+              type="text"
+              id="watermark-text"
+              class="text-input range-input"
+              spellcheck="false"
+              placeholder="Confidential"
+            />
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Font size</span>
+              <input type="range" id="watermark-size" min="8" max="120" value="40" />
+              <output for="watermark-size">40</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Opacity</span>
+              <input type="range" id="watermark-opacity" min="5" max="100" value="15" />
+              <output for="watermark-opacity">15</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Rotation</span>
+              <input type="range" id="watermark-rotate" min="-90" max="90" value="-45" />
+              <output for="watermark-rotate">-45</output>
+            </label>
+          </div>
+          <div class="option">
+            <label class="radio" for="watermark-color">Color</label>
+            <select id="watermark-color" class="select">
+              <option value="black" selected>Black</option>
+              <option value="white">White</option>
+              <option value="red">Red</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="watermark-run" class="btn" disabled>Add watermark and download</button>
+          <span id="watermark-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Page numbers -->
+      <section id="tool-pagenum" data-tool-panel hidden>
+        <label class="file-drop" for="pagenum-file">
+          <input type="file" id="pagenum-file" accept="application/pdf" />
+          <span>Choose one PDF to number</span>
+        </label>
+        <p class="size-note" id="pagenum-info"></p>
+
+        <fieldset class="options">
+          <legend>Format</legend>
+          <div class="option">
+            <label class="radio" for="pagenum-template">Template</label>
+            <input
+              type="text"
+              id="pagenum-template"
+              class="text-input range-input"
+              spellcheck="false"
+              value="Page {n} of {total}"
+            />
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-pos">Position</label>
+            <select id="pagenum-pos" class="select">
+              <option value="bottom" selected>Bottom</option>
+              <option value="top">Top</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="radio" for="pagenum-align">Align</label>
+            <select id="pagenum-align" class="select">
+              <option value="center" selected>Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="range-row">
+              <span>Font size</span>
+              <input type="range" id="pagenum-size" min="6" max="72" value="10" />
+              <output for="pagenum-size">10</output>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-row">
+          <button type="button" id="pagenum-run" class="btn" disabled>Add page numbers and download</button>
+          <span id="pagenum-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Protect / Unlock -->
+      <section id="tool-unlock" data-tool-panel hidden>
+        <label class="file-drop" for="unlock-file">
+          <input type="file" id="unlock-file" accept="application/pdf" />
+          <span>Choose a password-protected PDF to unlock</span>
+        </label>
+        <p class="size-note" id="unlock-info"></p>
+
+        <fieldset class="options">
+          <legend>Password</legend>
+          <div class="option">
+            <label class="radio" for="unlock-password">Password</label>
+            <input
+              type="password"
+              id="unlock-password"
+              class="text-input range-input"
+              autocomplete="current-password"
+              placeholder="Password required by the file"
+            />
+          </div>
+        </fieldset>
+
+        <p class="note" id="unlock-note" hidden>
+          The unlocked PDF is rebuilt from rendered pages, so its text becomes non-selectable.
+        </p>
+        <p class="note">
+          Adding an open password is not supported by the client-side PDF libraries used here; you can only remove a password you already know.
+        </p>
+
+        <div class="form-row">
+          <button type="button" id="unlock-run" class="btn" disabled>Unlock and download</button>
+          <span id="unlock-status" class="status" role="status"></span>
+        </div>
+      </section>
+
+      <!-- Extract text -->
+      <section id="tool-extract" data-tool-panel hidden>
+        <label class="file-drop" for="extract-file">
+          <input type="file" id="extract-file" accept="application/pdf" />
+          <span>Choose one PDF to extract text from</span>
+        </label>
+        <p class="size-note" id="extract-info" hidden></p>
+
+        <div class="form-row">
+          <button type="button" id="extract-copy" class="btn ghost" disabled>Copy text</button>
+          <button type="button" id="extract-txt" class="btn" disabled>Download .txt</button>
+          <span id="extract-status" class="status" role="status"></span>
+        </div>
+        <textarea
+          id="extract-output"
+          class="text-pane"
+          rows="12"
+          readonly
+          spellcheck="false"
+          placeholder="Extracted text appears here."
+        ></textarea>
+      </section>
+
+      <!-- Reorder -->
+      <section id="tool-reorder" data-tool-panel hidden>
+        <label class="file-drop" for="reorder-file">
+          <input type="file" id="reorder-file" accept="application/pdf" />
+          <span>Choose one PDF, then drag pages into the order you want</span>
+        </label>
+        <div class="form-row org-bar" id="reorder-bar" hidden>
+          <button type="button" id="reorder-run" class="btn" disabled>Download PDF in this order</button>
+          <span id="reorder-status" class="status" role="status"></span>
+          <span class="muted" id="reorder-count"></span>
+        </div>
+        <div id="reorder-thumbs" class="thumbs" hidden></div>
+        <p class="size-note" id="reorder-help" hidden>
+          Drag a page card to change the order. The downloaded PDF follows the order shown.
+        </p>
+      </section>
+
+      <!-- SEO content -->
+      <section class="seo" aria-labelledby="pdf-seo-h">
+        <h2 id="pdf-seo-h">Merge, split and edit PDF files without uploading them</h2>
+        <p>
+          The PDF toolkit covers the operations most people need on a PDF: joining several
+          documents into one, splitting out a page range, reordering pages visually,
+          rotating or deleting individual pages, numbering them, adding a watermark,
+          compressing scans and extracting the text layer. Every operation writes a new file
+          that you download — the original is never modified.
+        </p>
+        <h3>How to combine or split a PDF</h3>
+        <ol>
+          <li>
+            Choose <strong>Merge</strong> in the sidebar and add two or more PDF files, or
+            choose <strong>Split</strong> to work on a single document.
+          </li>
+          <li>
+            For a split, enter the pages you want to keep (for example <code>1, 3-5</code>)
+            or export every page as its own file.
+          </li>
+          <li>
+            Click the download button — the result is generated locally and saved by your
+            browser.
+          </li>
+        </ol>
+        <h3>Frequently asked questions</h3>
+        <details>
+          <summary>Are my PDF files uploaded to a server?</summary>
+          <p>
+            No. Every tool reads and writes the PDF inside your browser using client-side
+            libraries. Nothing is sent over the network, so there is no upload size limit to
+            hit and nothing is stored afterwards.
+          </p>
+        </details>
+        <details>
+          <summary>What happens when I compress a PDF?</summary>
+          <p>
+            Each page is re-rendered as an optimized JPEG inside a new PDF. The file gets
+            smaller, but text becomes part of the image — compression works best for scans
+            and image-heavy documents, not for text you still need to select.
+          </p>
+        </details>
+        <details>
+          <summary>Can I remove a password I don't know?</summary>
+          <p>
+            No. Unlock only works when you already know the password — the file is decrypted
+            locally with the password you type. There is no server that could try passwords
+            for you, by design.
+          </p>
+        </details>
+        <details>
+          <summary>Does rotating or reordering change my original file?</summary>
+          <p>
+            No. The tools always produce a new PDF that you download; the file you picked
+            stays untouched on your device.
+          </p>
+        </details>
+        <p class="related">
+          Related tools:
+          <a href="/convert/">File converter (PDF → text)</a>
+          <a href="/image/">Image tools</a>
+          <a href="/secret/">Encrypted note sharing</a>
+        </p>
+      </section>
+
+        </div>
+</div>
+<noscript>
+        <p class="note">
+          This tool needs JavaScript to read and write PDF files locally in your browser.
+        </p>
+      </noscript>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© 2026 kokoapi.space — MIT licensed · <a href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">GitHub · Open-source</a></span>
+        <span>No uploads · Files stay on your device · No cookies</span>
+      </div>
+    </footer>
+  </body>
+</html>
