@@ -383,7 +383,9 @@
       }
       var chunks = [];
       for (var i = 0; i < doc.numPages; i++) {
-        var page = await doc.getPage(i);
+        // pdf.js page numbers are 1-based; 0-based access throws
+        // "Invalid page request.".
+        var page = await doc.getPage(i + 1);
         var content = await page.getTextContent();
         var rows = {};
         var order = [];
