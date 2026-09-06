@@ -75,5 +75,6 @@ jobs:
             git fetch origin main
             git pull --ff-only origin main
             git rev-parse --short HEAD
-            docker compose up -d --build
+            docker compose down --remove-orphans
+            docker compose up -d --build --remove-orphans
             docker image prune -f
