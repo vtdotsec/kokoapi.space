@@ -124,11 +124,22 @@
     });
   });
 
+  segButtons.forEach(function (b) {
+    var u = TOOL_URL[b.dataset.tool];
+    if (u && !b.querySelector(".seg-path")) {
+      var pathSpan = document.createElement("span");
+      pathSpan.className = "seg-path";
+      pathSpan.textContent = u;
+      b.appendChild(pathSpan);
+    }
+  });
+
   if (pdfSelect) {
     segButtons.forEach(function (b) {
       var opt = document.createElement("option");
       opt.value = b.dataset.tool;
-      opt.textContent = b.textContent.trim();
+      var labelNode = b.firstChild;
+      opt.textContent = (labelNode && labelNode.nodeType === 3 ? labelNode.textContent : b.dataset.tool).trim();
       pdfSelect.appendChild(opt);
     });
     pdfSelect.addEventListener("change", function () {
@@ -1240,21 +1251,33 @@
         file.name + " — " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s");
 
       var chunks = [];
+      var failed = 0;
       for (var i = 0; i < pdf.numPages; i++) {
-        // pdf.js page numbers are 1-based; 0-based access throws "Invalid page request.".
-        var content = await pdf.getPage(i + 1).getTextContent();
-        var line = [];
-        for (var k = 0; k < content.items.length; k++) {
-          var it = content.items[k];
-          if (it && typeof it.str === "string") line.push(it.str);
-        }
-        chunks.push(line.join("\n"));
         setStatus("extract-status", "Read page " + (i + 1) + " of " + pdf.numPages + ".");
+        try {
+          // pdf.js page numbers are 1-based; 0-based access throws "Invalid page request.".
+          var content = await pdf.getPage(i + 1).getTextContent();
+          var line = [];
+          for (var k = 0; k < content.items.length; k++) {
+            var it = content.items[k];
+            if (it && typeof it.str === "string") line.push(it.str);
+          }
+          chunks.push(line.join("\n"));
+        } catch (err) {
+          failed++;
+          chunks.push("");
+        }
       }
-      var text = chunks.join("\n\n");
+      var text = chunks.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
       exOut.value = text;
-      setStatus("extract-status", "Extracted " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + ", " + text.length + " characters.");
-      exCanRun();
+      if (text) exCanRun();
+      if (!text) {
+        setStatus("extract-status", "No selectable text found \u2014 this PDF may be a scan (image) without a text layer.", true);
+      } else if (failed > 0) {
+        setStatus("extract-status", "Extracted " + (pdf.numPages - failed) + " of " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + (failed === 1 ? " (1 page could not be read)." : " (" + failed + " pages could not be read)."), false);
+      } else {
+        setStatus("extract-status", "Extracted " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + " \u2014 " + text.length + " characters.");
+      }
     } catch (err) {
       setStatus("extract-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF.', true);
     }
