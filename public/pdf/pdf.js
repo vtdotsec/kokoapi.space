@@ -88,12 +88,12 @@
   /* Tool switching                                                    */
   /* ================================================================ */
 
-  var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress", "watermark", "pagenum", "unlock", "extract", "reorder"];
+  var TOOLS = ["merge", "split", "organize", "imgs2pdf", "pdf2img", "compress", "watermark", "pagenum", "extract", "reorder"];
   var segButtons = Array.prototype.slice.call(document.querySelectorAll(".seg-btn"));
   var pdfSelect = document.querySelector(".pdf-side .side-select");
 
   // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
-  var TOOL_URL = { merge: "/pdf/merge/", compress: "/pdf/compress/", split: "/pdf/split/", reorder: "/pdf/reorder/", organize: "/pdf/rotate/", pagenum: "/pdf/page-numbers/", watermark: "/pdf/watermark/", unlock: "/pdf/unlock/", extract: "/pdf/extract-text/", imgs2pdf: "/pdf/images-to-pdf/", pdf2img: "/pdf/pdf-to-images/" };
+  var TOOL_URL = { merge: "/pdf/merge/", compress: "/pdf/compress/", split: "/pdf/split/", reorder: "/pdf/reorder/", organize: "/pdf/rotate/", pagenum: "/pdf/page-numbers/", watermark: "/pdf/watermark/", extract: "/pdf/extract-text/", imgs2pdf: "/pdf/images-to-pdf/", pdf2img: "/pdf/pdf-to-images/" };
   function toolByUrl() {
     var segs = location.pathname.split("/").filter(Boolean);
     if (segs.length < 2) return "";
@@ -937,26 +937,48 @@
 
   compressRun.addEventListener("click", async function () {
     if (!cstate) return;
-    markBusy(compressRun, true, "Rendering…");
+    markBusy(compressRun, true, "Optimizing…");
     setStatus("compress-status", "");
     try {
       await loadScript(PDFLIB_URL);
       PDFLib = window.PDFLib;
-      var quality = Number($("compress-quality").value) / 100;
-      var scale = Number($("compress-scale").value);
-      var out = await PDFLib.PDFDocument.create();
-      for (var i = 0; i < cstate.doc.numPages; i++) {
-        var canvas = await renderPdfCanvas(cstate.doc, i + 1, scale);
-        var blob = await canvasToBlob(canvas, "image/jpeg", quality);
-        var jpeg = new Uint8Array(await blob.arrayBuffer());
-        var img = await out.embedJpg(jpeg);
-        var pw = canvas.width / scale;
-        var ph = canvas.height / scale;
-        var page = out.addPage([pw, ph]);
-        page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
-        setStatus("compress-status", "Rendered page " + (i + 1) + " of " + cstate.doc.numPages + ".");
+      var src = await PDFLib.PDFDocument.load(cstate.bytes, { ignoreEncryption: true });
+      if (src.isEncrypted) throw new Error("This PDF is password-protected and cannot be processed.");
+
+      // 1) Lossless rebuild: drops unused objects and re-saves streams. Best result
+      //    for text/vector PDFs and keeps text selectable.
+      var copy = await PDFLib.PDFDocument.create();
+      var allIdx = [];
+      for (var p = 0; p < src.getPageCount(); p++) allIdx.push(p);
+      var copied = await copy.copyPages(src, allIdx);
+      copied.forEach(function (pg) { copy.addPage(pg); });
+      var result = await copy.save();
+
+      // 2) If lossless cannot shrink the file (image-heavy scans), rasterize pages
+      //    to JPEG at the chosen quality/resolution and keep the smaller result.
+      if (result.length >= cstate.bytes.length) {
+        var quality = Number($("compress-quality").value) / 100;
+        var scale = Number($("compress-scale").value);
+        var out = await PDFLib.PDFDocument.create();
+        for (var i = 0; i < cstate.doc.numPages; i++) {
+          var canvas = await renderPdfCanvas(cstate.doc, i + 1, scale);
+          var blob = await canvasToBlob(canvas, "image/jpeg", quality);
+          var jpeg = new Uint8Array(await blob.arrayBuffer());
+          var img = await out.embedJpg(jpeg);
+          var pw = canvas.width / scale;
+          var ph = canvas.height / scale;
+          var page = out.addPage([pw, ph]);
+          page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
+          setStatus("compress-status", "Rendering page " + (i + 1) + " of " + cstate.doc.numPages + "…");
+        }
+        var imgBytes = await out.save();
+        if (imgBytes.length < result.length) result = imgBytes;
       }
-      var result = await out.save();
+
+      if (result.length >= cstate.bytes.length) {
+        setStatus("compress-status", "This PDF is already well compressed — rebuilding it would not make it smaller.", true);
+        return;
+      }
       var base = cleanName(baseName(cstate.name));
       download(new Blob([result], { type: "application/pdf" }), base + "-compressed.pdf");
       setStatus("compress-status", "Original " + readableBytes(cstate.bytes.length) + " → compressed " + readableBytes(result.length) + ".");
@@ -998,7 +1020,7 @@
       var bytes = await bytesOf(file);
       var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       if (doc.isEncrypted) {
-        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+        throw new Error("This PDF is password-protected and cannot be processed.");
       }
       wmState = { bytes: bytes, name: file.name, pages: doc.getPageCount() };
       $("watermark-info").textContent =
@@ -1053,7 +1075,7 @@
       PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(wmState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
-        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+        throw new Error("This PDF is password-protected and cannot be processed.");
       }
       var font = await src.embedFont(PDFLib.StandardFonts.HelveticaBold);
       var text = String($("watermark-text").value || "").trim();
@@ -1116,7 +1138,7 @@
       var bytes = await bytesOf(file);
       var doc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       if (doc.isEncrypted) {
-        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+        throw new Error("This PDF is password-protected and cannot be processed.");
       }
       pnState = { bytes: bytes, name: file.name, pages: doc.getPageCount() };
       $("pagenum-info").textContent =
@@ -1137,7 +1159,7 @@
       PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(pnState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
-        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+        throw new Error("This PDF is password-protected and cannot be processed.");
       }
       var font = await src.embedFont(PDFLib.StandardFonts.Helvetica);
       var template = String($("pagenum-template").value || "");
@@ -1177,102 +1199,6 @@
       setStatus("pagenum-status", err && err.message ? err.message : "Numbering failed.", true);
     } finally {
       markBusy(pnRun, false);
-    }
-  });
-
-  /* ================================================================ */
-  /* Protect / Unlock (password removal by raster re-render)           */
-  /* ================================================================ */
-
-  var ulState = null; // { bytes, name }
-  var ulRun = $("unlock-run");
-  ulRun.dataset.label = "Unlock and download";
-  var UNLOCK_SCALE = 1.5;
-
-  function ulCanRun() {
-    ulRun.disabled = !ulState;
-  }
-
-  $("unlock-file").addEventListener("change", async function (e) {
-    var file = e.target.files && e.target.files[0];
-    if (!file) return;
-    e.target.value = "";
-    ulState = null;
-    ulRun.disabled = true;
-    setStatus("unlock-status", "Reading…");
-    $("unlock-info").textContent = "";
-    $("unlock-note").hidden = true;
-    try {
-      await loadPdfjs();
-      pdfjsLib = window.pdfjsLib;
-      var bytes = await bytesOf(file);
-      ulState = { bytes: bytes, name: file.name };
-      var preview = null;
-      try {
-        preview = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
-        $("unlock-info").textContent =
-          file.name + " — " + preview.numPages + " page" + (preview.numPages === 1 ? "" : "s");
-        $("unlock-note").hidden = false;
-        setStatus("unlock-status", "");
-      } catch (err2) {
-        if (err2 && err2.name === "PasswordException") {
-          $("unlock-info").textContent = file.name + " — password protected";
-          $("unlock-note").hidden = false;
-          setStatus("unlock-status", "Enter the password below, then press Unlock.");
-        } else {
-          ulState = null;
-          throw err2;
-        }
-      }
-      if (preview) {
-        try { preview.destroy(); } catch (err3) {}
-      }
-      ulCanRun();
-    } catch (err) {
-      setStatus("unlock-status", err && err.message ? err.message : '"' + file.name + '" could not be read as a PDF (encrypted or corrupted).', true);
-    }
-  });
-
-  ulRun.addEventListener("click", async function () {
-    if (!ulState) return;
-    markBusy(ulRun, true, "Rendering pages…");
-    setStatus("unlock-status", "");
-    var pdf = null;
-    try {
-      await loadPdfjs();
-      pdfjsLib = window.pdfjsLib;
-      await loadScript(PDFLIB_URL);
-      PDFLib = window.PDFLib;
-      var password = String($("unlock-password").value || "");
-      var opts = { data: ulState.bytes.slice() };
-      if (password) opts.password = password;
-      pdf = await pdfjsLib.getDocument(opts).promise;
-      var out = await PDFLib.PDFDocument.create();
-      for (var i = 0; i < pdf.numPages; i++) {
-        var canvas = await renderPdfCanvas(pdf, i + 1, UNLOCK_SCALE);
-        var blob = await canvasToBlob(canvas, "image/jpeg", 0.92);
-        var jpeg = new Uint8Array(await blob.arrayBuffer());
-        var img = await out.embedJpg(jpeg);
-        var pw = canvas.width / UNLOCK_SCALE;
-        var ph = canvas.height / UNLOCK_SCALE;
-        var page = out.addPage([pw, ph]);
-        page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
-        setStatus("unlock-status", "Rendered page " + (i + 1) + " of " + pdf.numPages + ".");
-      }
-      var result = await out.save();
-      download(new Blob([result], { type: "application/pdf" }), cleanName(baseName(ulState.name)) + "-unlocked.pdf");
-      setStatus("unlock-status", "Downloaded " + pdf.numPages + " page" + (pdf.numPages === 1 ? "" : "s") + " without the password.");
-    } catch (err) {
-      if (err && err.name === "PasswordException") {
-        setStatus("unlock-status", "Wrong password — check it and try again.", true);
-      } else {
-        setStatus("unlock-status", err && err.message ? err.message : "Unlocking failed.", true);
-      }
-    } finally {
-      if (pdf) {
-        try { pdf.destroy(); } catch (err) {}
-      }
-      markBusy(ulRun, false);
     }
   });
 
@@ -1553,7 +1479,7 @@
         pdf = await task.promise;
       } catch (err) {
         if (err && err.name === "PasswordException") {
-          setStatus("reorder-status", "This PDF needs a password — remove it with the Protect / Unlock tool first.", true);
+          setStatus("reorder-status", "This PDF is password-protected and cannot be processed.", true);
           return;
         }
         throw err;
@@ -1589,7 +1515,7 @@
       PDFLib = window.PDFLib;
       var src = await PDFLib.PDFDocument.load(rrState.bytes, { ignoreEncryption: true });
       if (src.isEncrypted) {
-        throw new Error("This PDF is protected. Remove its password with the Protect / Unlock tool first.");
+        throw new Error("This PDF is password-protected and cannot be processed.");
       }
       var out = await PDFLib.PDFDocument.create();
       for (var i = 0; i < rrItems.length; i++) {
