@@ -652,6 +652,16 @@ main.wrap {
   color: var(--accent);
 }
 
+.pdf-side .seg-path {
+  display: block;
+  font-size: 0.68em;
+  font-weight: 400;
+  opacity: 0.62;
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
 .pdf-main {
   min-width: 0;
 }
@@ -676,6 +686,9 @@ main.wrap {
     width: auto;
     white-space: nowrap;
     flex: none;
+  }
+  .pdf-side .seg-path {
+    display: none;
   }
 }
 
