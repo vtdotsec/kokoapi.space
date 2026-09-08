@@ -1,30 +1,36 @@
-/* kokoapi.space — identity tokens (single design source, loaded last on every page).
-   Replaces the generic near-black + indigo SaaS scheme with a warm "workbench"
-   ink/paper palette and a single amber signal for action/active states. */
+/* kokoapi identity tokens v3 — neutral graphite + muted moss accent.
+   Only the file-drop and the primary action button may own a full 4-side box. */
 
 :root {
-  /* palette — warm ink & paper, amber signal */
-  --bg: #15120c;
-  --bg-elevated: #1d1a12;
-  --bg-muted: #272116;
-  --border: #38311f;
-  --border-strong: #524730;
-  --text: #efe5cf;
-  --text-secondary: #bfb298;
-  --text-muted: #988c71;
-  --accent: #dfa03c;
-  --accent-strong: #eeb75e;
-  --accent-soft: #3a2d12;
-  --accent-contrast: #1c1507;
-  --success: #a3cf94;
-  --success-soft: #20301a;
-  --warning: #dfa03c;
-  --warning-soft: #3a2d12;
-  --danger: #e67f66;
-  --danger-soft: #38201a;
-  --focus-ring: 0 0 0 2px rgb(223 160 60 / 0.45);
+  /* canonical palette (exact values) */
+  --bg: #14151A;
+  --bg-surface: #1C1D23;
+  --text-primary: #E7E4DC;
+  --text-secondary: #96918A;
+  --hairline: #2A2B31;
+  --accent: #6E8B74;
+  --accent-hover: #7FA084;
+  --accent-ink: #0F1410;
 
-  /* typography — Newsreader (editorial display) + IBM Plex (UI/data), self-hosted */
+  /* aliases consumed by existing page css */
+  --bg-elevated: #14151A;
+  --bg-muted: #14151A;
+  --border: #2A2B31;
+  --border-strong: #2A2B31;
+  --text: #E7E4DC;
+  --text-muted: #96918A;
+  --accent-strong: #7FA084;
+  --accent-soft: transparent;
+  --accent-contrast: #0F1410;
+  --success: #7FA084;
+  --success-soft: transparent;
+  --warning: #96918A;
+  --warning-soft: transparent;
+  --danger: #C2544E;
+  --danger-soft: transparent;
+  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
+
+  /* typography — untouched (Newsreader + IBM Plex, self-hosted in fonts.css) */
   --font-display: "Newsreader", Georgia, "Times New Roman", serif;
   --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -33,113 +39,45 @@
   --fs-body: 0.95rem;
   --fs-data: 0.8125rem;
 
-  /* structure — crisp, flat, hairline-first; cards no longer float */
-  --radius-sm: 2px;
-  --radius: 3px;
-  --radius-lg: 6px;
+  /* structure */
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
 }
 
 :root[data-theme="light"] {
-  --bg: #f3ede0;
-  --bg-elevated: #fbf7ed;
-  --bg-muted: #e9e1cf;
-  --border: #d6cbae;
-  --border-strong: #b7a87f;
-  --text: #201a0d;
-  --text-secondary: #5c523c;
-  --text-muted: #8d8164;
-  --accent: #96600c;
-  --accent-strong: #7a4d05;
-  --accent-soft: #f2e2c2;
-  --accent-contrast: #ffffff;
-  --success: #42713a;
-  --success-soft: #e0ecd7;
-  --warning: #96600c;
-  --warning-soft: #f2e2c2;
-  --danger: #a93f2c;
-  --danger-soft: #f6ddd6;
-  --focus-ring: 0 0 0 2px rgb(150 96 12 / 0.4);
+  --bg: #14151A;
+  --bg-surface: #1C1D23;
+  --text-primary: #E7E4DC;
+  --text-secondary: #96918A;
+  --hairline: #2A2B31;
+  --accent: #6E8B74;
+  --accent-hover: #7FA084;
+  --accent-ink: #0F1410;
+  --bg-elevated: #14151A;
+  --bg-muted: #14151A;
+  --border: #2A2B31;
+  --border-strong: #2A2B31;
+  --text: #E7E4DC;
+  --text-muted: #96918A;
+  --accent-strong: #7FA084;
+  --accent-soft: transparent;
+  --accent-contrast: #0F1410;
+  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
 }
 
-/* Brand: single colour, mono, crisp */
-.brand {
-  font-family: var(--font-mono);
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
-.brand .space {
-  color: inherit;
-}
-.brand .logo {
-  width: 1.3em;
-  height: 1.3em;
-}
-.brand .lg-cursor {
-  fill: var(--accent);
-}
+/* ---------- typographic voice (unchanged) ---------- */
+body { font-family: var(--font-ui); }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 650; line-height: 1.1; letter-spacing: -0.01em; }
+code, pre, kbd, samp { font-family: var(--font-mono); }
 
-/* Micro-labels: mono + sentence case, not uppercase template chrome */
-.footer-links h3,
-.tool-side-title,
-.cv-side-title,
-.pdf-side-title,
-.suite-side .suite-title,
-.home-stats dt,
-.recent-table th,
-.page-head .eyebrow,
-.card-cat,
-fieldset legend {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-}
+.brand { font-family: var(--font-mono); font-weight: 650; letter-spacing: -0.02em; }
+.brand .space { color: inherit; }
+.brand .lg-cursor { fill: currentColor; }
 
-/* Tool path captions stay mono */
-.seg-path {
-  font-family: var(--font-mono);
-}
-
-/* Flat, crisp controls & grouped surfaces */
-.btn,
-.seg-btn,
-.pdf-side .seg-btn,
-.tool-nav button,
-.cv-side-nav button,
-.file-drop,
-.text-input,
-.ta,
-.thumb,
-input[type="text"],
-textarea,
-select {
-  border-radius: 2px;
-  box-shadow: none;
-}
-
-/* Emphasise the one action that produces a file */
-.btn:not(.ghost) {
-  font-weight: 600;
-}
-
-/* === identity: editorial serif display + plex UI, flat hierarchy === */
-body {
-  font-family: var(--font-ui);
-}
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  font-weight: 650;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-}
-code, pre, kbd, samp {
-  font-family: var(--font-mono);
-}
-
-/* micro-labels & data: mono, sentence case, low weight */
 .footer-links h3,
 .tool-side-title,
 .cv-side-title,
@@ -158,16 +96,31 @@ fieldset legend {
   letter-spacing: 0;
 }
 
-/* notes/status are text — no box */
-.note, .status, .help, .alert, .banner {
+/* ---------- structure: only dropzone + primary button own a box ---------- */
+
+/* notice banner: text on --bg with a thin accent bar on the left */
+.note,
+.banner,
+.alert,
+.callout,
+.status,
+.pdf-layout .note,
+.tool-layout .note,
+.cv-layout .note,
+body.embed main.wrap > .note {
   background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.9rem;
+  color: var(--text-primary);
 }
 
-/* sidebars: bare columns; active tool is a text + left marker, not a box */
-.pdf-side, .tool-side, .cv-side {
+/* sidebars: bare columns, no panel box */
+.pdf-side,
+.tool-side,
+.cv-side {
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -175,39 +128,106 @@ fieldset legend {
 .pdf-side .seg-btn,
 .tool-nav button,
 .cv-side-nav button {
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
   border-radius: 0;
   box-shadow: none;
-  border-left: 2px solid transparent;
+  color: var(--text-primary);
+}
+.pdf-side .seg-btn:hover,
+.tool-nav button:hover,
+.cv-side-nav button:hover {
+  background: transparent;
+  color: var(--text-primary);
 }
 .pdf-side .seg-btn[aria-pressed="true"],
 .tool-nav button[aria-pressed="true"],
+.cv-side-nav button[aria-pressed="true"],
+.tool-nav button.active,
 .cv-side-nav button.active {
   background: transparent;
   color: var(--accent);
   font-weight: 600;
-  border-left-color: var(--accent);
+  border-left: 2px solid var(--accent);
 }
 
-/* grouped/listed content: hairlines, not floating cards */
+/* FAQ accordion: hairline divider only, never a closed box */
+details,
+.seo details,
+details.seo {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* the two sanctioned boxes */
+.file-drop {
+  background: var(--bg-surface);
+  border: 1px dashed var(--hairline);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--text-secondary);
+}
+.btn {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn.ghost,
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  border-radius: 0;
+}
+.btn.ghost:hover,
+.btn-ghost:hover {
+  background: transparent;
+  color: var(--accent-hover);
+}
+
+/* inputs stay fields: hairline, square */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+textarea,
+select,
+.text-input,
+.ta {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-primary);
+}
+
+/* lists: hairline rows, no floating cards */
 .thumb,
 .file-row,
-details {
+.file-list > li,
+.tool-list > li {
   background: transparent;
+  border: 0;
   border-radius: 0;
   box-shadow: none;
 }
-details {
-  border-bottom: 1px solid var(--border);
-}
 
-/* the upload area is the one true "work surface": a calm dashed box */
-.file-drop {
-  background: transparent;
-  border-style: dashed;
-  box-shadow: none;
-}
+/* links: accent only, no box */
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
 
-/* keep the real action boxed */
-.btn {
-  box-shadow: none;
+/* focus */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }

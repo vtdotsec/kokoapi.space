@@ -6,29 +6,29 @@
 
 :root {
   /* Palette — neutral base, one indigo accent. No gradients. */
-  --bg: #f3ede0;
-  --bg-elevated: #fbf7ed;
-  --bg-muted: #e9e1cf;
-  --border: #d6cbae;
-  --border-strong: #b7a87f;
+  --bg: #14151A;
+  --bg-elevated: #14151A;
+  --bg-muted: #14151A;
+  --border: #2A2B31;
+  --border-strong: #2A2B31;
 
-  --text: #201a0d;
-  --text-secondary: #5c523c;
-  --text-muted: #8d8164;
+  --text: #E7E4DC;
+  --text-secondary: #96918A;
+  --text-muted: #96918A;
 
-  --accent: #96600c;
-  --accent-strong: #7a4d05;
-  --accent-soft: #f2e2c2;
-  --accent-contrast: #ffffff;
+  --accent: #6E8B74;
+  --accent-strong: #7FA084;
+  --accent-soft: transparent;
+  --accent-contrast: #0F1410;
 
-  --success: #42713a;
-  --success-soft: #e0ecd7;
-  --warning: #96600c;
-  --warning-soft: #f2e2c2;
-  --danger: #a93f2c;
-  --danger-soft: #f6ddd6;
+  --success: #7FA084;
+  --success-soft: transparent;
+  --warning: #6E8B74;
+  --warning-soft: transparent;
+  --danger: #C2544E;
+  --danger-soft: transparent;
 
-  --focus-ring: 0 0 0 2px rgb(150 96 12 / 0.4);
+  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.4);
 
   /* Radii & shadows — flat, hairline-first */
   --radius-sm: 2px;
@@ -58,29 +58,29 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #15120c;
-    --bg-elevated: #1d1a12;
-    --bg-muted: #272116;
-    --border: #38311f;
-    --border-strong: #524730;
+    --bg: #14151A;
+    --bg-elevated: #14151A;
+    --bg-muted: #14151A;
+    --border: #2A2B31;
+    --border-strong: #2A2B31;
 
-    --text: #efe5cf;
-    --text-secondary: #bfb298;
-    --text-muted: #988c71;
+    --text: #E7E4DC;
+    --text-secondary: #96918A;
+    --text-muted: #96918A;
 
-    --accent: #dfa03c;
-    --accent-strong: #eeb75e;
-    --accent-soft: #3a2d12;
-    --accent-contrast: #1c1507;
+    --accent: #6E8B74;
+    --accent-strong: #7FA084;
+    --accent-soft: transparent;
+    --accent-contrast: #0F1410;
 
-    --success: #a3cf94;
-    --success-soft: #20301a;
-    --warning: #dfa03c;
-    --warning-soft: #3a2d12;
-    --danger: #e67f66;
-    --danger-soft: #38201a;
+    --success: #7FA084;
+    --success-soft: transparent;
+    --warning: #6E8B74;
+    --warning-soft: transparent;
+    --danger: #C2544E;
+    --danger-soft: transparent;
 
-    --focus-ring: 0 0 0 2px rgb(223 160 60 / 0.45);
+    --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
 
     --shadow-sm: none;
     --shadow-md: none;
@@ -1445,19 +1445,19 @@ h4 {
 }
 
 :root[data-theme="light"] {
-  --bg: #f3ede0;
-  --bg-elevated: #fbf7ed;
-  --bg-muted: #e9e1cf;
-  --border: #d6cbae;
-  --border-strong: #b7a87f;
-  --text: #201a0d;
-  --text-secondary: #5c523c;
-  --text-muted: #8d8164;
-  --accent: #96600c;
-  --accent-strong: #7a4d05;
-  --accent-soft: #f2e2c2;
-  --accent-contrast: #ffffff;
-  --focus-ring: 0 0 0 2px rgb(150 96 12 / 0.4);
+  --bg: #14151A;
+  --bg-elevated: #14151A;
+  --bg-muted: #14151A;
+  --border: #2A2B31;
+  --border-strong: #2A2B31;
+  --text: #E7E4DC;
+  --text-secondary: #96918A;
+  --text-muted: #96918A;
+  --accent: #6E8B74;
+  --accent-strong: #7FA084;
+  --accent-soft: transparent;
+  --accent-contrast: #0F1410;
+  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.4);
   color-scheme: light;
 }
 
@@ -1667,4 +1667,138 @@ details {
 /* keep the real action boxed */
 .btn {
   box-shadow: none;
+}
+
+/* notice banner: text on --bg with a thin accent bar on the left */
+.note,
+.banner,
+.alert,
+.callout,
+.status,
+.pdf-layout .note,
+.tool-layout .note,
+.cv-layout .note,
+body.embed main.wrap > .note {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.9rem;
+  color: var(--text-primary);
+}
+
+/* sidebars: bare columns, no panel box */
+.pdf-side,
+.tool-side,
+.cv-side {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.pdf-side .seg-btn,
+.tool-nav button,
+.cv-side-nav button {
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-primary);
+}
+.pdf-side .seg-btn:hover,
+.tool-nav button:hover,
+.cv-side-nav button:hover {
+  background: transparent;
+  color: var(--text-primary);
+}
+.pdf-side .seg-btn[aria-pressed="true"],
+.tool-nav button[aria-pressed="true"],
+.cv-side-nav button[aria-pressed="true"],
+.tool-nav button.active,
+.cv-side-nav button.active {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  border-left: 2px solid var(--accent);
+}
+
+/* FAQ accordion: hairline divider only, never a closed box */
+details,
+.seo details,
+details.seo {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* the two sanctioned boxes */
+.file-drop {
+  background: var(--bg-surface);
+  border: 1px dashed var(--hairline);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--text-secondary);
+}
+.btn {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn.ghost,
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  border-radius: 0;
+}
+.btn.ghost:hover,
+.btn-ghost:hover {
+  background: transparent;
+  color: var(--accent-hover);
+}
+
+/* inputs stay fields: hairline, square */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+textarea,
+select,
+.text-input,
+.ta {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-primary);
+}
+
+/* lists: hairline rows, no floating cards */
+.thumb,
+.file-row,
+.file-list > li,
+.tool-list > li {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* links: accent only, no box */
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+
+/* focus */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
