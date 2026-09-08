@@ -6,29 +6,10 @@
 
 :root {
   /* Palette — neutral base, one indigo accent. No gradients. */
-  --bg: #F4F4F6;
-  --bg-elevated: #F4F4F6;
-  --bg-muted: #F4F4F6;
-  --border: #D5D6DB;
-  --border-strong: #D5D6DB;
 
-  --text: #1F2024;
-  --text-secondary: #5E6068;
-  --text-muted: #5E6068;
 
-  --accent: #4F7058;
-  --accent-strong: #5C8265;
-  --accent-soft: transparent;
-  --accent-contrast: #0F1410;
 
-  --success: #5C8265;
-  --success-soft: transparent;
-  --warning: #4F7058;
-  --warning-soft: transparent;
-  --danger: #B03A2F;
-  --danger-soft: transparent;
 
-  --focus-ring: 0 0 0 2px rgb(79 112 88 / 0.4);
 
   /* Radii & shadows — flat, hairline-first */
   --radius-sm: 2px;
@@ -58,29 +39,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14151A;
-    --bg-elevated: #14151A;
-    --bg-muted: #14151A;
-    --border: #2A2B31;
-    --border-strong: #2A2B31;
 
-    --text: #E7E4DC;
-    --text-secondary: #96918A;
-    --text-muted: #96918A;
 
-    --accent: #6E8B74;
-    --accent-strong: #7FA084;
-    --accent-soft: transparent;
-    --accent-contrast: #0F1410;
 
-    --success: #7FA084;
-    --success-soft: transparent;
-    --warning: #6E8B74;
-    --warning-soft: transparent;
-    --danger: #C2544E;
-    --danger-soft: transparent;
 
-    --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
 
     --shadow-sm: none;
     --shadow-md: none;
@@ -1428,42 +1390,10 @@ h4 {
 
 /* ---------- Theme (default dark; light via <html data-theme="light">) ---- */
 :root {
-  --bg: #0e0f13;
-  --bg-elevated: #16171d;
-  --bg-muted: #1e2027;
-  --border: #2a2c35;
-  --border-strong: #3b3e49;
-  --text: #ececf2;
-  --text-secondary: #b7b9c4;
-  --text-muted: #878b98;
-  --accent: #818cf8;
-  --accent-strong: #a5b0fb;
-  --accent-soft: #22284a;
-  --accent-contrast: #0e0f13;
-  --focus-ring: 0 0 0 3px rgb(129 140 248 / 0.4);
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --bg: #F4F4F6;
-  --bg-elevated: #FFFFFF;
-  --bg-muted: #ECECEF;
-  --border: #D5D6DB;
-  --border-strong: #B9BBC3;
-  --text: #1F2024;
-  --text-secondary: #5E6068;
-  --text-muted: #5E6068;
-  --accent: #4F7058;
-  --accent-strong: #5C8265;
-  --accent-soft: transparent;
-  --accent-contrast: #0F1410;
-  --success: #4F7058;
-  --success-soft: transparent;
-  --warning: #7A7C84;
-  --warning-soft: transparent;
-  --danger: #B03A2F;
-  --danger-soft: transparent;
-  --focus-ring: 0 0 0 2px rgb(79 112 88 / 0.4);
   color-scheme: light;
 
 /* ---------- Tool landing pages (focused sub-routes) ----------------- */

@@ -73,6 +73,7 @@
   --danger: #B03A2F;
   --danger-soft: transparent;
   --focus-ring: 0 0 0 2px rgb(79 112 88 / 0.4);
+  color-scheme: light;
 }
 
 /* ---------- typographic voice (unchanged) ---------- */
@@ -236,4 +237,34 @@ a:hover { color: var(--accent-hover); }
 :focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* ---------- sidebar: function emphasis (typography/spacing only, no boxes) ---------- */
+.pdf-side .seg-btn,
+.tool-nav button,
+.cv-side-nav button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  line-height: 1.3;
+  font-weight: 550;
+}
+.pdf-side .seg-btn .seg-path {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 2px;
+  color: var(--text-secondary);
+}
+.pdf-side .seg-btn:not([aria-pressed="true"]):hover,
+.tool-nav button:not([aria-pressed="true"]):hover,
+.cv-side-nav button:not(.active):not([aria-pressed="true"]):hover {
+  background: transparent;
+  color: var(--accent);
+}
+.pdf-side .seg-btn[aria-pressed="true"] .seg-path {
+  color: var(--accent);
 }
