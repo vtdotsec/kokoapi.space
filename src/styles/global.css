@@ -43,10 +43,9 @@
   --header-h: 56px;
 
   /* Typography */
-  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas,
-    monospace;
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --fs-xs: 0.75rem;
   --fs-sm: 0.875rem;
   --fs-base: 1rem;
@@ -1581,4 +1580,91 @@ h4 {
 
 .tool-landing .related a {
   font-weight: 600;
+}
+
+/* === identity: editorial serif display + plex UI, flat hierarchy === */
+body {
+  font-family: var(--font-ui);
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+/* micro-labels & data: mono, sentence case, low weight */
+.footer-links h3,
+.tool-side-title,
+.cv-side-title,
+.pdf-side-title,
+.suite-side .suite-title,
+.home-stats dt,
+.recent-table th,
+.page-head .eyebrow,
+.card-cat,
+.seg-path,
+.size-note,
+fieldset legend {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* notes/status are text — no box */
+.note, .status, .help, .alert, .banner {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* sidebars: bare columns; active tool is a text + left marker, not a box */
+.pdf-side, .tool-side, .cv-side {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.pdf-side .seg-btn,
+.tool-nav button,
+.cv-side-nav button {
+  border-radius: 0;
+  box-shadow: none;
+  border-left: 2px solid transparent;
+}
+.pdf-side .seg-btn[aria-pressed="true"],
+.tool-nav button[aria-pressed="true"],
+.cv-side-nav button.active {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+  border-left-color: var(--accent);
+}
+
+/* grouped/listed content: hairlines, not floating cards */
+.thumb,
+.file-row,
+details {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+details {
+  border-bottom: 1px solid var(--border);
+}
+
+/* the upload area is the one true "work surface": a calm dashed box */
+.file-drop {
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* keep the real action boxed */
+.btn {
+  box-shadow: none;
 }
