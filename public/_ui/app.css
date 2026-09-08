@@ -205,8 +205,8 @@ main.wrap {
 .tool-side-title {
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin: 0.25rem 0.5rem 0.5rem;
 }
@@ -380,8 +380,8 @@ main.wrap {
 .suite-side .suite-title {
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   padding: 0.3rem 0.55rem 0.5rem;
 }
@@ -518,8 +518,8 @@ main.wrap {
 .footer-links h3 {
   font-size: 0.875rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   margin-bottom: 0.6rem;
 }
 

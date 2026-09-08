@@ -95,8 +95,8 @@ main.wrap { padding-block: 2.5rem 3rem; }
 .cat-title {
   font-size: 0.78rem;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
@@ -170,8 +170,8 @@ main.wrap { padding-block: 2.5rem 3rem; }
 .options legend {
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin-bottom: 0.4rem;
 }
@@ -233,8 +233,8 @@ main.wrap { padding-block: 2.5rem 3rem; }
   display: block;
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin-bottom: 0.25rem;
 }
@@ -392,8 +392,8 @@ main.wrap { padding-block: 2.5rem 3rem; }
 .cv-side-title {
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin: 0.2rem 0.4rem 0.5rem;
 }

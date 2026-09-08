@@ -1,0 +1,120 @@
+/* kokoapi.space — identity tokens (single design source, loaded last on every page).
+   Replaces the generic near-black + indigo SaaS scheme with a warm "workbench"
+   ink/paper palette and a single amber signal for action/active states. */
+
+:root {
+  /* palette — warm ink & paper, amber signal */
+  --bg: #15120c;
+  --bg-elevated: #1d1a12;
+  --bg-muted: #272116;
+  --border: #38311f;
+  --border-strong: #524730;
+  --text: #efe5cf;
+  --text-secondary: #bfb298;
+  --text-muted: #988c71;
+  --accent: #dfa03c;
+  --accent-strong: #eeb75e;
+  --accent-soft: #3a2d12;
+  --accent-contrast: #1c1507;
+  --success: #a3cf94;
+  --success-soft: #20301a;
+  --warning: #dfa03c;
+  --warning-soft: #3a2d12;
+  --danger: #e67f66;
+  --danger-soft: #38201a;
+  --focus-ring: 0 0 0 2px rgb(223 160 60 / 0.45);
+
+  /* typography — system mono as the "voice", no web fonts downloaded */
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* structure — crisp, flat, hairline-first; cards no longer float */
+  --radius-sm: 2px;
+  --radius: 3px;
+  --radius-lg: 6px;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+:root[data-theme="light"] {
+  --bg: #f3ede0;
+  --bg-elevated: #fbf7ed;
+  --bg-muted: #e9e1cf;
+  --border: #d6cbae;
+  --border-strong: #b7a87f;
+  --text: #201a0d;
+  --text-secondary: #5c523c;
+  --text-muted: #8d8164;
+  --accent: #96600c;
+  --accent-strong: #7a4d05;
+  --accent-soft: #f2e2c2;
+  --accent-contrast: #ffffff;
+  --success: #42713a;
+  --success-soft: #e0ecd7;
+  --warning: #96600c;
+  --warning-soft: #f2e2c2;
+  --danger: #a93f2c;
+  --danger-soft: #f6ddd6;
+  --focus-ring: 0 0 0 2px rgb(150 96 12 / 0.4);
+}
+
+/* Brand: single colour, mono, crisp */
+.brand {
+  font-family: var(--font-mono);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.brand .space {
+  color: inherit;
+}
+.brand .logo {
+  width: 1.3em;
+  height: 1.3em;
+}
+.brand .lg-cursor {
+  fill: var(--accent);
+}
+
+/* Micro-labels: mono + sentence case, not uppercase template chrome */
+.footer-links h3,
+.tool-side-title,
+.cv-side-title,
+.pdf-side-title,
+.suite-side .suite-title,
+.home-stats dt,
+.recent-table th,
+.page-head .eyebrow,
+.card-cat,
+fieldset legend {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Tool path captions stay mono */
+.seg-path {
+  font-family: var(--font-mono);
+}
+
+/* Flat, crisp controls & grouped surfaces */
+.btn,
+.seg-btn,
+.pdf-side .seg-btn,
+.tool-nav button,
+.cv-side-nav button,
+.file-drop,
+.text-input,
+.ta,
+.thumb,
+input[type="text"],
+textarea,
+select {
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+/* Emphasise the one action that produces a file */
+.btn:not(.ghost) {
+  font-weight: 600;
+}

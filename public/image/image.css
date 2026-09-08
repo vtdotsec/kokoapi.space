@@ -318,8 +318,8 @@ main.wrap {
 .options legend {
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
@@ -586,8 +586,8 @@ main.wrap {
 #tool-qrcode .field-label {
   font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--text-muted);
   margin-top: 0.6rem;
 }

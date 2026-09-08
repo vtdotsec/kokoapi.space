@@ -52,6 +52,7 @@ const imageUrl = new URL(image, site).toString();
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/_ui/app.css" />
+    <link rel="stylesheet" href="/_ui/tokens.css" />
     {styles.map((href) => <link rel="stylesheet" href={href} />)}
     <script is:inline src="/_ui/ui.js" defer></script>
     {scripts.map((src) => <script is:inline src={src} defer></script>)}
