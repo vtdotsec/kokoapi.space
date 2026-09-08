@@ -49,24 +49,30 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #14151A;
-  --bg-surface: #1C1D23;
-  --text-primary: #E7E4DC;
-  --text-secondary: #96918A;
-  --hairline: #2A2B31;
-  --accent: #6E8B74;
-  --accent-hover: #7FA084;
+  --bg: #F4F4F6;
+  --bg-surface: #FFFFFF;
+  --text-primary: #1F2024;
+  --text-secondary: #5E6068;
+  --hairline: #D5D6DB;
+  --accent: #4F7058;
+  --accent-hover: #5C8265;
   --accent-ink: #0F1410;
-  --bg-elevated: #14151A;
-  --bg-muted: #14151A;
-  --border: #2A2B31;
-  --border-strong: #2A2B31;
-  --text: #E7E4DC;
-  --text-muted: #96918A;
-  --accent-strong: #7FA084;
+  --bg-elevated: #FFFFFF;
+  --bg-muted: #ECECEF;
+  --border: #D5D6DB;
+  --border-strong: #B9BBC3;
+  --text: #1F2024;
+  --text-muted: #5E6068;
+  --accent-strong: #5C8265;
   --accent-soft: transparent;
   --accent-contrast: #0F1410;
-  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
+  --success: #4F7058;
+  --success-soft: transparent;
+  --warning: #7A7C84;
+  --warning-soft: transparent;
+  --danger: #B03A2F;
+  --danger-soft: transparent;
+  --focus-ring: 0 0 0 2px rgb(79 112 88 / 0.4);
 }
 
 /* ---------- typographic voice (unchanged) ---------- */
