@@ -1,9 +1,26 @@
 # kokoapi.space
 
-kokoapi.space is a small collection of open-source web tools. Every tool runs in the
-browser: documents, images, QR codes and short encrypted notes stay on the user's device
-unless the tool says otherwise. There are no accounts, no telemetry, no ads and no
-cookies. Source: <https://github.com/vtdotsec/kokoapi.space>.
+**Live site:** https://kokoapi.space
+**Source code:** https://github.com/vtdotsec/kokoapi.space
+
+kokoapi.space is a small collection of open-source web tools. Every tool runs in the browser: documents, images, QR codes and short encrypted notes stay on the user's device unless the tool says otherwise. There are no accounts, no telemetry, no ads and no cookies.
+
+## Project background
+
+The application code was generated with AI assistance. This is a non-profit personal project built not only to provide free, open-source web tools, but also to serve as a practical DevOps/SRE learning environment. The goal is to design, deploy and operate a realistic production-like infrastructure, including cloud hosting, containerized services, reverse proxy, domain integration and automated CI/CD.
+
+
+**My main contribution was the infrastructure and deployment setup**, including the OCI virtual machine, Docker Compose, Caddy, Cloudflare and GitHub Actions CI/CD.
+
+## Infrastructure
+
+* **Oracle Cloud Infrastructure (OCI):** Always Free Linux VM with 2 OCPUs and 12 GB RAM, hosting the production services.
+* **Docker Compose:** containerized deployment and service orchestration.
+* **Caddy:** reverse proxy and public-facing web entry point.
+* **Cloudflare:** domain and DNS integration.
+* **GitHub Actions:** automated CI/CD pipeline triggered by pushes to `main`, with build checks and deployment to the production VM.
+* **Linux:** host configuration and operation of the self-hosted environment.
+
 
 ## Tools
 
