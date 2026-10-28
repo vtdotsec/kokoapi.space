@@ -1,6 +1,6 @@
 # kokoapi.space
 
-**Live site:** https://kokoapi.space
+**Live site:** https://tools.kokoapi.space
 **Source code:** https://github.com/vtdotsec/kokoapi.space
 
 kokoapi.space is a small collection of open-source web tools. Every tool runs in the browser: documents, images, QR codes and short encrypted notes stay on the user's device unless the tool says otherwise. There are no accounts, no telemetry, no ads and no cookies.

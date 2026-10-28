@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kokoapi.space/sitemap-index.xml
+Sitemap: https://tools.kokoapi.space/sitemap-index.xml
