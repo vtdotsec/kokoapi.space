@@ -27,7 +27,7 @@ const {
   scripts = [],
 } = Astro.props;
 
-const site = new URL(Astro.site?.toString() ?? "https://kokoapi.space/");
+const site = new URL(Astro.site?.toString() ?? "https://tools.kokoapi.space/");
 const pageUrl = new URL(Astro.url.pathname, site);
 if (!pageUrl.pathname.endsWith("/")) pageUrl.pathname += "/";
 const canonical = pageUrl.toString();

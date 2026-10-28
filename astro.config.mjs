@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://kokoapi.space",
+  site: "https://tools.kokoapi.space",
   output: "static",
   trailingSlash: "ignore",
   // Keep CSS/JS as external hashed files so a strict
@@ -16,10 +16,10 @@ export default defineConfig({
       // The tool apps under public/ are not Astro routes, so list them here.
       // /secret/ is proxied by nginx to the Node service at runtime.
       customPages: [
-        "https://kokoapi.space/image/",
-        "https://kokoapi.space/pdf/",
-        "https://kokoapi.space/convert/",
-        "https://kokoapi.space/secret/",
+        "https://tools.kokoapi.space/image/",
+        "https://tools.kokoapi.space/pdf/",
+        "https://tools.kokoapi.space/convert/",
+        "https://tools.kokoapi.space/secret/",
       ],
       // The 404 page is an error document, not an indexable URL.
       filter: (page) => !page.includes("/404"),
