@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://repasses.kokoapi.space/sitemap-index.xml

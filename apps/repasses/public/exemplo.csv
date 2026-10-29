@@ -1,0 +1,6 @@
+data,consignante,item,status,valor_bruto,desconto,comissao,id_venda
+2026-10-01,Ateliê Aurora,Vaso azul,Vendido,"R$ 120,00","R$ 0,00",30%,V-001
+2026-10-02,Ateliê Aurora,Prato artesanal,Vendido,"R$ 85,50","R$ 5,50",,V-002
+2026-10-03,Costura da Ana,Bolsa de lona,Vendido,"R$ 160,00","R$ 10,00",25%,V-003
+2026-10-04,Costura da Ana,Carteira pequena,Devolvido,"R$ 55,00","R$ 0,00",,V-004
+2026-10-05,Ateliê Aurora,Caneca branca,Não vendido,"R$ 48,00","R$ 0,00",,V-005

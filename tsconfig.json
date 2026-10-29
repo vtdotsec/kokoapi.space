@@ -1,5 +1,5 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules", "public", "secret", "e2e"]
+  "exclude": ["dist", "node_modules", "public", "secret", "e2e", "apps/repasses"]
 }

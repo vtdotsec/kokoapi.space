@@ -13,6 +13,7 @@ A small, free, open-source suite for working with PDFs, images and common file f
 | `/pdf/` | PDF tools | Merge, split, reorder, rotate, add page numbers or watermarks, compress, protect/unlock, extract text and convert images to/from PDF. |
 | `/convert/` | File converter | Convert Markdown/HTML/PDF, images, JSON/CSV/YAML/XML; create and extract ZIP, TAR and GZIP archives. |
 | `/secret/` | Secret Sender | Share a note or file up to 10 MB through an expiring or one-read link. The browser encrypts content with AES-GCM; the server temporarily stores ciphertext. The key stays in the URL fragment. |
+| `https://repasses.kokoapi.space` | Repasses | Calculate consignor commissions and payouts from a CSV; review invalid rows and possible duplicates; export consolidated and per-supplier reports. CSV processing stays in the browser. |
 
 PDF, image and conversion work runs locally in the browser. Secret Sender is the exception: the service stores encrypted content until it is read or expires. Reader links are returned with `noindex, nofollow` so private tokens are not indexed.
 
@@ -27,7 +28,7 @@ The site uses a self-hosted Newsreader and IBM Plex type system, a shared color 
 - PDF and conversion tools use locally vendored libraries; image operations use browser APIs. No application code is loaded from a CDN.
 - Secret Sender is a dependency-free Node service. It stores ciphertext in flat files under `DATA_DIR`, with expiry/read-once cleanup; there is no database or Redis.
 - Nginx serves static assets, applies security headers and gzip, and proxies `/secret/` to the Node service.
-- Docker Compose runs the static web app and Secret Sender in separate containers.
+- Docker Compose runs the static web app, Secret Sender and Repasses in separate containers. The web Nginx routes `repasses.kokoapi.space` to the Repasses service over the private Compose network.
 - GitHub Actions runs dependency installation, audit, build and Astro checks on pushes to `main`, then deploys to the OCI VM over SSH.
 
 ## SEO and routes
@@ -54,7 +55,7 @@ Playwright needs its Chromium browser installed (`npx playwright install chromiu
 
 ## Deployment
 
-The workflow expects repository secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, and `DEPLOY_PATH`; `DEPLOY_PORT` is optional. It fetches the latest `main` commit on the VM and rebuilds the Compose services.
+The workflow expects repository secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, and `DEPLOY_PATH`; `DEPLOY_PORT` is optional. It fetches the latest `main` commit on the VM and rebuilds all Compose services, including Repasses. Caddy on the VM routes `repasses.kokoapi.space` to the suite Nginx, which forwards to the private Repasses container. DNS must contain a proxied `A` record named `repasses` pointing to the VM's public IP.
 
 ## Repository layout
 
@@ -69,5 +70,5 @@ secret/                        Secret Sender service and browser UI
 e2e/                           Playwright browser tests
 nginx.conf                     Static routing, headers and app proxy
 Dockerfile                     Static site image
-docker-compose.yml             Web and Secret Sender services
+docker-compose.yml             Web, Secret Sender and Repasses services
 ```

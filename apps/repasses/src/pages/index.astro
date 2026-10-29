@@ -1,0 +1,110 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base>
+  <header class="site-head">
+    <div class="shell head-inner">
+      <a class="wordmark" href="/" aria-label="Repasses — início"><span class="mark" aria-hidden="true">r.</span><span>repasses</span></a>
+      <nav aria-label="Navegação principal">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#privacidade">Privacidade</a>
+        <a class="sample-link" href="/exemplo.csv" download>Baixar CSV de exemplo <span aria-hidden="true">↓</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> FECHAMENTO DE CONSIGNAÇÃO</p>
+        <h1 id="page-title">Seu fechamento,<br /><em>em ordem.</em></h1>
+        <p class="hero-lead">Calcule comissões e repasses por consignante a partir do seu CSV. Confira cada valor antes de fechar.</p>
+        <div class="hero-trust" aria-label="Características do produto">
+          <span>Sem cadastro</span><span>Gratuito no beta</span><span>Dados no seu dispositivo</span>
+        </div>
+      </div>
+      <aside class="hero-note" id="privacidade">
+        <span class="note-index">01 / PRIVACIDADE</span>
+        <h2>O arquivo fica com você.</h2>
+        <p>Leitura, cálculo e exportação acontecem no seu navegador. A planilha não é enviada nem guardada em servidor.</p>
+        <span class="note-foot">LOCAL NO NAVEGADOR <span aria-hidden="true">↗</span></span>
+      </aside>
+    </section>
+
+    <nav class="step-nav" aria-label="Etapas do fechamento">
+      <span class="step-current" data-step-indicator="1"><b>01</b> Importar</span>
+      <span data-step-indicator="2"><b>02</b> Relacionar colunas</span>
+      <span data-step-indicator="3"><b>03</b> Revisar</span>
+      <span data-step-indicator="4"><b>04</b> Fechar</span>
+    </nav>
+
+    <div id="app-status" class="app-status" role="status" aria-live="polite" hidden></div>
+
+    <section class="workspace" id="step-import" aria-labelledby="import-title">
+      <div class="workspace-heading">
+        <div><p class="section-index">ETAPA 01</p><h2 id="import-title">Comece pelo arquivo de vendas.</h2></div>
+        <p class="workspace-explainer">CSV separado por vírgula ou ponto e vírgula.<br />Até 10 MB por arquivo.</p>
+      </div>
+      <label class="drop-area" id="drop-area" for="csv-file">
+        <input id="csv-file" type="file" accept=".csv,text/csv" />
+        <span class="drop-icon" aria-hidden="true">↑</span>
+        <span class="drop-title">Solte seu CSV aqui ou <u>selecione um arquivo</u></span>
+        <span class="drop-detail" id="file-detail">O arquivo será aberto somente neste navegador.</span>
+      </label>
+      <div class="import-footnote"><span class="privacy-dot" aria-hidden="true"></span><span>Seu arquivo não sai do dispositivo. Sem login, sem envio, sem armazenamento.</span><a href="/exemplo.csv" download>Usar o CSV de exemplo <span aria-hidden="true">↗</span></a></div>
+    </section>
+
+    <section class="workspace" id="step-map" aria-labelledby="map-title" hidden>
+      <div class="workspace-heading">
+        <div><p class="section-index">ETAPA 02</p><h2 id="map-title">Relacione as colunas.</h2></div>
+        <p class="workspace-explainer" id="map-file-name">Arquivo selecionado</p>
+      </div>
+      <p class="section-intro">Identificamos alguns campos automaticamente. Confira o relacionamento e veja uma prévia antes de processar.</p>
+      <div class="mapping-grid" id="mapping-grid"></div>
+      <div class="preview-table-wrap" id="mapping-preview"></div>
+      <div class="step-actions"><button class="button secondary" type="button" id="back-import">Voltar</button><button class="button primary" type="button" id="preview-closing">Ver prévia do fechamento <span aria-hidden="true">→</span></button></div>
+    </section>
+
+    <section class="workspace" id="step-review" aria-labelledby="review-title" hidden>
+      <div class="workspace-heading">
+        <div><p class="section-index">ETAPA 03</p><h2 id="review-title">Revise antes de fechar.</h2></div>
+        <p class="workspace-explainer" id="review-file-name">CSV importado</p>
+      </div>
+
+      <div class="summary-grid" id="review-summary" aria-live="polite"></div>
+      <div class="settings-row">
+        <label class="commission-setting" for="default-commission"><span>Comissão padrão da loja</span><span class="percent-input"><input id="default-commission" type="text" inputmode="decimal" value="30" aria-describedby="commission-hint" /><b>%</b></span><small id="commission-hint">Usada quando não houver uma taxa por consignante ou item.</small></label>
+        <label class="date-setting" for="period-start"><span>Período do fechamento</span><span class="date-inputs"><input id="period-start" type="date" aria-label="Início do período" /><span aria-hidden="true">até</span><input id="period-end" type="date" aria-label="Fim do período" /></span></label>
+      </div>
+
+      <div class="review-columns">
+        <section class="review-block" aria-labelledby="supplier-rates-title"><div class="block-heading"><div><p class="section-index">TAXAS</p><h3 id="supplier-rates-title">Por consignante</h3></div><p>Uma taxa específica substitui a padrão.</p></div><div id="supplier-rates" class="supplier-rates"></div></section>
+        <section class="review-block flags-block" aria-labelledby="flags-title"><div class="block-heading"><div><p class="section-index">CONFERÊNCIA</p><h3 id="flags-title">O que precisa de atenção</h3></div></div><div id="review-flags"></div></section>
+      </div>
+
+      <label class="duplicate-choice" id="duplicate-choice" hidden><input type="checkbox" id="include-duplicates" /><span>Incluir linhas marcadas como possíveis duplicatas. Por padrão, as linhas repetidas após a primeira ficam fora do repasse.</span></label>
+      <div class="preview-table-wrap" id="sales-preview"></div>
+      <div class="step-actions"><button class="button secondary" type="button" id="back-map">Voltar ao mapeamento</button><button class="button primary" type="button" id="confirm-closing">Confirmar fechamento <span aria-hidden="true">→</span></button></div>
+    </section>
+
+    <section class="workspace result-workspace" id="step-result" aria-labelledby="result-title" hidden>
+      <div class="result-topline"><div><p class="section-index">ETAPA 04 / FECHAMENTO</p><h2 id="result-title">Fechamento consolidado.</h2><p id="result-period" class="result-period"></p></div><button type="button" class="button secondary" id="new-closing">Novo fechamento</button></div>
+      <div class="summary-grid final-summary" id="final-summary" aria-live="polite"></div>
+      <div class="result-actions"><button class="button primary" type="button" id="export-all-pdf">Baixar relatório PDF <span aria-hidden="true">↓</span></button><button class="button secondary" type="button" id="export-csv">Exportar dados em CSV <span aria-hidden="true">↓</span></button></div>
+      <div class="table-heading"><div><p class="section-index">REPASSES POR CONSIGNANTE</p><h3>Valores a pagar</h3></div><p>PDF individual disponível em cada linha.</p></div>
+      <div class="final-table-wrap" id="supplier-results"></div>
+      <details class="excluded-details" id="excluded-details" hidden><summary>Ver itens fora do repasse <span id="excluded-count"></span></summary><div id="excluded-results"></div></details>
+    </section>
+
+    <section class="how-section" id="como-funciona" aria-labelledby="how-title">
+      <div><p class="section-index">UM FLUXO CURTO</p><h2 id="how-title">Do CSV ao repasse conferido.</h2></div>
+      <ol class="how-list"><li><b>01</b><span><strong>Traga os dados.</strong> Selecione seu CSV e relacione os campos uma vez.</span></li><li><b>02</b><span><strong>Confira as regras.</strong> Defina a comissão e revise descontos, devoluções e possíveis duplicatas.</span></li><li><b>03</b><span><strong>Feche e compartilhe.</strong> Baixe o consolidado e um demonstrativo para cada consignante.</span></li></ol>
+    </section>
+
+    <footer class="page-footer"><a class="wordmark" href="/" aria-label="Repasses — início"><span class="mark" aria-hidden="true">r.</span><span>repasses</span></a><span>Beta gratuito · Os dados permanecem no seu navegador</span><a href="#privacidade">Privacidade</a></footer>
+  </main>
+  <script>
+    import "../scripts/app.ts";
+  </script>
+</Base>
