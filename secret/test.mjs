@@ -6,12 +6,13 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "secret-test-"));
 process.env.DATA_DIR = tmp;
 
-const { createApp } = await import(path.join(path.dirname(fileURLToPath(import.meta.url)), "server.mjs"));
+const serverPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "server.mjs");
+const { createApp } = await import(pathToFileURL(serverPath).href);
 
 const { server, sweep } = createApp();
 await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));

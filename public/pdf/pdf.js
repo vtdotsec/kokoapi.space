@@ -94,6 +94,7 @@
 
   // Focused landing pages load this app in an iframe as ?tool=<name>&embed=1.
   var TOOL_URL = { merge: "/pdf/merge/", compress: "/pdf/compress/", split: "/pdf/split/", reorder: "/pdf/reorder/", organize: "/pdf/rotate/", pagenum: "/pdf/page-numbers/", watermark: "/pdf/watermark/", extract: "/pdf/extract-text/", imgs2pdf: "/pdf/images-to-pdf/", pdf2img: "/pdf/pdf-to-images/" };
+  var TOOL_TITLES = { merge: "Merge PDF files", split: "Split a PDF", organize: "Rotate or delete PDF pages", imgs2pdf: "Convert images to PDF", pdf2img: "Convert PDF to images", compress: "Compress PDF", watermark: "Add a PDF watermark", pagenum: "Add page numbers to a PDF", extract: "Extract text from a PDF", reorder: "Reorder PDF pages" };
   function toolByUrl() {
     var segs = location.pathname.split("/").filter(Boolean);
     if (segs.length < 2) return "";
@@ -115,6 +116,21 @@
       $("tool-" + t).hidden = t !== tool;
     });
     if (pdfSelect) pdfSelect.value = tool;
+    var title = TOOL_TITLES[tool] || "PDF tools";
+    document.title = title + " | kokoapi.space";
+    var heading = document.querySelector("main.wrap > h1");
+    if (heading) heading.textContent = title;
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (ogTitle) ogTitle.content = title + " | kokoapi.space";
+    if (twitterTitle) twitterTitle.content = title + " | kokoapi.space";
+    var description = document.querySelector('meta[name="description"]');
+    var descriptionText = title + " in your browser. Free PDF processing with no upload.";
+    if (description) description.content = descriptionText;
+    var ogDescription = document.querySelector('meta[property="og:description"]');
+    var twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (ogDescription) ogDescription.content = descriptionText;
+    if (twitterDescription) twitterDescription.content = descriptionText;
   }
 
   segButtons.forEach(function (b) {

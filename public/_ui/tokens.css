@@ -1,79 +1,70 @@
-/* kokoapi identity tokens v3 — neutral graphite + muted moss accent.
-   Only the file-drop and the primary action button may own a full 4-side box. */
+/* kokoapi visual system: warm graphite, paper, and field green.
+   Shared by the static tool workspaces; loaded after each app stylesheet. */
 
 :root {
-  /* canonical palette (exact values) */
-  --bg: #14151A;
-  --bg-surface: #1C1D23;
-  --text-primary: #E7E4DC;
-  --text-secondary: #96918A;
-  --hairline: #2A2B31;
-  --accent: #6E8B74;
-  --accent-hover: #7FA084;
-  --accent-ink: #0F1410;
+  color-scheme: dark;
+  --bg: #171916;
+  --bg-surface: #20231e;
+  --bg-elevated: #20231e;
+  --bg-muted: #282b25;
+  --text: #eeede5;
+  --text-primary: #eeede5;
+  --text-secondary: #b2b2a7;
+  --text-muted: #8e9185;
+  --border: #3a3d35;
+  --border-strong: #55594d;
+  --hairline: #3a3d35;
+  --accent: #c7d66b;
+  --accent-hover: #d5e47e;
+  --accent-strong: #d5e47e;
+  --accent-soft: #303625;
+  --accent-ink: #1a1d13;
+  --accent-contrast: #1a1d13;
+  --success: #a9c983;
+  --success-soft: #273124;
+  --warning: #e4bd73;
+  --warning-soft: #342d20;
+  --danger: #e18b7e;
+  --danger-soft: #352522;
+  --focus-ring: 0 0 0 3px rgb(199 214 107 / 0.42);
 
-  /* aliases consumed by existing page css */
-  --bg-elevated: #14151A;
-  --bg-muted: #14151A;
-  --border: #2A2B31;
-  --border-strong: #2A2B31;
-  --text: #E7E4DC;
-  --text-muted: #96918A;
-  --accent-strong: #7FA084;
-  --accent-soft: transparent;
-  --accent-contrast: #0F1410;
-  --success: #7FA084;
-  --success-soft: transparent;
-  --warning: #96918A;
-  --warning-soft: transparent;
-  --danger: #C2544E;
-  --danger-soft: transparent;
-  --focus-ring: 0 0 0 2px rgb(110 139 116 / 0.45);
-
-  /* typography — untouched (Newsreader + IBM Plex, self-hosted in fonts.css) */
   --font-display: "Newsreader", Georgia, "Times New Roman", serif;
   --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --fs-display: 2rem;
-  --fs-title: 1.45rem;
-  --fs-body: 0.95rem;
-  --fs-data: 0.8125rem;
-
-  /* structure */
-  --radius-sm: 0;
-  --radius: 0;
-  --radius-lg: 0;
+  --radius-sm: 3px;
+  --radius: 5px;
+  --radius-lg: 8px;
   --shadow-sm: none;
   --shadow-md: none;
   --shadow-lg: none;
 }
 
 :root[data-theme="light"] {
-  --bg: #F4F4F6;
-  --bg-surface: #FFFFFF;
-  --text-primary: #1F2024;
-  --text-secondary: #5E6068;
-  --hairline: #D5D6DB;
-  --accent: #4F7058;
-  --accent-hover: #5C8265;
-  --accent-ink: #0F1410;
-  --bg-elevated: #FFFFFF;
-  --bg-muted: #ECECEF;
-  --border: #D5D6DB;
-  --border-strong: #B9BBC3;
-  --text: #1F2024;
-  --text-muted: #5E6068;
-  --accent-strong: #5C8265;
-  --accent-soft: transparent;
-  --accent-contrast: #0F1410;
-  --success: #4F7058;
-  --success-soft: transparent;
-  --warning: #7A7C84;
-  --warning-soft: transparent;
-  --danger: #B03A2F;
-  --danger-soft: transparent;
-  --focus-ring: 0 0 0 2px rgb(79 112 88 / 0.4);
   color-scheme: light;
+  --bg: #f4f0e6;
+  --bg-surface: #fffdf7;
+  --bg-elevated: #fffdf7;
+  --bg-muted: #eae5d8;
+  --text: #282a23;
+  --text-primary: #282a23;
+  --text-secondary: #5e6257;
+  --text-muted: #75796d;
+  --border: #d7d1c3;
+  --border-strong: #bdb6a5;
+  --hairline: #d7d1c3;
+  --accent: #526642;
+  --accent-hover: #3d5130;
+  --accent-strong: #3d5130;
+  --accent-soft: #e6eadb;
+  --accent-ink: #fffdf7;
+  --accent-contrast: #fffdf7;
+  --success: #456b42;
+  --success-soft: #e4eee0;
+  --warning: #865e22;
+  --warning-soft: #f2ead8;
+  --danger: #a44439;
+  --danger-soft: #f3e3df;
+  --focus-ring: 0 0 0 3px rgb(82 102 66 / 0.35);
 }
 
 /* ---------- typographic voice (unchanged) ---------- */
@@ -223,8 +214,8 @@ select,
 .file-row,
 .file-list > li,
 .tool-list > li {
-  background: transparent;
-  border: 0;
+  background: var(--bg-surface);
+  border-color: var(--hairline);
   border-radius: 0;
   box-shadow: none;
 }

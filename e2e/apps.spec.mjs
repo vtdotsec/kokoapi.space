@@ -27,13 +27,13 @@ test.describe("image tools", () => {
     await expect(page.locator("#resize-info")).toContainText("dropped.png");
   });
 
-  test("crop page renders the crop tool inline with a sidebar link", async ({ page }) => {
+  test("crop deep link opens the crop panel in the image workspace", async ({ page }) => {
     await page.goto("/image/crop");
     await expect(page).toHaveTitle(/Crop/);
     await expect(page.locator("iframe")).toHaveCount(0);
     await expect(page.locator("#tool-crop")).toBeVisible();
     await expect(page.locator("#tool-convert")).toBeHidden();
-    await expect(page.locator('.tool-side a[href="/image/crop/"]')).toHaveAttribute("aria-current", "page");
+    await expect(page.locator('.tool-side button[data-tool="crop"]')).toHaveAttribute("aria-pressed", "true");
   });
 });
 
@@ -79,7 +79,7 @@ test.describe("pdf tools", () => {
     await expect(page.locator("iframe")).toHaveCount(0);
     await expect(page.locator("#tool-merge")).toBeVisible();
     await expect(page.locator("#tool-compress")).toBeHidden();
-    await expect(page.locator('.suite-side a[href="/pdf/merge/"]')).toHaveAttribute("aria-current", "page");
+    await expect(page.locator('.pdf-side .seg-btn[data-tool="merge"]')).toHaveAttribute("aria-pressed", "true");
   });
 
   test("compress page renders the compress tool inline", async ({ page }) => {
@@ -88,6 +88,7 @@ test.describe("pdf tools", () => {
     await expect(page.locator("iframe")).toHaveCount(0);
     await expect(page.locator("#tool-compress")).toBeVisible();
     await expect(page.locator("#tool-merge")).toBeHidden();
+    await expect(page.locator('.pdf-side .seg-btn[data-tool="compress"]')).toHaveAttribute("aria-pressed", "true");
   });
 });
 

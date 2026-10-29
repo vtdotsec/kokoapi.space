@@ -1,7 +1,7 @@
 // Post-build step: minify the hand-written page scripts copied into dist/ by Astro.
 // Vendor files under <app>/vendor/ are already shipped minified (or loaded lazily);
 // this only touches the app's own JS, which lives unminified in public/.
-import { build } from "esbuild";
+import { transform } from "esbuild";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,13 +24,18 @@ for (const rel of targets) {
     continue;
   }
   try {
-    await build({
-      entryPoints: [file],
-      outfile: file,
-      allowOverwrite: true,
+    // Transform the file contents in memory. Bundling a file back onto itself
+    // makes esbuild walk the output directory and is fragile in restricted CI
+    // and Windows workspaces; these scripts have no imports to resolve.
+    const source = fs.readFileSync(file, "utf8");
+    const result = await transform(source, {
+      loader: "js",
+      sourcefile: rel,
       minify: true,
+      legalComments: "none",
       logLevel: "silent",
     });
+    fs.writeFileSync(file, result.code, "utf8");
     console.log("postbuild: minified dist/" + rel);
   } catch (err) {
     console.error("postbuild: minify failed for " + rel + " — " + (err.message || err));

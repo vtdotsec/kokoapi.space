@@ -5,7 +5,7 @@
   "type": "module",
   "description": "kokoapi.space - open-source web tools that run in the browser: PDF, images, file conversion, QR codes and encrypted sharing.",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "astro dev",

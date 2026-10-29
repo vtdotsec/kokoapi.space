@@ -1,170 +1,73 @@
 # kokoapi.space
 
-**Live site:** https://tools.kokoapi.space
-**Source code:** https://github.com/vtdotsec/kokoapi.space
+**Live tools:** https://tools.kokoapi.space
+**Source:** https://github.com/vtdotsec/kokoapi.space
 
-kokoapi.space is a small collection of open-source web tools. Every tool runs in the browser: documents, images, QR codes and short encrypted notes stay on the user's device unless the tool says otherwise. There are no accounts, no telemetry, no ads and no cookies.
-
-## Project background
-
-The application code was generated with AI assistance. This is a non-profit personal project built not only to provide free, open-source web tools, but also to serve as a practical DevOps/SRE learning environment. The goal is to design, deploy and operate a realistic production-like infrastructure, including cloud hosting, containerized services, reverse proxy, domain integration and automated CI/CD.
-
-
-**My main contribution was the infrastructure and deployment setup**, including the OCI virtual machine, Docker Compose, Caddy, Cloudflare and GitHub Actions CI/CD.
-
-## Infrastructure
-
-* **Oracle Cloud Infrastructure (OCI):** Always Free Linux VM with 2 OCPUs and 12 GB RAM, hosting the production services.
-* **Docker Compose:** containerized deployment and service orchestration.
-* **Caddy:** reverse proxy and public-facing web entry point.
-* **Cloudflare:** domain and DNS integration.
-* **GitHub Actions:** automated CI/CD pipeline triggered by pushes to `main`, with build checks and deployment to the production VM.
-* **Linux:** host configuration and operation of the self-hosted environment.
-
+A small, free, open-source suite for working with PDFs, images and common file formats. No account is required and the site does not use analytics or advertising.
 
 ## Tools
 
-| Path        | Tool             | What it does |
-| ----------- | ---------------- | ------------ |
-| `/image/`   | Image tools      | Convert between PNG/JPEG/WebP/AVIF, resize keeping the aspect ratio, crop, rotate/flip, compress (quality slider), strip EXIF/GPS metadata, color filters, image palette, base64, favicon and social presets. |
-| `/pdf/`     | PDF tools        | Merge, split, visual reorder, rotate/delete pages, page numbers, watermark, compress, protect with a password / unlock, extract text, and images ⇄ PDF. |
-| `/convert/` | File converter   | Markdown → HTML/PDF, HTML → PDF, PDF → TXT, batch image conversion, JSON ⇄ CSV, JSON ⇄ YAML, XML → JSON, and ZIP / TAR / GZIP creation and extraction. |
-| `/secret/`  | Secret Sender    | Share a note, password or small file (≤ 10 MB) through a link that expires after 1 hour / 24 hours / 7 days or burns after the first read. AES-GCM encryption happens in the browser and the key stays in the URL fragment (`/secret/…#key`); content is only decrypted after an explicit click and the countdown starts on that reveal. Share links are served with a `noindex` robots tag, so ephemeral pages never accumulate in search results. |
-| `/image/qrcode/` | QR code    | Generate QR codes for URLs, plain text, Wi-Fi networks, vCards, e-mails, SMS and phone numbers. Codes are drawn locally in the browser (qrcode-generator) and downloaded as PNG. |
+| Path | Workspace | What it does |
+| --- | --- | --- |
+| `/image/` | Image tools | Convert, compress, resize, crop, watermark and filter images; remove EXIF/GPS metadata; generate QR codes. |
+| `/pdf/` | PDF tools | Merge, split, reorder, rotate, add page numbers or watermarks, compress, protect/unlock, extract text and convert images to/from PDF. |
+| `/convert/` | File converter | Convert Markdown/HTML/PDF, images, JSON/CSV/YAML/XML; create and extract ZIP, TAR and GZIP archives. |
+| `/secret/` | Secret Sender | Share a note or file up to 10 MB through an expiring or one-read link. The browser encrypts content with AES-GCM; the server temporarily stores ciphertext. The key stays in the URL fragment. |
 
-The interface has dark and light themes; the choice is saved in `localStorage`. The site
-is written in English.
+PDF, image and conversion work runs locally in the browser. Secret Sender is the exception: the service stores encrypted content until it is read or expires. Reader links are returned with `noindex, nofollow` so private tokens are not indexed.
 
-## Stack
+## Design and accessibility
 
-Everything is static-first and client-side. The only code that runs outside the browser
-is the tiny Node service that stores encrypted blobs for `/secret/`.
+The site uses a self-hosted Newsreader and IBM Plex type system, a shared color and spacing system across all workspaces, visible keyboard focus, reduced-motion support and responsive layouts. It makes no third-party font or analytics requests.
 
-**Front-end**
+## Stack and hosting
 
-- **Astro** (static output) for the `/` home page and `/404`; TypeScript for the Astro
-  components and `astro check` for validation. `@astrojs/sitemap` generates the sitemap.
-- The tools under `/image/`, `/pdf/` and `/convert/` are plain HTML/CSS/JS
-  pages (no front-end framework). Astro copies `public/` into the build output as-is.
-- **CSS is hand-written** (no Tailwind and no CSS framework): `public/_ui/app.css` holds
-  the shared layout/header/footer, `public/_ui/theme.css` the color tokens (dark
-  default, `[data-theme="light"]` override), and each tool has its own stylesheet.
-- `public/_ui/ui.js` is the only shared script: theme toggle (persisted), drag & drop
-  file handling with accept/size validation, and toasts.
+- Astro generates the site shell and static 404 page. The tool workspaces are small HTML/CSS/JavaScript applications under `public/`.
+- `public/_ui/` contains the shared app shell, theme toggle, self-hosted fonts, tokens, and common interaction helpers.
+- PDF and conversion tools use locally vendored libraries; image operations use browser APIs. No application code is loaded from a CDN.
+- Secret Sender is a dependency-free Node service. It stores ciphertext in flat files under `DATA_DIR`, with expiry/read-once cleanup; there is no database or Redis.
+- Nginx serves static assets, applies security headers and gzip, and proxies `/secret/` to the Node service.
+- Docker Compose runs the static web app and Secret Sender in separate containers.
+- GitHub Actions runs dependency installation, audit, build and Astro checks on pushes to `main`, then deploys to the OCI VM over SSH.
 
-**Libraries** (all vendored locally under each app's `vendor/`, never loaded from a CDN,
-so the strict `script-src 'self'` CSP holds):
+## SEO and routes
 
-| App        | Vendor libraries |
-| ---------- | ---------------- |
-| `/image/`  | `fflate` (batch ZIP download), `qrcode` (QR generator, lazy); image codecs are the native Canvas/Blob APIs |
-| `/pdf/`    | `pdf-lib`, `pdf.js` (+ worker), `fflate` |
-| `/convert/`| `marked`, `js-yaml`, `pdf-lib`, `pdf.js` (+ worker), `fflate` |
+Astro generates the canonical homepage, 404 response and sitemap. The four tool entry points are included as sitemap custom pages because they live under `public/`. Client-side operation URLs such as `/pdf/merge` load their workspace shell; the tool script updates the active panel, heading and browser title. Their canonical remains the workspace entry point, so these state URLs are not listed as separate pages. The Secret Sender applies `noindex, nofollow` to individual token links.
 
-**Runtime / infra**
+`robots.txt` allows public pages and points crawlers to the generated sitemap index. The legacy apex domain redirects to `https://tools.kokoapi.space/`.
 
-- **Nginx** serves the static build with hardened headers (CSP, `X-Frame-Options`,
-  `Referrer-Policy`, `Permissions-Policy`), gzip and long-lived caching for hashed
-  assets. It proxies `/secret/` to the Node service over the Compose network.
-- **Secret Sender service**: plain Node (zero dependencies). It stores ciphertext + IV
-  as flat files on disk (`DATA_DIR`, mounted at `/data`) and never sees keys or
-  plaintext; a periodic sweep deletes expired or already-read blobs.
-- **Docker / Compose**: a multi-stage `Dockerfile` builds the Astro site into the nginx
-  image; the `secret` service runs with a `128m` memory limit, read-only root and
-  dropped capabilities. No database, no Redis, no external services.
-- **CI/CD**: `.github/workflows/deploy.yml` runs on every push to `main` — it installs
-  dependencies with `npm ci`, runs `npm audit`, `npm run build` and `npm run check`,
-  then SSHes into the production VM (Appleboy action) to `git pull` and
-  `docker compose up -d --build`.
+## Local development
 
-## Repository layout
-
-```
-.
-├── .github/workflows/deploy.yml   # CI + deploy to the production VM
-├── Dockerfile                     # multi-stage: Astro build → hardened nginx image
-├── docker-compose.yml             # nginx site + the /secret/ node service
-├── nginx.conf                     # static server, CSP, gzip, /secret/ proxy
-├── src/                           # Astro site: home, 404, layouts, focused landing pages
-│   ├── pages/pdf/[tool].astro     # generates /pdf/merge/, /pdf/compress/, ...
-│   ├── data/toolLandings.ts       # copy, steps, FAQ and Schema data for those pages
-│   ├── components/                # Header, Footer, ToolLanding
-├── public/
-│   ├── _ui/                       # shared CSS/JS (base, theme tokens, ui.js, landing.js)
-│   ├── image/  pdf/  convert/   # static tool apps (+ own vendor/)
-├── secret/                        # Secret Sender: node service, UI, Dockerfile
-├── e2e/                           # Playwright specs, fixtures and serve helper
-└── README.md
-```
-
-## Running locally
-
-Requires Node.js ≥ 20 (Astro 7 wants ≥ 22; the CI pipeline uses Node 22).
+Requires Node.js 22 or newer.
 
 ```sh
 npm ci
-npm run dev          # http://localhost:4321 (home + static tools)
-npm run check        # astro check (types/content)
-npm run build        # static build into dist/
-npm run test:e2e     # builds the site, then runs the Playwright suite
+npm run dev       # http://localhost:4321
+npm run check     # Astro diagnostics
+npm run build     # static output in dist/
+npm run test      # Astro diagnostics + production build
+npm run test:e2e  # production build + Playwright suite
+node secret/test.mjs # Secret Sender API lifecycle tests
 ```
 
-The Secret Sender service (only needed to exercise `/secret/` end to end):
+Playwright needs its Chromium browser installed (`npx playwright install chromium`). The E2E suite covers image conversion, PDF operations, file conversion, QR generation, theme behavior and Secret Sender flows.
 
-```sh
-cd secret
-node server.mjs      # DATA_DIR defaults to /data — set it for local runs
-node test.mjs        # API lifecycle tests (create, read, burn, expiry)
+## Deployment
+
+The workflow expects repository secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, and `DEPLOY_PATH`; `DEPLOY_PORT` is optional. It fetches the latest `main` commit on the VM and rebuilds the Compose services.
+
+## Repository layout
+
+```text
+.github/workflows/deploy.yml   CI and production deployment
+src/                           Astro homepage and 404
+public/_ui/                    Shared UI shell, styles, theme and local fonts
+public/image/                  Image and QR workspace
+public/pdf/                    PDF workspace
+public/convert/                File conversion workspace
+secret/                        Secret Sender service and browser UI
+e2e/                           Playwright browser tests
+nginx.conf                     Static routing, headers and app proxy
+Dockerfile                     Static site image
+docker-compose.yml             Web and Secret Sender services
 ```
-
-## Docker Compose
-
-```sh
-docker compose up -d --build
-```
-
-- `kokoapi-tools-web` — builds the site and serves it with the hardened nginx config
-  on port 8080; also routes `/secret/` to the Node service. Read-only root, tmpfs for
-  nginx runtime files, all capabilities dropped except `NET_BIND_SERVICE`.
-- `kokoapi-tools-secret` — the ephemeral sharing service with a `128m` memory limit,
-  read-only root, dropped capabilities and a named volume for the encrypted blobs at
-  `/data`.
-
-Two services on purpose, not one: the static nginx front end and the Node service have
-different runtimes, security contexts and resource limits, and only the secret service
-touches the encrypted-blob volume. Merging them into one container would require a
-process supervisor (or dropping the per-service hardening) for no practical gain.
-
-## Adding or editing content
-
-- **Tool pages**: each app is a folder under `public/<tool>/` with `index.html` plus a
-  `<tool>.css` / `<tool>.js`. New third-party libraries must be copied into that app's
-  `vendor/` (each folder documents its licenses in `vendor/README.md`) and referenced
-  with relative or site-absolute paths so the CSP (`script-src 'self'`) keeps working.
-- **Focused landing pages** (`/pdf/merge`, `/pdf/compress`, `/image/crop`,
-  `/convert/json-to-csv`, …): add an entry in `src/data/toolLandings.ts`; the route is
-  generated by `src/pages/<tool>/[tool].astro` for each service folder. Every route
-  renders its tool natively in the page (no iframes): the reusable suites
-  `src/components/{ImageTools,PdfSuite,ConvertSuite}.astro` draw the sidebar of native
-  links and show the active panel (panels live as raw HTML under `src/raw/`), while
-  `image.js` / `pdf.js` / `convert.js` activate the tool from `data-koko-tool`. Keep
-  each page's copy unique; do not reuse the toolbox blurbs.
-  Each page embeds the matching `public/<tool>/` app pre-selected with
-  `?tool=<name>&embed=1` — the app hides its chrome and reports its height to
-  `/_ui/landing.js`. Keep each page's copy unique; do not reuse the toolbox blurbs.
-- **Home page / header / footer copy**: `src/pages/index.astro`,
-  `src/components/Header.astro`, `src/components/Footer.astro`. Adding a tool means a
-  link in the header/footer nav and a card on the home page.
-- **New route**: static apps under `public/` are served from the build automatically;
-  add an explicit `location /<tool>/` block in `nginx.conf` when a tool needs a
-  dedicated mapping.
-- **Themes**: color tokens live in `public/_ui/theme.css` (dark default + light
-  override); the toggle logic is in `public/_ui/ui.js`.
-- **Nginx / deploy config**: edit `nginx.conf` and rebuild the image
-  (`docker compose up -d --build`); the CI workflow deploys automatically on push to
-  `main`.
-
-## License
-
-MIT — see [LICENSE](LICENSE). Third-party libraries under `vendor/` keep their own
-licenses (documented in each `vendor/README.md`).

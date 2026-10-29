@@ -1,32 +1,10 @@
-/* ============================================================
-   kokoapi.space · Self-Hosting Catalog — global styles
-   No framework: a small design system built on CSS custom
-   properties, system fonts and zero external requests.
-   ============================================================ */
+/* kokoapi.space home page and 404 styles. Shared tools use public/_ui/*.css. */
 
 :root {
-  /* Palette — neutral base, one indigo accent. No gradients. */
-
-
-
-
-
-  /* Radii & shadows — flat, hairline-first */
-  --radius-sm: 2px;
-  --radius: 3px;
-  --radius-lg: 6px;
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
-
   /* Layout */
   --container: 1000px;
   --header-h: 56px;
 
-  /* Typography */
-  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
-  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --fs-xs: 0.75rem;
   --fs-sm: 0.875rem;
   --fs-base: 1rem;
@@ -35,19 +13,6 @@
   --fs-xl: 1.75rem;
   --fs-2xl: 2.25rem;
   --fs-3xl: 3rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-
-
-
-
-
-    --shadow-sm: none;
-    --shadow-md: none;
-    --shadow-lg: none;
-  }
 }
 
 /* ---------- Reset ------------------------------------------------- */
@@ -1395,6 +1360,7 @@ h4 {
 
 :root[data-theme="light"] {
   color-scheme: light;
+}
 
 /* ---------- Tool landing pages (focused sub-routes) ----------------- */
 .tool-landing {
@@ -1517,223 +1483,298 @@ h4 {
   font-weight: 600;
 }
 
-/* === identity: editorial serif display + plex UI, flat hierarchy === */
-body {
-  font-family: var(--font-ui);
-}
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  font-weight: 650;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-}
-code, pre, kbd, samp {
-  font-family: var(--font-mono);
-}
-
-/* micro-labels & data: mono, sentence case, low weight */
-.footer-links h3,
-.tool-side-title,
-.cv-side-title,
-.pdf-side-title,
-.suite-side .suite-title,
-.home-stats dt,
-.recent-table th,
-.page-head .eyebrow,
-.card-cat,
-.seg-path,
-.size-note,
-fieldset legend {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-/* notes/status are text — no box */
-.note, .status, .help, .alert, .banner {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* sidebars: bare columns; active tool is a text + left marker, not a box */
-.pdf-side, .tool-side, .cv-side {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-.pdf-side .seg-btn,
-.tool-nav button,
-.cv-side-nav button {
-  border-radius: 0;
-  box-shadow: none;
-  border-left: 2px solid transparent;
-}
-.pdf-side .seg-btn[aria-pressed="true"],
-.tool-nav button[aria-pressed="true"],
-.cv-side-nav button.active {
-  background: transparent;
-  color: var(--accent);
-  font-weight: 600;
-  border-left-color: var(--accent);
-}
-
-/* grouped/listed content: hairlines, not floating cards */
-.thumb,
-.file-row,
-details {
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-details {
+/* ---------- Editorial tool index ------------------------------------ */
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(245px, 0.75fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 6rem);
+  padding-block: clamp(3.5rem, 9vw, 7.25rem) clamp(3rem, 7vw, 5.5rem);
   border-bottom: 1px solid var(--border);
 }
 
-/* the upload area is the one true "work surface": a calm dashed box */
-.file-drop {
-  background: transparent;
-  border-style: dashed;
-  box-shadow: none;
-}
-
-/* keep the real action boxed */
-.btn {
-  box-shadow: none;
-}
-
-/* notice banner: text on --bg with a thin accent bar on the left */
-.note,
-.banner,
-.alert,
-.callout,
-.status,
-.pdf-layout .note,
-.tool-layout .note,
-.cv-layout .note,
-body.embed main.wrap > .note {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  border-left: 3px solid var(--accent);
-  padding-left: 0.9rem;
-  color: var(--text-primary);
-}
-
-/* sidebars: bare columns, no panel box */
-.pdf-side,
-.tool-side,
-.cv-side {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-.pdf-side .seg-btn,
-.tool-nav button,
-.cv-side-nav button {
-  background: transparent;
-  border: 0;
-  border-left: 2px solid transparent;
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--text-primary);
-}
-.pdf-side .seg-btn:hover,
-.tool-nav button:hover,
-.cv-side-nav button:hover {
-  background: transparent;
-  color: var(--text-primary);
-}
-.pdf-side .seg-btn[aria-pressed="true"],
-.tool-nav button[aria-pressed="true"],
-.cv-side-nav button[aria-pressed="true"],
-.tool-nav button.active,
-.cv-side-nav button.active {
-  background: transparent;
+.home-kicker,
+.section-index,
+.annotation-label {
   color: var(--accent);
-  font-weight: 600;
-  border-left: 2px solid var(--accent);
+  font: 500 0.7rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
 }
 
-/* FAQ accordion: hairline divider only, never a closed box */
-details,
-.seo details,
-details.seo {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  border-bottom: 1px solid var(--hairline);
+.home-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
 }
 
-/* the two sanctioned boxes */
-.file-drop {
-  background: var(--bg-surface);
-  border: 1px dashed var(--hairline);
-  border-radius: 4px;
-  box-shadow: none;
-  color: var(--text-secondary);
-}
-.btn {
+.home-kicker span {
+  width: 0.45rem;
+  height: 0.45rem;
   background: var(--accent);
-  color: var(--accent-ink);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  box-shadow: none;
+  border-radius: 50%;
 }
-.btn:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+
+.home-intro h1 {
+  max-width: 16ch;
+  margin-bottom: 1.2rem;
+  font-size: clamp(2.7rem, 6.2vw, 5.3rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
 }
-.btn.ghost,
-.btn-ghost {
-  background: transparent;
+
+.home-intro h1 em {
   color: var(--accent);
-  border: 0;
-  border-radius: 0;
-}
-.btn.ghost:hover,
-.btn-ghost:hover {
-  background: transparent;
-  color: var(--accent-hover);
+  font-weight: 450;
 }
 
-/* inputs stay fields: hairline, square */
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="number"],
-textarea,
-select,
-.text-input,
-.ta {
-  background: transparent;
-  border: 1px solid var(--hairline);
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--text-primary);
+.home-intro .lead {
+  max-width: 54ch;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.7;
 }
 
-/* lists: hairline rows, no floating cards */
-.thumb,
-.file-row,
-.file-list > li,
-.tool-list > li {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
+.home-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1.7rem 0 0;
+  padding: 0;
+  color: var(--text-muted);
+  list-style: none;
+  font: 500 0.7rem/1.5 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* links: accent only, no box */
-a { color: var(--accent); }
-a:hover { color: var(--accent-hover); }
+.home-facts li::before {
+  content: "·";
+  margin-right: 0.55rem;
+  color: var(--accent);
+}
 
-/* focus */
-:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
+.home-annotation {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--border-strong);
+  padding: 1rem 0 1rem clamp(1.2rem, 3vw, 2rem);
+}
+
+.annotation-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.annotation-label span {
+  color: var(--accent);
+}
+
+.home-annotation h2 {
+  margin: 1.1rem 0 0.55rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.home-annotation p:not(.annotation-label) {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.home-annotation strong {
+  color: var(--text);
+}
+
+.annotation-rule {
+  height: 1px;
+  margin: 1rem 0;
+  background: var(--border);
+}
+
+.home-annotation a,
+.source-link {
+  width: fit-content;
+  margin-top: 1rem;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.home-block {
+  padding-top: clamp(3.25rem, 7vw, 5.25rem);
+}
+
+.home-tools .section-title {
+  margin-bottom: 1.2rem;
+}
+
+.section-index {
+  margin-bottom: 0.65rem;
+}
+
+.home-tools .section-title h2,
+.home-note .section-title h2 {
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  letter-spacing: -0.025em;
+}
+
+.home-tools .section-title > p:last-child {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.app-index {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border-strong);
+  list-style: none;
+}
+
+.app-index li {
+  border-bottom: 1px solid var(--border);
+}
+
+.app-row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) minmax(9rem, 0.4fr) 1rem;
+  align-items: center;
+  gap: 0.7rem 1rem;
+  min-height: 6.1rem;
+  padding: 1.15rem 0.2rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: padding 150ms ease, background-color 150ms ease;
+}
+
+.app-row:hover {
+  padding-inline: 0.7rem;
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+  text-decoration: none;
+}
+
+.app-row-no,
+.app-row-path,
+.app-row-meta,
+.app-row-arrow {
+  font-family: var(--font-mono);
+}
+
+.app-row-no {
+  align-self: start;
+  padding-top: 0.35rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+}
+
+.app-row-main {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.app-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.85rem;
+}
+
+.app-row-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.app-row-path {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.app-row-desc {
+  max-width: 68ch;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.app-row-meta {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.app-row-arrow {
+  color: var(--accent);
+  font-size: 1rem;
+  transition: transform 150ms ease;
+}
+
+.app-row:hover .app-row-arrow {
+  transform: translate(2px, -2px);
+}
+
+.home-note {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: 0.75rem 3rem;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.home-note .section-title {
+  grid-row: span 2;
+}
+
+.home-note-copy {
+  max-width: 62ch;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.source-link {
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 760px) {
+  .home-intro {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+  }
+
+  .home-annotation {
+    max-width: 38rem;
+  }
+
+  .app-row {
+    grid-template-columns: 2rem minmax(0, 1fr) 1rem;
+  }
+
+  .app-row-meta {
+    display: none;
+  }
+
+  .home-note {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .home-note .section-title {
+    grid-row: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-row,
+  .app-row-arrow {
+    transition: none;
+  }
 }

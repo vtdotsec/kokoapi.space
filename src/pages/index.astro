@@ -3,54 +3,35 @@ import Base from "../layouts/Base.astro";
 
 const tools = [
   {
+    number: "01",
     title: "Image tools",
+    category: "Image · QR",
     path: "/image/",
-    desc: "Convert, compress, resize, crop, filter and strip metadata from images locally. Processing happens in your browser; nothing is uploaded.",
+    desc: "Convert, resize, crop, compress and remove EXIF or GPS metadata. Includes a QR generator. Your images stay in the browser.",
   },
   {
+    number: "02",
     title: "PDF tools",
+    category: "Documents",
     path: "/pdf/",
-    desc: "Merge, split, rotate, reorder, watermark, compress and convert PDF files entirely in your browser. Your files never leave your device.",
+    desc: "Merge, split, reorder, rotate, watermark, compress and extract text from PDFs on your device.",
   },
   {
+    number: "03",
     title: "File converter",
+    category: "Text · Data · Archives",
     path: "/convert/",
-    desc: "Markdown/HTML/PDF, images, JSON/CSV/XML/YAML, ZIP and GZIP conversions, all executed locally in your browser.",
+    desc: "Convert Markdown, HTML, PDF, images, JSON, CSV, YAML and XML; create or unpack ZIP, TAR and GZIP archives locally.",
   },
   {
+    number: "04",
     title: "Secret Sender",
+    category: "Encrypted sharing",
     path: "/secret/",
-    desc: "Share a note, password or small file with a link that expires or burns after one read. Encrypted in your browser before it reaches the server.",
-  },
-  {
-    title: "QR code generator",
-    path: "/image/qrcode/",
-    desc: "Generate QR codes for links, Wi-Fi, contacts and more — entirely in your browser. Now part of the image tools area.",
+    desc: "Send a note or small file using a one-read or expiring link. The browser encrypts it; the server temporarily stores ciphertext.",
   },
 ];
 
-const principles = [
-  {
-    term: "Open source",
-    desc: "The code for these tools and for this site is public and can be reviewed, audited or self-hosted.",
-  },
-  {
-    term: "No account",
-    desc: "No sign-up, no login, no profile. Every tool works immediately.",
-  },
-  {
-    term: "No telemetry",
-    desc: "No analytics, no tracking pixels, no data collection of any kind.",
-  },
-  {
-    term: "No ads and no cookies",
-    desc: "Nothing is sold or profiled. The pages set no cookies.",
-  },
-  {
-    term: "Free",
-    desc: "No payments, no quotas, no paywalls. Hosting is paid for out of pocket.",
-  },
-];
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -58,11 +39,11 @@ const jsonLd = {
       "@type": "WebSite",
       "name": "kokoapi.space",
       "url": "https://tools.kokoapi.space/",
-      "description": "Open-source web tools that run in your browser: image editing, a PDF toolkit, a file converter, ephemeral encrypted sharing and a QR code generator. No accounts, no telemetry, no ads, no cookies.",
+      "description": "Free, open-source image, PDF and file conversion tools that process files in your browser, plus Secret Sender for encrypted, expiring links. No account or analytics.",
     },
     {
       "@type": "ItemList",
-      "name": "kokoapi.space tools",
+      "name": "Free file tools",
       "itemListElement": tools.map((tool, i) => ({
         "@type": "ListItem",
         position: i + 1,
@@ -75,51 +56,66 @@ const jsonLd = {
 ---
 
 <Base
-  title="kokoapi.space — free online web tools, no sign-up"
-  description="Image editing, PDF tools, a file converter, encrypted note sharing and a QR code generator — all open source and running in your browser. No accounts, no telemetry, no ads, no cookies."
+  title="Free PDF, image and file tools — private by default"
+  description="Merge and edit PDFs, convert images, clean EXIF metadata and transform files in your browser. Free, open source and no account required."
   jsonLd={jsonLd}
 >
   <section class="container home-intro">
-    <h1>Web tools, without the usual baggage</h1>
-    <p class="lead">
-      kokoapi.space is a small set of open-source web tools. Everything runs in your
-      browser: documents, images, QR codes and short encrypted notes stay on your device
-      unless a tool says otherwise.
-    </p>
-    <p class="intro-sub">
-      Everything is free and works without an account. There is no telemetry, no ads, no
-      cookies and nothing to pay.
-    </p>
+    <div class="home-intro-copy">
+      <p class="home-kicker"><span></span> Independent file utilities / Open source</p>
+      <h1>Useful tools for files.<br /><em>Room to work.</em></h1>
+      <p class="lead">
+        A small, carefully maintained set of tools for PDFs, images and everyday file formats.
+        Start in one click; your documents stay in your browser for most tasks.
+      </p>
+      <ul class="home-facts" aria-label="Service details">
+        <li>No account</li>
+        <li>No analytics</li>
+        <li>Free to use</li>
+      </ul>
+    </div>
+    <aside class="home-annotation" aria-label="How file processing works">
+      <p class="annotation-label">DATA PATH <span>01 / 02</span></p>
+      <h2>Local by default.</h2>
+      <p>Images, PDFs and conversions are processed on your device. They are not uploaded.</p>
+      <div class="annotation-rule"></div>
+      <p><strong>One exception:</strong> Secret Sender keeps encrypted content temporarily so a recipient can retrieve it. Its decryption key stays in the link fragment.</p>
+      <a href="/secret/">See how Secret Sender works <span aria-hidden="true">↗</span></a>
+    </aside>
   </section>
 
-  <section class="container home-block" aria-labelledby="tools-heading">
+  <section class="container home-block home-tools" aria-labelledby="tools-heading">
     <div class="section-title">
-      <h2 id="tools-heading">Tools</h2>
+      <p class="section-index">01 / TOOL INDEX</p>
+      <h2 id="tools-heading">Choose a workspace.</h2>
+      <p>Choose a workspace to see its available operations.</p>
     </div>
-    <div class="app-index">
+    <ol class="app-index">
       {tools.map((tool) => (
-        <a class="app-row" href={tool.path}>
-          <span class="app-row-top">
-            <span class="app-row-name">{tool.title}</span>
-            <span class="app-row-path">{tool.path}</span>
-          </span>
-          <span class="app-row-desc">{tool.desc}</span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="container home-block" aria-labelledby="principles-heading">
-    <div class="section-title">
-      <h2 id="principles-heading">What you can expect here</h2>
-    </div>
-    <ul class="principles">
-      {principles.map((p) => (
         <li>
-          <strong>{p.term}</strong>
-          <span class="principles-desc">{p.desc}</span>
+          <a class="app-row" href={tool.path}>
+            <span class="app-row-no">{tool.number}</span>
+            <span class="app-row-main">
+              <span class="app-row-top">
+                <span class="app-row-name">{tool.title}</span>
+                <span class="app-row-path">{tool.path}</span>
+              </span>
+              <span class="app-row-desc">{tool.desc}</span>
+            </span>
+            <span class="app-row-meta">{tool.category}</span>
+            <span class="app-row-arrow" aria-hidden="true">↗</span>
+          </a>
         </li>
       ))}
-    </ul>
+    </ol>
+  </section>
+
+  <section class="container home-block home-note" aria-labelledby="notes-heading">
+    <div class="section-title">
+      <p class="section-index">02 / PROJECT NOTES</p>
+      <h2 id="notes-heading">Made to be inspected.</h2>
+    </div>
+    <p class="home-note-copy">The source is public and self-hostable. The tools are free, need no account, and do not use analytics or advertising. Most processing happens entirely on your device.</p>
+    <a class="source-link" href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">Read the source on GitHub <span aria-hidden="true">↗</span></a>
   </section>
 </Base>

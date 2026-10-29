@@ -1697,6 +1697,22 @@
       cat.hidden = cat !== activeCat;
     });
     if (cvSelect) cvSelect.value = id;
+    var activeButton = cvSideBtns.find(function (button) { return button.getAttribute("data-target") === id; });
+    var title = activeButton ? activeButton.textContent.trim() : "File converter";
+    document.title = title + " | kokoapi.space";
+    var heading = document.querySelector("main.wrap > h1");
+    if (heading) heading.textContent = title;
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (ogTitle) ogTitle.content = title + " | kokoapi.space";
+    if (twitterTitle) twitterTitle.content = title + " | kokoapi.space";
+    var description = document.querySelector('meta[name="description"]');
+    var descriptionText = title + " in your browser. Free local file conversion with no upload.";
+    if (description) description.content = descriptionText;
+    var ogDescription = document.querySelector('meta[property="og:description"]');
+    var twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (ogDescription) ogDescription.content = descriptionText;
+    if (twitterDescription) twitterDescription.content = descriptionText;
   }
   cvSideBtns.forEach(function (b) {
     b.addEventListener("click", function () {

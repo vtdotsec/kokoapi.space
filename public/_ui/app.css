@@ -91,6 +91,32 @@
   color: var(--accent);
 }
 
+@media (max-width: 580px) {
+  .topbar .wrap {
+    column-gap: 0.5rem;
+    row-gap: 0.3rem;
+  }
+  .topbar .brand {
+    margin-right: 0;
+  }
+  .top-actions {
+    order: 2;
+  }
+  .main-nav {
+    order: 3;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0;
+    padding-bottom: 0.15rem;
+    scrollbar-width: thin;
+  }
+  .main-nav-link {
+    padding-inline: 0.45rem;
+    font-size: 0.8rem;
+  }
+}
+
 .top-actions {
   margin-left: auto;
   display: inline-flex;

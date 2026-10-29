@@ -18,7 +18,7 @@ interface Props {
 
 const {
   title = "kokoapi.space",
-  description = "Small open-source web apps hosted on kokoapi.space — no accounts, no telemetry, no cookies.",
+  description = "Free, open-source file tools. Most processing happens in your browser; Secret Sender temporarily stores encrypted content for delivery.",
   image = "/og.svg",
   type = "website",
   noindex = false,
@@ -30,7 +30,7 @@ const {
 const site = new URL(Astro.site?.toString() ?? "https://tools.kokoapi.space/");
 const pageUrl = new URL(Astro.url.pathname, site);
 if (!pageUrl.pathname.endsWith("/")) pageUrl.pathname += "/";
-const canonical = pageUrl.toString();
+const canonical = noindex ? undefined : pageUrl.toString();
 
 // Brand is kokoapi.space; descriptive titles get it appended as a suffix.
 const fullTitle = title.toLowerCase().startsWith("kokoapi")
@@ -48,8 +48,8 @@ const imageUrl = new URL(image, site).toString();
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />
     <meta name="generator" content={Astro.generator} />
-    {noindex && <meta name="robots" content="noindex" />}
-    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/_ui/app.css" />
     <link rel="stylesheet" href="/_ui/fonts.css" />
@@ -57,13 +57,13 @@ const imageUrl = new URL(image, site).toString();
     {styles.map((href) => <link rel="stylesheet" href={href} />)}
     <script is:inline src="/_ui/ui.js" defer></script>
     {scripts.map((src) => <script is:inline src={src} defer></script>)}
-    <meta name="theme-color" content="#0e0f13" />
+    <meta name="theme-color" content="#171916" />
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="kokoapi.space" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
-    <meta property="og:url" content={canonical} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={imageUrl} />
     <meta property="og:locale" content="en_US" />
 

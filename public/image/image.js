@@ -180,6 +180,16 @@
     batch: "Batch",
     qrcode: "QR code",
   };
+  var TOOL_TITLES = {
+    convert: "Convert images online",
+    resize: "Compress and resize images",
+    strip: "Remove image EXIF metadata",
+    crop: "Crop images online",
+    wmark: "Add an image watermark",
+    filters: "Apply image filters",
+    batch: "Batch convert images",
+    qrcode: "Create QR codes",
+  };
   var sideButtons = Array.prototype.slice.call(document.querySelectorAll(".tool-nav button[data-tool]"));
   var sideSelect = document.querySelector(".tool-side .side-select");
 
@@ -207,7 +217,24 @@
       $("tool-" + t).hidden = t !== tool;
     });
     if (sideSelect) sideSelect.value = tool;
-    if (tool === "qrcode") qrStart();
+    var title = TOOL_TITLES[tool] || "Image tools";
+    document.title = title + " | kokoapi.space";
+    var heading = document.querySelector("main.wrap > h1");
+    if (heading) heading.textContent = title;
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (ogTitle) ogTitle.content = title + " | kokoapi.space";
+    if (twitterTitle) twitterTitle.content = title + " | kokoapi.space";
+    var description = document.querySelector('meta[name="description"]');
+    var descriptionText = title + " in your browser. Free image tools with local processing and no upload.";
+    if (description) description.content = descriptionText;
+    var ogDescription = document.querySelector('meta[property="og:description"]');
+    var twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (ogDescription) ogDescription.content = descriptionText;
+    if (twitterDescription) twitterDescription.content = descriptionText;
+    // QR_FIELDS is initialized later in this file. Defer the first setup until
+    // the current script has finished evaluating, especially on /image/qrcode.
+    if (tool === "qrcode") setTimeout(qrStart, 0);
   }
 
   sideButtons.forEach(function (b) {
