@@ -19,16 +19,24 @@ import Base from "../layouts/Base.astro";
       <div class="hero-copy">
         <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> FECHAMENTO DE CONSIGNAÇÃO</p>
         <h1 id="page-title">Seu fechamento,<br /><em>em ordem.</em></h1>
-        <p class="hero-lead">Calcule comissões e repasses por consignante a partir do seu CSV. Confira cada valor antes de fechar.</p>
+        <p class="hero-lead">Calcule comissão e repasse de vendas consignadas por consignante. Confira cada valor antes de fechar.</p>
         <div class="hero-trust" aria-label="Características do produto">
-          <span>Sem cadastro</span><span>Gratuito no beta</span><span>Dados no seu dispositivo</span>
+          <span>Sem cadastro</span><span>Gratuito no beta</span><span>CSV no seu dispositivo</span>
         </div>
       </div>
-      <aside class="hero-note" id="privacidade">
-        <span class="note-index">01 / PRIVACIDADE</span>
-        <h2>O arquivo fica com você.</h2>
-        <p>Leitura, cálculo e exportação acontecem no seu navegador. A planilha não é enviada nem guardada em servidor.</p>
-        <span class="note-foot">LOCAL NO NAVEGADOR <span aria-hidden="true">↗</span></span>
+      <aside class="hero-panel" id="privacidade">
+        <div class="hero-note">
+          <span class="note-index">01 / PRIVACIDADE</span>
+          <h2>O arquivo fica com você.</h2>
+          <p>Leitura, cálculo e exportação acontecem neste navegador. O conteúdo do CSV não é enviado nem guardado em servidor.</p>
+        </div>
+        <label class="drop-area hero-drop" id="drop-area" for="csv-file">
+          <input id="csv-file" type="file" accept=".csv,text/csv" />
+          <span class="drop-icon" aria-hidden="true">↑</span>
+          <span class="drop-title">Solte seu CSV ou <u>selecione um arquivo</u></span>
+          <span class="drop-detail" id="file-detail">CSV de até 10 MB · vírgula ou ponto e vírgula</span>
+        </label>
+        <p class="hero-beta-note">Beta gratuito, sem limite de uso e sem cadastro. Se as condições mudarem, avisaremos antes.</p>
       </aside>
     </section>
 
@@ -44,15 +52,15 @@ import Base from "../layouts/Base.astro";
     <section class="workspace" id="step-import" aria-labelledby="import-title">
       <div class="workspace-heading">
         <div><p class="section-index">ETAPA 01</p><h2 id="import-title">Comece pelo arquivo de vendas.</h2></div>
-        <p class="workspace-explainer">CSV separado por vírgula ou ponto e vírgula.<br />Até 10 MB por arquivo.</p>
+        <p class="workspace-explainer">CSV de até 50 mil linhas.<br />Vírgula ou ponto e vírgula.</p>
       </div>
-      <label class="drop-area" id="drop-area" for="csv-file">
-        <input id="csv-file" type="file" accept=".csv,text/csv" />
-        <span class="drop-icon" aria-hidden="true">↑</span>
-        <span class="drop-title">Solte seu CSV aqui ou <u>selecione um arquivo</u></span>
-        <span class="drop-detail" id="file-detail">O arquivo será aberto somente neste navegador.</span>
-      </label>
-      <div class="import-footnote"><span class="privacy-dot" aria-hidden="true"></span><span>Seu arquivo não sai do dispositivo. Sem login, sem envio, sem armazenamento.</span><a href="/exemplo.csv" download>Usar o CSV de exemplo <span aria-hidden="true">↗</span></a></div>
+      <div class="import-footnote"><span class="privacy-dot" aria-hidden="true"></span><span>Seu CSV é lido localmente; o conteúdo das vendas não sai deste navegador.</span><a href="/exemplo.csv" download>Baixar CSV de exemplo <span aria-hidden="true">↗</span></a></div>
+    </section>
+
+    <section class="example-section" aria-labelledby="example-title">
+      <div class="example-heading"><div><p class="section-index">EXEMPLO DE SAÍDA</p><h2 id="example-title">Um resumo claro para cada consignante.</h2></div><p>Valores ilustrativos com comissão padrão de 30%.</p></div>
+      <div class="example-table-wrap"><table class="example-table"><caption class="visually-hidden">Exemplo de demonstrativo de vendas líquidas, comissão e repasse por consignante</caption><thead><tr><th>Consignante / itens</th><th>Vendas líquidas</th><th>Comissão</th><th>Repasse</th></tr></thead><tbody><tr><th scope="row">Ateliê Aurora <small>2 itens</small></th><td>R$ 200,00</td><td>R$ 60,00</td><td class="money-strong">R$ 140,00</td></tr><tr><th scope="row">Costura da Ana <small>1 item</small></th><td>R$ 150,00</td><td>R$ 37,50</td><td class="money-strong">R$ 112,50</td></tr></tbody></table></div>
+      <p class="example-footnote">No fechamento real, você também pode baixar um PDF individual para cada consignante.</p>
     </section>
 
     <section class="workspace" id="step-map" aria-labelledby="map-title" hidden>
@@ -102,9 +110,33 @@ import Base from "../layouts/Base.astro";
       <ol class="how-list"><li><b>01</b><span><strong>Traga os dados.</strong> Selecione seu CSV e relacione os campos uma vez.</span></li><li><b>02</b><span><strong>Confira as regras.</strong> Defina a comissão e revise descontos, devoluções e possíveis duplicatas.</span></li><li><b>03</b><span><strong>Feche e compartilhe.</strong> Baixe o consolidado e um demonstrativo para cada consignante.</span></li></ol>
     </section>
 
+    <section class="editorial-section" aria-labelledby="editorial-title">
+      <div class="editorial-intro"><p class="section-index">FECHAMENTO DE CONSIGNAÇÃO</p><h2 id="editorial-title">Calcule comissão e repasse sem refazer as contas na planilha.</h2><p>O Repasses organiza o fechamento de lojas que trabalham com consignação. Importe as vendas em CSV, relacione as colunas do seu sistema e confira o total líquido, a comissão da loja e o valor a pagar para cada consignante antes de exportar.</p></div>
+      <div class="editorial-grid">
+        <article><p class="section-index">01 / FORMATO DO ARQUIVO</p><h3>Que dados colocar no CSV?</h3><p>São necessários o nome do consignante, o item e o valor bruto da venda. Data, status da venda, desconto, comissão do item e identificador da venda são opcionais. O importador aceita CSV separado por vírgula ou ponto e vírgula; você confirma o mapeamento antes de calcular.</p><p>Use <a href="/exemplo.csv" download>o arquivo CSV de exemplo</a> para conferir as colunas. São aceitos arquivos de até 10 MB e 50 mil linhas.</p></article>
+        <article><p class="section-index">02 / REGRAS DO CÁLCULO</p><h3>Como o repasse é calculado?</h3><p>O desconto é abatido do valor bruto. A comissão incide sobre o valor líquido, e o repasse é o líquido menos a comissão. Uma comissão informada no item tem prioridade sobre a taxa do consignante, que tem prioridade sobre a taxa padrão da loja.</p><p>Vendas devolvidas e itens não vendidos ficam fora do repasse. Linhas inválidas são listadas para conferência; possíveis duplicatas são sinalizadas e excluídas por padrão.</p></article>
+      </div>
+      <div class="faq-section" aria-labelledby="faq-title"><p class="section-index">DÚVIDAS FREQUENTES</p><h3 id="faq-title">Antes de fechar</h3>
+        <details><summary>Meu arquivo de vendas é enviado para algum servidor?</summary><p>Não. O CSV é lido e calculado na memória deste navegador. Não usamos upload, API, login ou armazenamento em nuvem para processar suas vendas.</p></details>
+        <details><summary>Preciso preparar as colunas com um nome específico?</summary><p>Não. O mapeamento permite escolher qual coluna corresponde a consignante, item e valor bruto. Alguns cabeçalhos conhecidos são identificados automaticamente, e você pode revisar a prévia antes do cálculo.</p></details>
+        <details><summary>Devoluções, itens não vendidos e descontos entram no repasse?</summary><p>Descontos reduzem a base da comissão. Devoluções e itens não vendidos aparecem na conferência, mas não somam ao repasse.</p></details>
+        <details><summary>O Repasses é gratuito? Há limite de uso?</summary><p>Durante o beta, o uso é gratuito e não há limite por fechamento. Se preço ou limites forem introduzidos no futuro, as condições serão informadas antes de entrarem em vigor.</p></details>
+      </div>
+    </section>
+
     <footer class="page-footer"><a class="wordmark" href="/" aria-label="Repasses — início"><span class="mark" aria-hidden="true">r.</span><span>repasses</span></a><span>Beta gratuito · Os dados permanecem no seu navegador</span><a href="#privacidade">Privacidade</a></footer>
   </main>
   <script>
     import "../scripts/app.ts";
   </script>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Repasses",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: "https://repasses.kokoapi.space/",
+    description: "Ferramenta web para calcular comissões e repasses de vendas consignadas a partir de CSV, diretamente no navegador.",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "BRL", description: "Gratuito durante o beta" },
+  })} />
 </Base>

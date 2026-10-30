@@ -29,6 +29,16 @@ test("permanece navegável em celular sem overflow horizontal", async ({ page })
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Seu fechamento," })).toBeVisible();
+  await expect(page.locator("#drop-area")).toBeInViewport({ ratio: 0.9 });
   const sizes = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(sizes.body).toBeLessThanOrEqual(sizes.viewport + 1);
+});
+
+test("lê o CSV localmente sem enviar conteúdo em uma requisição", async ({ page }) => {
+  const payloads: string[] = [];
+  page.on("request", (request) => { if (request.postData()) payloads.push(request.url()); });
+  await page.goto("/");
+  await page.locator("#csv-file").setInputFiles(example);
+  await expect(page.getByRole("heading", { name: "Relacione as colunas." })).toBeVisible();
+  expect(payloads).toEqual([]);
 });
