@@ -3,7 +3,7 @@
 **Live tools:** https://tools.kokoapi.space
 **Source:** https://github.com/vtdotsec/kokoapi.space
 
-A small, free, open-source suite for working with PDFs, images and common file formats. No account is required and the site does not use analytics or advertising.
+A small, free, open-source suite for working with PDFs, images and common file formats. No account is required and the site does not use advertising. Optional first-party analytics is enabled only after visitor consent.
 
 ## Tools
 
@@ -15,7 +15,7 @@ A small, free, open-source suite for working with PDFs, images and common file f
 | `/secret/` | Secret Sender | Share a note or file up to 10 MB through an expiring or one-read link. The browser encrypts content with AES-GCM; the server temporarily stores ciphertext. The key stays in the URL fragment. |
 | `https://repasses.kokoapi.space` | Repasses | Calculate consignor commissions and payouts from a CSV; review invalid rows and possible duplicates; export consolidated and per-supplier reports. CSV processing stays in the browser. |
 
-PDF, image and conversion work runs locally in the browser. Secret Sender is the exception: the service stores encrypted content until it is read or expires. Reader links are returned with `noindex, nofollow` so private tokens are not indexed.
+PDF, image, conversion and Repasses work runs locally in the browser; the file contents are not uploaded by these tools. The theme preference and analytics choice are stored in browser `localStorage`. Optional first-party analytics runs only after consent. It records page paths, traffic-source categories and a daily random browser ID; the service stores only a one-way hash for about 48 hours and aggregate counts for about 400 days. It does not store IP addresses, user agents, file contents, query strings or Secret Sender reader URLs. The counts are approximate opted-in browsers, not verified people. See `/privacy/` and `/privacidade/` for details. Secret Sender is the file-sharing exception: the service stores ciphertext plus delivery metadata temporarily. For file shares, the filename, MIME type and size are readable by the server; the decryption key remains in the URL fragment and is not sent in HTTP requests. Read-once content is deleted before delivery. Timed-link expiry starts at first reveal; cleanup runs periodically, and unopened content has a 30-day safety limit. Reader links are returned with `noindex, nofollow` so private tokens are not indexed.
 
 ## Design and accessibility
 
@@ -26,9 +26,10 @@ The site uses a self-hosted Newsreader and IBM Plex type system, a shared color 
 - Astro generates the site shell and static 404 page. The tool workspaces are small HTML/CSS/JavaScript applications under `public/`.
 - `public/_ui/` contains the shared app shell, theme toggle, self-hosted fonts, tokens, and common interaction helpers.
 - PDF and conversion tools use locally vendored libraries; image operations use browser APIs. No application code is loaded from a CDN.
-- Secret Sender is a dependency-free Node service. It stores ciphertext in flat files under `DATA_DIR`, with expiry/read-once cleanup; there is no database or Redis.
+- Secret Sender is a dependency-free Node service. It stores ciphertext and delivery metadata in flat files under `DATA_DIR`, with expiry/read-once cleanup; there is no database or Redis.
+- First-party traffic analytics runs in `kokoapi-analytics`, behind `/analytics/` on the Tools and Repasses hosts. The dashboard is at `https://tools.kokoapi.space/analytics/admin`; its first-run password is generated into the `analytics-data` volume and can be read on the VM with `docker exec kokoapi-analytics cat /data/dashboard-password` (username `admin`). Do not publish or paste that password into the repository.
 - Nginx serves static assets, applies security headers and gzip, and proxies `/secret/` to the Node service.
-- Docker Compose runs the static web app, Secret Sender and Repasses in separate containers. The web Nginx routes `repasses.kokoapi.space` to the Repasses service over the private Compose network.
+- Docker Compose runs the static web app, Secret Sender, Repasses and the first-party analytics collector in separate containers. Analytics aggregates are stored in a dedicated SQLite volume. The web Nginx routes `repasses.kokoapi.space` to the Repasses service over the private Compose network.
 - GitHub Actions runs dependency installation, audit, build and Astro checks on pushes to `main`, then deploys to the OCI VM over SSH.
 
 ## SEO and routes

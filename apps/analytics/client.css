@@ -1,0 +1,33 @@
+.analytics-banner {
+  position: fixed;
+  z-index: 9999;
+  inset: auto 1rem 1rem;
+  max-width: 42rem;
+  margin-inline: auto;
+  padding: 1rem 1.125rem;
+  border: 1px solid #8b8c82;
+  border-radius: 0.8rem;
+  background: #f8f6ef;
+  color: #1c211c;
+  box-shadow: 0 1rem 3rem #0003;
+  font: 500 0.94rem/1.5 system-ui, sans-serif;
+}
+.analytics-banner p { margin: 0 0 0.4rem; }
+.analytics-banner a { color: inherit; font-size: 0.85rem; text-underline-offset: 0.18em; }
+.analytics-banner-actions { display: flex; justify-content: flex-end; gap: 0.55rem; margin-top: 0.8rem; }
+.analytics-banner button, .analytics-settings-link {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #676b62;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.analytics-banner .analytics-accept { background: #28382d; color: #fff; border-color: #28382d; }
+.analytics-settings-link { margin: 0.75rem 0.5rem 0; font-size: 0.82rem; }
+@media (max-width: 600px) {
+  .analytics-banner { inset: auto 0.6rem 0.6rem; padding: 0.85rem; }
+  .analytics-banner-actions { flex-wrap: wrap; }
+}

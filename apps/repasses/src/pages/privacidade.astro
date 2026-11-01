@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base>
+  <main class="shell privacy-page">
+    <p class="eyebrow">PRIVACIDADE / MEDIÇÃO</p>
+    <h1>Seu CSV fica no navegador. A medição é opcional.</h1>
+    <p class="lead">O Repasses calcula os dados localmente. O conteúdo do CSV não é enviado ao serviço de analytics.</p>
+
+    <h2>Analytics somente com sua autorização</h2>
+    <p>Se você escolher “Aceitar analytics”, nosso serviço próprio registra visualizações de página e uma categoria de origem do tráfego para entendermos quais ferramentas são encontradas por busca. Se recusar, o navegador não envia eventos de analytics. Você pode alterar sua escolha em “Preferências de privacidade” no rodapé.</p>
+
+    <h2>Dados registrados</h2>
+    <ul>
+      <li>Site, caminho da ferramenta, data, contagem de páginas e categoria de origem (direta, busca orgânica, rede social, referência, campanha ou interna).</li>
+      <li>Um identificador aleatório do navegador que muda diariamente. O servidor guarda somente seu hash por até 48 horas para contar visualizações repetidas no mesmo dia.</li>
+      <li>As contagens agregadas ficam por 400 dias. O banco de analytics não guarda endereços IP, user-agent, parâmetros de busca, fragmentos de URL, nomes, IDs de conta ou conteúdo de arquivos.</li>
+    </ul>
+
+    <h2>Limitações e infraestrutura</h2>
+    <p>São contagens aproximadas de navegadores que aceitaram, não pessoas verificadas. Quem recusa, bloqueia scripts ou não executa JavaScript não entra nas métricas; navegadores automatizados ainda podem ser contados. O identificador diário não usa fingerprinting nem conecta dias ou subdomínios.</p>
+    <p>As requisições passam pela Cloudflare e pelo proxy de rede da VM. Esses sistemas podem processar dados técnicos de conexão conforme suas próprias configurações de logs e retenção; o banco de analytics não recebe nem guarda o IP ou user-agent do visitante.</p>
+
+    <h2>Secret Sender</h2>
+    <p>Links de leitura do Secret Sender não entram no analytics para que seus códigos não sejam registrados. O conteúdo criptografado e os metadados de arquivos são tratados conforme descrito na <a href="https://tools.kokoapi.space/secret/">página do Secret Sender</a>.</p>
+  </main>
+  <footer class="page-footer shell"><a href="/">Voltar ao Repasses</a></footer>
+</Base>

@@ -154,7 +154,7 @@ async function readBody(req, limit) {
 
 // Serves the static UI. Share pages (/secret/<id>) get the same shell but with a
 // robots noindex, because ephemeral links must never accumulate in search results.
-function staticFile(res, rel, { noindex = false } = {}) {
+function staticFile(res, rel, { noindex = false, noanalytics = false } = {}) {
   const file = path.join(PUBLIC_DIR, rel);
   // Only known files may be served.
   if (rel !== "index.html" && rel !== "app.js" && rel !== "app.css") {
@@ -181,6 +181,14 @@ function staticFile(res, rel, { noindex = false } = {}) {
         data
           .toString("utf8")
           .replace("</head>", '<meta name="robots" content="noindex, nofollow" />\n  </head>'),
+      );
+    }
+    if (noanalytics && rel === "index.html") {
+      data = Buffer.from(
+        data.toString("utf8").replace(
+          /\s*<link rel="stylesheet" href="\/analytics\/client\.css"\s*\/>\s*<script src="\/analytics\/client\.js" defer><\/script>/,
+          "",
+        ),
       );
     }
     res.writeHead(200, headers);
@@ -420,7 +428,7 @@ export function createApp() {
       // A shared link (/secret/<id>) is a client-side reader route. Keep it out of
       // search indexes: the shell holds no content and the blob is gone in minutes.
       if (req.method === "GET" && /^\/secret\/[^/]+\/?$/.test(p)) {
-        return staticFile(res, "index.html", { noindex: true });
+        return staticFile(res, "index.html", { noindex: true, noanalytics: true });
       }
 
       // Anything else under /secret is a client-side route (composer/reader).

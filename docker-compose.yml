@@ -11,6 +11,7 @@ services:
     depends_on:
       - kokoapi-tools-secret
       - kokoapi-repasses
+      - kokoapi-analytics
 
     tmpfs:
       - /var/cache/nginx:uid=101,gid=101,mode=0755
@@ -70,6 +71,40 @@ services:
       retries: 3
       start_period: 5s
 
+  # First-party, opt-in traffic metrics. The service stores only daily aggregates
+  # and short-lived hashes; its SQLite volume is separate from app data.
+  kokoapi-analytics:
+    build: ./apps/analytics
+    container_name: kokoapi-analytics
+
+    expose:
+      - "8788"
+
+    volumes:
+      - analytics-data:/data
+
+    mem_limit: 192m
+
+    read_only: true
+
+    tmpfs:
+      - /tmp
+
+    restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8788/analytics/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
   # Ephemeral sharing app (/secret/). Plain Node, zero deps; encrypted blobs on disk.
   kokoapi-tools-secret:
     build: ./secret
@@ -102,3 +137,4 @@ services:
 
 volumes:
   secret-data:
+  analytics-data:

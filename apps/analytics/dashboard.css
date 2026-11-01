@@ -1,0 +1,11 @@
+:root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#151815;color:#edf0e7}
+body{max-width:1100px;margin:0 auto;padding:2rem 1rem 4rem}h1{font:600 clamp(2rem,5vw,3.5rem)/1.05 Georgia,serif;letter-spacing:-.04em}
+p,small{color:#b7beb3}.toolbar{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin:1.5rem 0}
+select,button{font:inherit;color:inherit;background:#252a25;border:1px solid #596258;border-radius:.5rem;padding:.65rem .8rem;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;margin:1rem 0 2rem}
+.card{border:1px solid #353d35;border-radius:.75rem;background:#1c211c;padding:1rem}
+.card b{display:block;font-size:1.8rem}.card span{color:#aab3a6;font-size:.88rem}
+h2{font:500 1.3rem Georgia,serif;margin:2rem 0 .75rem}table{width:100%;border-collapse:collapse}
+th,td{text-align:left;border-bottom:1px solid #353d35;padding:.65rem .5rem;vertical-align:top}
+th{color:#b7beb3;font-size:.82rem;font-weight:600}td:last-child,th:last-child{text-align:right}
+.scroll{overflow:auto}#notice{color:#e6c879}.muted{color:#8c9689}

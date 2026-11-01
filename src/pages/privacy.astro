@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Privacy and analytics" description="How kokoapi.space processes files and measures opted-in visits.">
+  <section class="container home-block" aria-labelledby="privacy-title">
+    <p class="section-index">PRIVACY / MEASUREMENT</p>
+    <h1 id="privacy-title">Files stay local. Visit measurement is optional.</h1>
+    <p class="lead">PDF, image, conversion and Repasses file contents are processed in your browser. They are not sent to the analytics service.</p>
+
+    <h2>Analytics only after permission</h2>
+    <p>If you choose “Allow analytics,” our self-hosted service records page views and a traffic-source category to understand which tools people find through search. If you decline, the browser sends no analytics events. You can change this choice from “Privacy preferences” in the footer.</p>
+
+    <h2>What the analytics database contains</h2>
+    <ul>
+      <li>The site, tool path, date, page-view count and source category (direct, organic search, social, referral, campaign or internal).</li>
+      <li>A random browser identifier that rotates daily. The server stores only its one-way hash for up to 48 hours to count repeated page views on the same day.</li>
+      <li>Aggregated counts are kept for 400 days. The database does not store IP addresses, user-agent strings, query strings, URL fragments, names, account IDs or file contents.</li>
+    </ul>
+
+    <h2>Limits and network operations</h2>
+    <p>These are approximate opted-in browser counts, not verified people. Visitors who decline, block scripts or use browsers that do not run JavaScript are not counted; automated browsers may still be counted. The analytics code does not use fingerprinting or link the daily identifier across days or subdomains.</p>
+    <p>Requests still pass through Cloudflare and the VM's network proxy. Those systems may process technical connection data under their own operational logging and retention settings; this analytics database does not receive or retain the visitor IP or browser user-agent.</p>
+
+    <h2>Secret Sender</h2>
+    <p>Secret Sender reader links are excluded from analytics so their unguessable link IDs are not recorded. Its encrypted payload and file metadata are handled as described on the <a href="/secret/">Secret Sender page</a>.</p>
+  </section>
+</Base>
