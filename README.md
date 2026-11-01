@@ -19,7 +19,7 @@ PDF, image, conversion and Repasses work runs locally in the browser; the file c
 
 ## Design and accessibility
 
-The site uses a self-hosted Newsreader and IBM Plex type system, a shared color and spacing system across all workspaces, visible keyboard focus, reduced-motion support and responsive layouts. It makes no third-party font or analytics requests.
+The site uses a compact directory with local search across 28 existing operations, shared minimal styling, self-hosted typography, visible keyboard focus, skip links, touch-friendly controls and reduced-motion support. Longer explanations remain available in disclosure sections. It makes no third-party font or analytics requests. Support links are plain GitHub Sponsors links without embedded widgets. See docs/ROADMAP.md for product priorities and boundaries.
 
 ## Stack and hosting
 

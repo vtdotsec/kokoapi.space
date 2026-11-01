@@ -1,121 +1,202 @@
 ---
 import Base from "../layouts/Base.astro";
-
-const tools = [
+const groups = [
   {
-    number: "01",
-    title: "Image tools",
-    category: "Image · QR",
-    path: "/image/",
-    desc: "Convert, resize, crop, compress and remove EXIF or GPS metadata. Includes a QR generator. Your images stay in the browser.",
+    "title": "PDF",
+    "path": "/pdf/",
+    "description": "Edit and organize documents.",
+    "items": [
+      [
+        "Merge PDFs",
+        "/pdf/merge/",
+        "join juntar unir"
+      ],
+      [
+        "Split PDF",
+        "/pdf/split/",
+        "separar"
+      ],
+      [
+        "Compress PDF",
+        "/pdf/compress/",
+        "reduce diminuir"
+      ],
+      [
+        "Reorder pages",
+        "/pdf/reorder/",
+        "organizar"
+      ],
+      [
+        "Images to PDF",
+        "/pdf/images-to-pdf/",
+        "jpg png"
+      ],
+      [
+        "PDF to images",
+        "/pdf/pdf-to-images/",
+        "jpg png"
+      ],
+      [
+        "Extract text",
+        "/pdf/extract-text/",
+        "texto"
+      ],
+      [
+        "Watermark",
+        "/pdf/watermark/",
+        "marca"
+      ],
+      [
+        "Rotate / delete pages",
+        "/pdf/rotate/",
+        "girar remover"
+      ],
+      [
+        "Page numbers",
+        "/pdf/page-numbers/",
+        "numerar"
+      ]
+    ]
   },
   {
-    number: "02",
-    title: "PDF tools",
-    category: "Documents",
-    path: "/pdf/",
-    desc: "Merge, split, reorder, rotate, watermark, compress and extract text from PDFs on your device.",
+    "title": "Images",
+    "path": "/image/",
+    "description": "Make images ready to use.",
+    "items": [
+      [
+        "Convert format",
+        "/image/convert/",
+        "png jpg webp"
+      ],
+      [
+        "Compress & resize",
+        "/image/compress/",
+        "reduzir tamanho"
+      ],
+      [
+        "Remove EXIF / GPS",
+        "/image/remove-exif/",
+        "metadata privacidade"
+      ],
+      [
+        "Crop",
+        "/image/crop/",
+        "recortar"
+      ],
+      [
+        "Watermark",
+        "/image/watermark/",
+        "marca"
+      ],
+      [
+        "Batch conversion",
+        "/image/batch/",
+        "lote"
+      ],
+      [
+        "QR code",
+        "/image/qrcode/",
+        "qr"
+      ],
+      [
+        "Image filters",
+        "/image/filters/",
+        "filtros"
+      ]
+    ]
   },
   {
-    number: "03",
-    title: "File converter",
-    category: "Text · Data · Archives",
-    path: "/convert/",
-    desc: "Convert Markdown, HTML, PDF, images, JSON, CSV, YAML and XML; create or unpack ZIP, TAR and GZIP archives locally.",
+    "title": "Conversions",
+    "path": "/convert/",
+    "description": "Move between everyday formats.",
+    "items": [
+      [
+        "Markdown to HTML",
+        "/convert/markdown-to-html/",
+        "texto"
+      ],
+      [
+        "Markdown / HTML to PDF",
+        "/convert/markdown-to-pdf/",
+        "document"
+      ],
+      [
+        "JSON ↔ CSV",
+        "/convert/json-to-csv/",
+        "data dados planilha"
+      ],
+      [
+        "JSON ↔ YAML",
+        "/convert/json-to-yaml/",
+        "data dados"
+      ],
+      [
+        "XML to JSON",
+        "/convert/xml-to-json/",
+        "data dados"
+      ],
+      [
+        "Create archive",
+        "/convert/create-archive/",
+        "zip tar gzip"
+      ],
+      [
+        "Extract archive",
+        "/convert/extract-archive/",
+        "unzip descompactar"
+      ],
+      [
+        "PDF to text",
+        "/convert/pdf-to-text/",
+        "texto"
+      ],
+      [
+        "Convert images",
+        "/convert/convert-images/",
+        "png jpg webp"
+      ]
+    ]
   },
   {
-    number: "04",
-    title: "Secret Sender",
-    category: "Encrypted sharing",
-    path: "/secret/",
-    desc: "Send a note or small file using a one-read or expiring link. The browser encrypts it; the server temporarily stores ciphertext.",
-  },
+    "title": "Encrypted sharing",
+    "path": "/secret/",
+    "description": "Share with a one-read or expiring link.",
+    "items": [
+      [
+        "Send a note or file",
+        "/secret/",
+        "enviar compartilhar mensagem"
+      ]
+    ],
+    "exception": true
+  }
 ];
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "name": "kokoapi.space",
-      "url": "https://tools.kokoapi.space/",
-      "description": "Free, open-source image, PDF and file conversion tools that process files in your browser, plus Secret Sender for encrypted, expiring links. No account; no analytics or tracking.",
-    },
-    {
-      "@type": "ItemList",
-      "name": "Free file tools",
-      "itemListElement": tools.map((tool, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        name: tool.title,
-        url: `https://tools.kokoapi.space${tool.path}`,
-      })),
-    },
-  ],
-};
+const jsonLd = {"@context":"https://schema.org","@type":"ItemList",name:"Free file tools",itemListElement:groups.map((g,i)=>({"@type":"ListItem",position:i+1,name:g.title,url:"https://tools.kokoapi.space"+g.path}))};
 ---
-
-<Base
-  title="Free PDF, image and file tools — private by default"
-  description="Merge and edit PDFs, convert images, clean EXIF metadata and transform files in your browser. Free, open source and no account required."
-  jsonLd={jsonLd}
->
-  <section class="container home-intro">
-    <div class="home-intro-copy">
-      <p class="home-kicker"><span></span> Independent file utilities / Open source</p>
-      <h1>Useful tools for files.<br /><em>Room to work.</em></h1>
-      <p class="lead">
-        A small, carefully maintained set of tools for PDFs, images and everyday file formats.
-        Start in one click; your documents stay in your browser for most tasks.
-      </p>
-      <ul class="home-facts" aria-label="Service details">
-        <li>No account</li>
-        <li>No analytics, cookies or tracking</li>
-        <li>Free to use</li>
-      </ul>
+<Base title="Free PDF, image and file tools" description="Simple, free tools for PDFs, images and file conversions. Work in your browser, without accounts, ads or analytics." jsonLd={jsonLd} scripts={["/_ui/catalog.js"]}>
+  <section class="directory container" aria-labelledby="directory-title">
+    <p class="directory-eyebrow">KOKO TOOLS · FREE & OPEN SOURCE</p>
+    <h1 id="directory-title">Your files.<br />Fewer steps.</h1>
+    <p class="directory-intro">Simple tools for PDFs, images and everyday formats.<br class="desktop-break" /> No account, ads or analytics. Just choose a task.</p>
+    <div class="catalog-search">
+      <label for="tool-search">Find a tool</label>
+      <input id="tool-search" type="search" placeholder="Try “compress”, “PDF” or “JSON”" autocomplete="off" spellcheck="false" aria-describedby="search-help" />
+      <p id="search-help">Search happens only on this page.</p>
     </div>
-    <aside class="home-annotation" aria-label="How file processing works">
-      <p class="annotation-label">DATA PATH <span>01 / 02</span></p>
-      <h2>Local by default.</h2>
-      <p>Images, PDFs and conversions are processed on your device. They are not uploaded.</p>
-      <div class="annotation-rule"></div>
-      <p><strong>One exception:</strong> Secret Sender temporarily stores encrypted content and delivery metadata. File names, types and sizes are readable by the server; the decryption key stays in the link fragment.</p>
-      <a href="/secret/">See how Secret Sender works <span aria-hidden="true">↗</span></a>
-    </aside>
-  </section>
-
-  <section class="container home-block home-tools" aria-labelledby="tools-heading">
-    <div class="section-title">
-      <p class="section-index">01 / TOOL INDEX</p>
-      <h2 id="tools-heading">Choose a workspace.</h2>
-      <p>Choose a workspace to see its available operations.</p>
-    </div>
-    <ol class="app-index">
-      {tools.map((tool) => (
-        <li>
-          <a class="app-row" href={tool.path}>
-            <span class="app-row-no">{tool.number}</span>
-            <span class="app-row-main">
-              <span class="app-row-top">
-                <span class="app-row-name">{tool.title}</span>
-                <span class="app-row-path">{tool.path}</span>
-              </span>
-              <span class="app-row-desc">{tool.desc}</span>
-            </span>
-            <span class="app-row-meta">{tool.category}</span>
-            <span class="app-row-arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
+    <p id="catalog-status" class="visually-hidden" role="status" aria-live="polite"></p>
+    <div class="catalog-grid">
+      {groups.map(group => (
+        <section class="catalog-group" data-catalog-group aria-label={group.title}>
+          <div class="catalog-heading"><h2><a href={group.path}>{group.title}</a></h2><span aria-hidden="true">↗</span></div>
+          <p>{group.description}</p>
+          <ul>{group.items.map(([label,path,aliases], index) => <li data-catalog-item data-secondary={index >= 4 ? "true" : undefined} hidden={index >= 4} data-search={group.title+" "+label+" "+aliases}><a href={path}>{label}<span aria-hidden="true">→</span></a></li>)}</ul>
+          {!group.exception && <a class="catalog-all" href={group.path}>All {group.items.length} {group.title.toLowerCase()} tools →</a>}
+          {group.exception && <p class="catalog-exception">Uploads encrypted content and delivery metadata temporarily. <a href="/privacy/">How sharing works</a></p>}
+        </section>
       ))}
-    </ol>
-  </section>
-
-  <section class="container home-block home-note" aria-labelledby="notes-heading">
-    <div class="section-title">
-      <p class="section-index">02 / PROJECT NOTES</p>
-      <h2 id="notes-heading">Made to be inspected.</h2>
     </div>
-    <p class="home-note-copy">The source is public and self-hostable. The tools are free and need no account. The Tools site has no analytics, tracking cookies or saved theme preference. File processing stays on your device; Secret Sender uploads encrypted content only when you create a share. Read the <a href="/privacy/">privacy notice</a>.</p>
-    <a class="source-link" href="https://github.com/vtdotsec/kokoapi.space" rel="noopener noreferrer">Read the source on GitHub <span aria-hidden="true">↗</span></a>
+    <p id="catalog-empty" hidden>No matching tools. Try a format such as PDF, PNG or JSON.</p>
+    <div class="directory-note"><p>PDF, image and conversion tools process files on your device. Secret Sender uses temporary server storage for sharing.</p><a href="/privacy/">Privacy details →</a></div>
+    <p class="project-line">An independent project, built to stay useful, inspectable and free. <a href="https://github.com/vtdotsec/kokoapi.space">Explore the source</a>.</p>
   </section>
 </Base>

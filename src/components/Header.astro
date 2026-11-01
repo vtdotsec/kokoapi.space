@@ -6,10 +6,10 @@ function isActive(href: string): boolean {
 }
 
 const links = [
-  { href: "/image/", label: "Image tools" },
-  { href: "/pdf/", label: "PDF tools" },
-  { href: "/convert/", label: "File converter" },
-  { href: "/secret/", label: "Secret Sender" },
+  { href: "/image/", label: "Images" },
+  { href: "/pdf/", label: "PDF" },
+  { href: "/convert/", label: "Convert" },
+  { href: "/secret/", label: "Share" },
 ];
 ---
 
@@ -28,7 +28,7 @@ const links = [
 
     <nav class="main-nav" aria-label="Tools">
       {links.map((link) => (
-        <a class:list={["main-nav-link", { current: isActive(link.href) }]} href={link.href}>
+        <a class:list={["main-nav-link", { current: isActive(link.href) }]} href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
           {link.label}
         </a>
       ))}

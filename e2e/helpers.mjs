@@ -8,40 +8,29 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROUTES = ["/", "/image/", "/pdf/", "/convert/", "/secret/", "/image/qrcode/"];
 
 export const NAV_LABELS = [
-  "Image tools",
-  "PDF tools",
-  "File converter",
-  "Secret Sender",
+  "Images",
+  "PDF",
+  "Convert",
+  "Share",
 ];
 
 export function fixture(name) {
   return fs.readFileSync(path.join(here, "fixtures", name));
 }
 
-// Asserts the page has exactly one theme button and that clicking it toggles
-// data-theme, the sun/moon icons and localStorage.
+// Theme is page-local, starts light, and the icon names the next action.
 export async function assertThemeToggle(page) {
-  const toggle = page.locator("#theme-toggle");
-  await expect(toggle).toHaveCount(1);
-  await expect(toggle).toBeVisible();
-  await expect(toggle).not.toHaveText(/EN|PT|flag/i);
-  await expect(page.locator("#lang-toggle")).toHaveCount(0);
-
-  await page.evaluate(() => localStorage.removeItem("koko-theme"));
-  await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.locator(".theme-ico-dark")).toBeVisible();
-  await expect(page.locator(".theme-ico-light")).toBeHidden();
-
-  await toggle.click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await expect(page.locator(".theme-ico-light")).toBeVisible();
-  await expect(page.locator(".theme-ico-dark")).toBeHidden();
-  expect(await page.evaluate(() => localStorage.getItem("koko-theme"))).toBe("light");
-
-  await toggle.click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  expect(await page.evaluate(() => localStorage.getItem("koko-theme"))).toBe("dark");
+ const toggle = page.locator("#theme-toggle");
+ await expect(toggle).toHaveCount(1);
+ await expect(toggle).toBeVisible();
+ await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+ await expect(page.locator(".theme-ico-dark")).toBeVisible();
+ await toggle.click();
+ await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+ await expect(page.locator(".theme-ico-light")).toBeVisible();
+ expect(await page.evaluate(() => localStorage.getItem("koko-theme"))).toBe(null);
+ await page.reload();
+ await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 }
 
 // Simulates dropping a file onto a label.file-drop (drag & drop path).

@@ -54,6 +54,7 @@ const imageUrl = new URL(image, site).toString();
     <link rel="stylesheet" href="/_ui/app.css" />
     <link rel="stylesheet" href="/_ui/fonts.css" />
     <link rel="stylesheet" href="/_ui/tokens.css" />
+    <link rel="stylesheet" href="/_ui/minimal.css" />
     {styles.map((href) => <link rel="stylesheet" href={href} />)}
     <script is:inline src="/_ui/ui.js" defer></script>
     {scripts.map((src) => <script is:inline src={src} defer></script>)}
@@ -75,6 +76,7 @@ const imageUrl = new URL(image, site).toString();
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <Header />
     <main id="main">
       <slot />
