@@ -29,6 +29,10 @@ a { color: var(--green); text-underline-offset: 0.2em; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 [hidden] { display: none !important; }
 .shell { width: min(100% - 3rem, 1120px); margin-inline: auto; }
+.privacy-page { padding-block: clamp(2.5rem, 7vw, 6rem); }
+.privacy-page h1 { max-width: 19ch; margin: 0 0 1rem; font: 500 clamp(2.7rem, 7vw, 5rem)/0.98 var(--display); letter-spacing: -0.045em; }
+.privacy-page h2 { margin: 2.2rem 0 0.6rem; font: 550 1.5rem/1.2 var(--display); }
+.privacy-page p, .privacy-page li { max-width: 75ch; color: var(--muted); }
 
 .site-head { border-bottom: 1px solid var(--line); }
 .head-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
