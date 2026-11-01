@@ -1,4 +1,5 @@
 FROM node:24-alpine AS build
+ENV ASTRO_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 
