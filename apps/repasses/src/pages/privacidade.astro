@@ -1,28 +1,32 @@
----
 import Base from "../layouts/Base.astro";
 ---
 <Base>
   <main class="shell privacy-page">
     <p class="eyebrow">PRIVACIDADE / MEDIÇÃO</p>
-    <h1>Seu CSV fica no navegador. A medição é opcional.</h1>
+    <h1>Seu CSV fica no navegador. As métricas são agregadas.</h1>
     <p class="lead">O Repasses calcula os dados localmente. O conteúdo do CSV não é enviado ao serviço de analytics.</p>
 
-    <h2>Analytics somente com sua autorização</h2>
-    <p>Se você escolher “Aceitar analytics”, nosso serviço próprio registra visualizações de página e uma categoria de origem do tráfego para entendermos quais ferramentas são encontradas por busca. Se recusar, o navegador não envia eventos de analytics. Você pode alterar sua escolha em “Preferências de privacidade” no rodapé.</p>
+    <h2>O que medimos</h2>
+    <p>Nosso analytics próprio conta visualizações de página e agrupa os totais por ferramenta, dia e categoria de origem do tráfego. Isso nos ajuda a entender quais ferramentas as pessoas encontram pela busca. O sistema não cria perfis nem conta pessoas únicas.</p>
+    <p>Usamos legítimo interesse para essa medição limitada de audiência, observados os requisitos aplicáveis da LGPD. O <a href="https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia_orientativo_cookies_e_protecao_de_dados_pessoais">guia da ANPD sobre cookies</a> informa que essa hipótese pode ser aplicável em alguns contextos quando a medição fica limitada a padrões agregados, sem perfilamento ou combinação com mecanismos de rastreamento. A avaliação está documentada no repositório; esta página explica as proteções e como desativar a medição.</p>
 
-    <h2>Dados registrados</h2>
+    <h2>Dados e proteções</h2>
     <ul>
-      <li>Site, caminho da ferramenta, data, contagem de páginas e categoria de origem (direta, busca orgânica, rede social, referência, campanha ou interna).</li>
-      <li>Um identificador aleatório do navegador que muda diariamente. O servidor guarda somente seu hash por até 48 horas para contar visualizações repetidas no mesmo dia.</li>
-      <li>As contagens agregadas ficam por 400 dias. O banco de analytics não guarda endereços IP, user-agent, parâmetros de busca, fragmentos de URL, nomes, IDs de conta ou conteúdo de arquivos.</li>
+      <li>O banco guarda somente data, site, caminho da ferramenta, totais de visualizações e categoria de origem (direta, busca orgânica, rede social, referência, campanha ou interna).</li>
+      <li>Não usamos cookies, IDs de navegador, fingerprint de dispositivo ou contagem de pessoas únicas. Parâmetros e fragmentos da URL são removidos; uma campanha é registrada apenas como sim ou não.</li>
+      <li>O navegador reduz a origem a um domínio, e o serviço transforma esse domínio imediatamente em uma categoria. A origem bruta não é guardada.</li>
+      <li>Os totais são apagados após 400 dias. Links de leitura do Secret Sender ficam fora da medição.</li>
+      <li>Os logs de acesso dos servidores web do Tools e Repasses e do coletor estão desativados. O aplicativo de analytics não guarda IP ou user-agent, e esses cabeçalhos não são enviados ao coletor.</li>
     </ul>
 
-    <h2>Limitações e infraestrutura</h2>
-    <p>São contagens aproximadas de navegadores que aceitaram, não pessoas verificadas. Quem recusa, bloqueia scripts ou não executa JavaScript não entra nas métricas; navegadores automatizados ainda podem ser contados. O identificador diário não usa fingerprinting nem conecta dias ou subdomínios.</p>
-    <p>As requisições passam pela Cloudflare e pelo proxy de rede da VM. Esses sistemas podem processar dados técnicos de conexão conforme suas próprias configurações de logs e retenção; o banco de analytics não recebe nem guarda o IP ou user-agent do visitante.</p>
+    <h2>Como desativar</h2>
+    <p>Você pode desativar futuros eventos do navegador pelo link “Desativar métricas agregadas” no rodapé. A escolha fica somente no armazenamento local do navegador; se você apagar os dados do site, poderá precisar desativar novamente. Visualizações já somadas não podem ser associadas ao seu navegador nem removidas individualmente.</p>
+
+    <h2>Provedores de rede</h2>
+    <p>As requisições passam pela Cloudflare e pela rede da VM. Esses provedores processam dados de conexão, como IP, para entregar o tráfego, conforme seus próprios termos e configurações operacionais. O banco de analytics não retém esses dados.</p>
 
     <h2>Secret Sender</h2>
-    <p>Links de leitura do Secret Sender não entram no analytics para que seus códigos não sejam registrados. O conteúdo criptografado e os metadados de arquivos são tratados conforme descrito na <a href="https://tools.kokoapi.space/secret/">página do Secret Sender</a>.</p>
+    <p>Links de leitura do Secret Sender ficam fora do analytics para que seus códigos não sejam registrados. O conteúdo criptografado e os metadados de arquivos são tratados conforme descrito na <a href="https://tools.kokoapi.space/secret/">página do Secret Sender</a>.</p>
   </main>
   <footer class="page-footer shell"><a href="/">Voltar ao Repasses</a></footer>
 </Base>

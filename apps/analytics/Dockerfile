@@ -7,7 +7,11 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 COPY --chown=node:node server.mjs client.js client.css dashboard.html dashboard.js dashboard.css ./
-RUN mkdir -p /data && chown node:node /data
+RUN node --check server.mjs \
+    && node --check client.js \
+    && node --check dashboard.js \
+    && mkdir -p /data \
+    && chown node:node /data
 
 USER node
 EXPOSE 8788

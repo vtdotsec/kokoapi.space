@@ -1,25 +1,29 @@
----
 import Base from "../layouts/Base.astro";
 ---
-<Base title="Privacy and analytics" description="How kokoapi.space processes files and measures opted-in visits.">
+<Base title="Privacy and analytics" description="How kokoapi.space processes files and measures aggregate pageviews.">
   <section class="container home-block" aria-labelledby="privacy-title">
     <p class="section-index">PRIVACY / MEASUREMENT</p>
-    <h1 id="privacy-title">Files stay local. Visit measurement is optional.</h1>
+    <h1 id="privacy-title">Files stay local. Audience metrics stay aggregate.</h1>
     <p class="lead">PDF, image, conversion and Repasses file contents are processed in your browser. They are not sent to the analytics service.</p>
 
-    <h2>Analytics only after permission</h2>
-    <p>If you choose “Allow analytics,” our self-hosted service records page views and a traffic-source category to understand which tools people find through search. If you decline, the browser sends no analytics events. You can change this choice from “Privacy preferences” in the footer.</p>
+    <h2>What we measure</h2>
+    <p>Our self-hosted analytics counts pageviews and groups them by tool path, day and traffic-source category. This helps us understand which tools visitors find through search. It does not create visitor profiles or count unique people.</p>
+    <p>We rely on legitimate interest for this limited audience measurement, subject to the applicable LGPD requirements. The <a href="https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia_orientativo_cookies_e_protecao_de_dados_pessoais">ANPD cookie guidance</a> says this basis may apply to audience measurement in some contexts when it is limited to aggregated patterns, without profiling or combining tracking mechanisms. Our assessment is documented in the repository; this notice explains the safeguards and the available opt-out.</p>
 
-    <h2>What the analytics database contains</h2>
+    <h2>Data and safeguards</h2>
     <ul>
-      <li>The site, tool path, date, page-view count and source category (direct, organic search, social, referral, campaign or internal).</li>
-      <li>A random browser identifier that rotates daily. The server stores only its one-way hash for up to 48 hours to count repeated page views on the same day.</li>
-      <li>Aggregated counts are kept for 400 days. The database does not store IP addresses, user-agent strings, query strings, URL fragments, names, account IDs or file contents.</li>
+      <li>The analytics database keeps only date, site, tool path, pageview totals and a traffic-source category (direct, organic search, social, referral, campaign or internal).</li>
+      <li>No cookies, browser IDs, device fingerprints or unique-person counts are used. Query strings and URL fragments are stripped; a campaign is recorded only as a yes/no category.</li>
+      <li>The browser reduces a referrer to its origin, and the service immediately converts that origin to a source category. Raw referrers are not stored.</li>
+      <li>Pageview aggregates are deleted after 400 days. Secret Sender reader links are excluded.</li>
+      <li>Access logs are disabled for the Tools and Repasses web servers and the collector. The analytics application does not store IP addresses or user-agent strings, and those headers are not forwarded to the collector.</li>
     </ul>
 
-    <h2>Limits and network operations</h2>
-    <p>These are approximate opted-in browser counts, not verified people. Visitors who decline, block scripts or use browsers that do not run JavaScript are not counted; automated browsers may still be counted. The analytics code does not use fingerprinting or link the daily identifier across days or subdomains.</p>
-    <p>Requests still pass through Cloudflare and the VM's network proxy. Those systems may process technical connection data under their own operational logging and retention settings; this analytics database does not receive or retain the visitor IP or browser user-agent.</p>
+    <h2>Your choice</h2>
+    <p>You can disable future browser events with “Disable aggregate metrics” in the footer. The choice is stored only in your browser's local storage so it can be remembered; if you clear site data, you may need to disable it again. Already-counted aggregate pageviews cannot be linked back to your browser or removed individually.</p>
+
+    <h2>Network providers</h2>
+    <p>Requests pass through Cloudflare and the VM network. Those providers necessarily process connection details such as an IP address to deliver traffic, under their own terms and operational settings. The analytics database does not retain those connection details.</p>
 
     <h2>Secret Sender</h2>
     <p>Secret Sender reader links are excluded from analytics so their unguessable link IDs are not recorded. Its encrypted payload and file metadata are handled as described on the <a href="/secret/">Secret Sender page</a>.</p>
