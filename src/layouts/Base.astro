@@ -19,7 +19,7 @@ interface Props {
 const {
   title = "kokoapi.space",
   description = "Free, open-source file tools. Most processing happens in your browser; Secret Sender temporarily stores encrypted content for delivery.",
-  image = "/og.svg",
+  image = "/og.svg?v=3",
   type = "website",
   noindex = false,
   jsonLd,
@@ -50,7 +50,7 @@ const imageUrl = new URL(image, site).toString();
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {canonical && <link rel="canonical" href={canonical} />}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3" />
     <link rel="stylesheet" href="/_ui/app.css" />
     <link rel="stylesheet" href="/_ui/fonts.css" />
     <link rel="stylesheet" href="/_ui/tokens.css" />

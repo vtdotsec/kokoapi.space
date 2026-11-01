@@ -13,7 +13,7 @@ Tools is a free, open-source set of useful file operations. Prefer local process
 2. Add contextual before/after size and quality previews for compression, with predictable output naming.
 3. Consolidate duplicate conversion interfaces while preserving existing URLs.
 4. Expand keyboard and screen-reader checks for page reordering, cropping, progress and download status.
-5. Consider a local file checksum verifier (SHA-256) and privacy-focused metadata inspection. Ship only with fixtures and clear descriptions of what metadata can remain.
+5. Shipped local SHA-256 checksums, signature-based type inspection and text cleanup with fixtures and privacy tests. A future metadata inspector must clearly distinguish metadata inspection from format signatures.
 6. Evaluate an explicitly requested offline package. Avoid silently caching documents or introducing service-worker persistence.
 
 ## Boundaries

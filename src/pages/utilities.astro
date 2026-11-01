@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+const tools = [
+  {name:'File checksum',path:'/files/checksum/',description:'Calculate SHA-256 and compare an expected hash.'},
+  {name:'File type inspector',path:'/files/inspect/',description:'Read the signature, declared MIME type and size.'},
+  {name:'Clean up text',path:'/text/clean/',description:'Trim whitespace and remove empty or duplicate lines.'},
+];
+---
+<Base title="File and text tools" description="Local file checksums, signature inspection and text cleanup. Free and without uploads.">
+  <section class="utility-page container"><p class="directory-eyebrow">FILE &amp; TEXT</p><h1>The small finishing touches.</h1><p class="utility-intro">Check a download or tidy up text. Everything stays on your device.</p>
+    <div class="utility-index">{tools.map(tool=><a href={tool.path}><h2>{tool.name} <span aria-hidden="true">→</span></h2><p>{tool.description}</p></a>)}</div>
+  </section>
+</Base>

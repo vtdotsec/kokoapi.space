@@ -11,6 +11,7 @@ export const NAV_LABELS = [
   "Images",
   "PDF",
   "Convert",
+  "Utilities",
   "Share",
 ];
 

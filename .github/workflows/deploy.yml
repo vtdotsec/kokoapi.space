@@ -38,6 +38,9 @@ jobs:
       - name: Validate build
         run: npm run build
 
+      - name: Local utility unit checks
+        run: node --test scripts/utility-core.test.mjs
+
       - name: Tools privacy checks
         run: node scripts/check-tools-privacy.mjs
 

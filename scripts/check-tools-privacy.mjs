@@ -8,7 +8,7 @@ for (const path of ['src/layouts/Base.astro', 'public/pdf/index.html', 'public/i
   assert.match(html, /<html lang="en" data-theme="light">/, path);
   assert.doesNotMatch(html, /(?:src|href)="\/analytics\//, path);
 }
-for (const path of ['public/pdf/pdf.js', 'public/image/image.js', 'public/convert/convert.js', 'secret/public/app.js', 'public/_ui/ui.js', 'public/_ui/catalog.js']) {
+for (const path of ['public/pdf/pdf.js', 'public/image/image.js', 'public/convert/convert.js', 'secret/public/app.js', 'public/_ui/ui.js', 'public/_ui/catalog.js', 'public/_ui/utilities.js', 'public/_ui/utility-core.js']) {
   assert.doesNotMatch(read(path), /(?:localStorage|sessionStorage)\s*\.\s*setItem|document\s*\.\s*cookie\s*=|indexedDB\s*\.\s*open|sendBeacon\s*\(/, path);
 }
 const handlers = {};

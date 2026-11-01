@@ -5,12 +5,12 @@ import Base from "../layouts/Base.astro";
   <section class="container home-block" aria-labelledby="privacy-title">
     <p class="section-index">PRIVACY</p>
     <h1 id="privacy-title">Your files stay with you.</h1>
-    <p class="lead">PDF, image and conversion tools process files in browser memory. They do not upload your files or save them on our server.</p>
+    <p class="lead">PDF, image, conversion and file/text utility tools process inputs in browser memory. They do not upload your files or save them on our server.</p>
     <h2>No audience tracking or saved preferences</h2>
     <p>Tools runs no analytics, advertising pixels, fingerprinting or visitor profiling. It sets no cookies and does not save theme preferences or document contents in localStorage, sessionStorage or IndexedDB. The theme starts light; you can switch it to dark for the current page.</p>
     <p>On your next visit, the UI removes old Tools theme and analytics keys left by previous releases. Previously collected Tools pageview aggregates are deleted from our analytics database. Repasses is a separate product with its own privacy notice.</p>
     <h2>Downloads and memory</h2>
-    <p>Files you explicitly download are saved by your browser to your device. Working data stays in the current page's memory until it is closed or reloaded. Your browser may cache public website assets; this is separate from storing your documents.</p>
+    <p>Files you explicitly download are saved by your browser to your device. Copy buttons write to your clipboard only when pressed. Working data stays in the current page's memory until it is cleared, closed or reloaded. Your browser may cache public website assets; this is separate from storing your documents.</p>
     <h2>Secret Sender is a sharing service</h2>
     <p>Creating a share intentionally uploads encrypted content to our server. It temporarily stores ciphertext, an initialization vector, expiry information and delivery metadata. For files, the filename, MIME type and size are readable by the server. The decryption key stays in the URL fragment and is not sent in HTTP requests.</p>
     <p>Read-once content is removed before delivery. Timed expiry starts on first reveal; periodic cleanup removes expired shares, with a 30-day safety limit for unopened shares. IP-based abuse counters exist only in server memory. Use the local file tools if your requirement is to upload nothing.</p>
