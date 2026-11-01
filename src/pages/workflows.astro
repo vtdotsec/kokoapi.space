@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+import { workflows } from "../data/guides";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "File workflows with koko tools",
+  itemListElement: workflows.map((workflow, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: workflow.title,
+    url: `https://tools.kokoapi.space/workflows/#${workflow.id}`,
+  })),
+};
+---
+
+<Base title="Common file workflows" description="Practical workflows for preparing photos, submitting PDFs, checking downloads and converting data. Free browser tools; local processing." jsonLd={jsonLd}>
+  <section class="workflows-page container" aria-labelledby="workflows-title">
+    <p class="directory-eyebrow">KOKO TOOLS / PRACTICAL WORKFLOWS</p>
+    <h1 id="workflows-title">A few useful steps, in order.</h1>
+    <p class="workflows-intro">Start with the task, then use only the tools you need. Local file operations stay in your browser; nothing is uploaded by these workflows.</p>
+
+    <div class="workflow-list">
+      {workflows.map((workflow) => (
+        <article class="workflow-card" id={workflow.id}>
+          <div class="workflow-card-heading"><h2>{workflow.title}</h2><p>{workflow.description}</p></div>
+          <ol>
+            {workflow.steps.map((step) => (
+              <li><a href={step.path}><span class="workflow-step-title">{step.title}</span><span class="workflow-step-detail">{step.detail}</span></a></li>
+            ))}
+          </ol>
+          <p class="workflow-note">{workflow.note}</p>
+          <a class="workflow-guide-link" href={workflow.guidePath}>Read the step-by-step guide <span aria-hidden="true">→</span></a>
+        </article>
+      ))}
+    </div>
+    <p class="workflows-privacy">The Tools app sends no analytics events and uses no tracking cookies or saved browser preferences. <a href="/privacy/">Privacy details, including Cloudflare's aggregate network metrics</a></p>
+  </section>
+</Base>

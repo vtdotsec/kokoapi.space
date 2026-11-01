@@ -17,7 +17,7 @@ interface Props {
 }
 
 const {
-  title = "kokoapi.space",
+  title = "koko tools",
   description = "Free, open-source file tools. Most processing happens in your browser; Secret Sender temporarily stores encrypted content for delivery.",
   image = "/og.svg?v=3",
   type = "website",
@@ -32,10 +32,10 @@ const pageUrl = new URL(Astro.url.pathname, site);
 if (!pageUrl.pathname.endsWith("/")) pageUrl.pathname += "/";
 const canonical = noindex ? undefined : pageUrl.toString();
 
-// Brand is kokoapi.space; descriptive titles get it appended as a suffix.
+// Keep search titles consistent with the current koko tools wordmark.
 const fullTitle = title.toLowerCase().startsWith("kokoapi")
   ? title
-  : `${title} · kokoapi.space`;
+  : `${title} · koko tools`;
 const metaDescription = description.slice(0, 200);
 const imageUrl = new URL(image, site).toString();
 ---
@@ -61,7 +61,7 @@ const imageUrl = new URL(image, site).toString();
     <meta name="theme-color" content="#f4f0e6" />
 
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content="kokoapi.space" />
+    <meta property="og:site_name" content="koko tools" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     {canonical && <meta property="og:url" content={canonical} />}

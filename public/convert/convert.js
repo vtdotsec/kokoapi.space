@@ -1699,13 +1699,13 @@
     if (cvSelect) cvSelect.value = id;
     var activeButton = cvSideBtns.find(function (button) { return button.getAttribute("data-target") === id; });
     var title = activeButton ? activeButton.textContent.trim() : "File converter";
-    document.title = title + " | kokoapi.space";
+    document.title = title + " | koko tools";
     var heading = document.querySelector("main.wrap > h1");
     if (heading) heading.textContent = title;
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (ogTitle) ogTitle.content = title + " | kokoapi.space";
-    if (twitterTitle) twitterTitle.content = title + " | kokoapi.space";
+    if (ogTitle) ogTitle.content = title + " | koko tools";
+    if (twitterTitle) twitterTitle.content = title + " | koko tools";
     var description = document.querySelector('meta[name="description"]');
     var descriptionText = title + " in your browser. Free local file conversion with no upload.";
     if (description) description.content = descriptionText;

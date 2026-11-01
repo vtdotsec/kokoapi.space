@@ -1,45 +1,37 @@
-# kokoapi.space
+# koko tools
 
-**Live tools:** https://tools.kokoapi.space
-**Source:** https://github.com/vtdotsec/kokoapi.space
+Free, open-source tools for PDFs, images, file conversion, checksums and text cleanup. No account or ads. Use them at **[tools.kokoapi.space](https://tools.kokoapi.space)**; browse the source at **[github.com/vtdotsec/kokoapi.space](https://github.com/vtdotsec/kokoapi.space)**.
 
-A small, free, open-source suite for working with PDFs, images and common file formats. No account is required and the site does not use advertising. Tools runs no analytics, cookies, tracking identifiers or saved theme preferences. Repasses is a separate product with its own metrics and privacy notice.
+## What is included
 
-## Tools
+- **Images** (`/image/`): convert, resize, crop, compress, watermark, edit and remove metadata; create QR codes.
+- **PDF** (`/pdf/`): merge, split, reorder, rotate, watermark, compress, protect, unlock, extract text and convert to/from images.
+- **Convert** (`/convert/`): convert common document, image, JSON, CSV, YAML and XML formats; create and extract archives.
+- **Utilities** (`/utilities/`): calculate SHA-256 checksums, identify file signatures and clean text.
+- **Workflows** (`/workflows/`): practical paths for preparing photos, submitting PDFs, checking downloads and converting data, with focused guides at `/guides/`.
+- **Secret Sender** (`/secret/`): share an encrypted note or file through a one-read or expiring link.
+- **Repasses** ([repasses.kokoapi.space](https://repasses.kokoapi.space)): a separate browser-based tool for calculating consignment payouts from CSV.
 
-| Path | Workspace | What it does |
-| --- | --- | --- |
-| `/image/` | Image tools | Convert, compress, resize, crop, watermark and filter images; remove EXIF/GPS metadata; generate QR codes. |
-| `/pdf/` | PDF tools | Merge, split, reorder, rotate, add page numbers or watermarks, compress, protect/unlock, extract text and convert images to/from PDF. |
-| `/convert/` | File converter | Convert Markdown/HTML/PDF, images, JSON/CSV/YAML/XML; create and extract ZIP, TAR and GZIP archives. |
-| `/utilities/` | File & text | SHA-256 file checksums, signature-based file inspection and text cleanup; all processing is local. |
-| `/secret/` | Secret Sender | Share a note or file up to 10 MB through an expiring or one-read link. The browser encrypts content with AES-GCM; the server temporarily stores ciphertext. The key stays in the URL fragment. |
-| `https://repasses.kokoapi.space` | Repasses | Calculate consignor commissions and payouts from a CSV; review invalid rows and possible duplicates; export consolidated and per-supplier reports. CSV processing stays in the browser. |
+## Privacy
 
-PDF, image, conversion and Repasses work runs locally in the browser; the file contents are not uploaded by these tools. Tools does not collect audience metrics or store browser preferences. Theme changes apply only to the current page, which starts in light mode. Old Tools analytics aggregates are deleted on collector startup; the collector now accepts Repasses only. See /privacy/ and docs/privacy/tools-audit.md for the privacy review and the Secret Sender exception. Secret Sender is the file-sharing exception: the service stores ciphertext plus delivery metadata temporarily. For file shares, the filename, MIME type and size are readable by the server; the decryption key remains in the URL fragment and is not sent in HTTP requests. Read-once content is deleted before delivery. Timed-link expiry starts at first reveal; cleanup runs periodically, and unopened content has a 30-day safety limit. Reader links are returned with `noindex, nofollow` so private tokens are not indexed.
+PDF, image, conversion, utility and Repasses operations run in the browser; those tools do not upload the files they process. The Tools app sends no analytics events, sets no tracking cookies and saves no browser preferences. Cloudflare separately provides aggregate network traffic metrics to the site owner; its approximate visitor counts use IP addresses and may include bots. Secret Sender is different: it temporarily stores encrypted content and delivery metadata so recipients can retrieve it. Its encryption key stays in the link fragment and is not sent to the server. See the [privacy notice](https://tools.kokoapi.space/privacy/) and [`docs/privacy/tools-audit.md`](docs/privacy/tools-audit.md).
 
-## Design and accessibility
+## Production stack
 
-The site uses a compact directory with local search across 31 operations, shared minimal styling, self-hosted typography, visible keyboard focus, skip links, touch-friendly controls and reduced-motion support. Longer explanations remain available in disclosure sections. It makes no third-party font or analytics requests. Support links are plain GitHub Sponsors links without embedded widgets. See docs/ROADMAP.md for product priorities and boundaries.
+- **DNS and edge:** Cloudflare proxied DNS records for `tools.kokoapi.space` and `repasses.kokoapi.space`.
+- **Host:** an Oracle Cloud Infrastructure (OCI) Linux VM.
+- **Ingress:** Caddy on the VM handles public host routing and reverse-proxies requests to the app stack.
+- **Containers:** Docker Engine and Docker Compose run the static web service, Secret Sender, Repasses and the separate first-party analytics service used by Repasses. The web container runs Nginx; Repasses and analytics are reachable only inside the Compose network.
+- **Site build:** Astro generates the static site. HTML, CSS and browser-side JavaScript serve the tools; local libraries are included in the repository rather than loaded from a CDN.
+- **Secret Sender:** a small Node.js service stores encrypted payloads and delivery metadata temporarily in a Docker volume. It does not use a database.
+- **Repasses metrics:** a separate service stores aggregate metrics in SQLite on its own Docker volume. It is not used by Tools.
+- **Deploy:** GitHub Actions checks and builds changes pushed to `main`, then connects to the OCI VM over SSH to pull the commit and rebuild the Compose services.
 
-## Stack and hosting
+## Search discovery
 
-- Astro generates the site shell and static 404 page. The tool workspaces are small HTML/CSS/JavaScript applications under `public/`.
-- `public/_ui/` contains the shared app shell, theme toggle, self-hosted fonts, tokens, and common interaction helpers.
-- PDF and conversion tools use locally vendored libraries; image operations use browser APIs. No application code is loaded from a CDN.
-- Secret Sender is a dependency-free Node service. It stores ciphertext and delivery metadata in flat files under `DATA_DIR`, with expiry/read-once cleanup; there is no database or Redis.
-- First-party traffic analytics runs in `kokoapi-analytics`, behind `/analytics/` on the Repasses host only. It stores pageview aggregates and source categories only. The dashboard is at `https://repasses.kokoapi.space/analytics/admin`; its first-run password is generated into the `analytics-data` volume and can be read on the VM with `docker exec kokoapi-analytics cat /data/dashboard-password` (username `admin`). Do not publish or paste that password into the repository.
-- Nginx serves static assets, applies security headers and gzip, and proxies `/secret/` to the Node service.
-- Docker Compose runs the static web app, Secret Sender, Repasses and the first-party analytics collector in separate containers. Analytics aggregates are stored in a dedicated SQLite volume. The web Nginx routes `repasses.kokoapi.space` to the Repasses service over the private Compose network.
-- GitHub Actions runs dependency installation, audit, build and Astro checks on pushes to `main`, then deploys to the OCI VM over SSH.
+The Tools app has no analytics scripts, beacons or pageview event collection. Use Cloudflare's separate aggregate traffic dashboard for broad delivery totals and Google Search Console for organic search queries, impressions, clicks and pages. The Search Console setup and content rules are in [`docs/SEO.md`](docs/SEO.md).
 
-## SEO and routes
-
-Astro generates the canonical homepage, 404 response and sitemap. The four tool entry points are included as sitemap custom pages because they live under `public/`. Client-side operation URLs such as `/pdf/merge` load their workspace shell; the tool script updates the active panel, heading and browser title. Their canonical remains the workspace entry point, so these state URLs are not listed as separate pages. The Secret Sender applies `noindex, nofollow` to individual token links.
-
-`robots.txt` allows public pages and points crawlers to the generated sitemap index. The legacy apex domain redirects to `https://tools.kokoapi.space/`.
-
-## Local development
+## Run locally
 
 Requires Node.js 22 or newer.
 
@@ -48,29 +40,25 @@ npm ci
 npm run dev       # http://localhost:4321
 npm run check     # Astro diagnostics
 npm run build     # static output in dist/
-npm run test      # Astro diagnostics + production build
-npm run test:e2e  # production build + Playwright suite
-node secret/test.mjs # Secret Sender API lifecycle tests
+npm run test:e2e  # production build + Playwright browser tests
+node secret/test.mjs
 ```
 
-Playwright needs its Chromium browser installed (`npx playwright install chromium`). The E2E suite covers image conversion, PDF operations, file conversion, QR generation, theme behavior and Secret Sender flows.
+Playwright requires Chromium (`npx playwright install chromium`).
 
-## Deployment
-
-The workflow expects repository secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, and `DEPLOY_PATH`; `DEPLOY_PORT` is optional. It fetches the latest `main` commit on the VM and rebuilds all Compose services, including Repasses. Caddy on the VM routes `repasses.kokoapi.space` to the suite Nginx, which forwards to the private Repasses container. DNS must contain a proxied `A` record named `repasses` pointing to the VM's public IP.
-
-## Repository layout
+## Repository map
 
 ```text
-.github/workflows/deploy.yml   CI and production deployment
-src/                           Astro homepage and 404
-public/_ui/                    Shared UI shell, styles, theme and local fonts
-public/image/                  Image and QR workspace
-public/pdf/                    PDF workspace
-public/convert/                File conversion workspace
-secret/                        Secret Sender service and browser UI
-e2e/                           Playwright browser tests
-nginx.conf                     Static routing, headers and app proxy
-Dockerfile                     Static site image
-docker-compose.yml             Web, Secret Sender and Repasses services
+src/                         Astro pages, guides, workflows and site shell
+public/_ui/                  Shared styles, UI helpers and local fonts
+public/image/                Image and QR tools
+public/pdf/                  PDF tools
+public/convert/              File conversion tools
+secret/                      Secret Sender Node service and browser UI
+apps/repasses/               Separate Repasses app
+apps/analytics/              Repasses-only metrics service
+docker-compose.yml           Production app services and data volumes
+nginx.conf                   Static routing, headers and internal proxies
+.github/workflows/deploy.yml CI and OCI deployment
+docs/SEO.md                  Search Console setup and SEO content rules
 ```
