@@ -3,16 +3,18 @@
 (function () {
   "use strict";
 
-  var THEME_KEY = "koko-theme";
+  // Theme stays in memory for this page; no preferences or identifiers are saved.
+  try {
+    ["koko-theme", "koko-analytics-consent", "koko-analytics-daily-id", "koko-analytics-opt-out"].forEach(function (key) {
+      localStorage.removeItem(key);
+    });
+  } catch (e) {}
 
   function getTheme() {
-    var v = null;
-    try { v = localStorage.getItem(THEME_KEY); } catch (e) {}
-    return v === "light" ? "light" : "dark";
+    return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
   }
 
   function setTheme(theme) {
-    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
     document.documentElement.setAttribute("data-theme", theme);
     var btn = document.getElementById("theme-toggle");
     if (btn) {
@@ -20,7 +22,6 @@
       btn.setAttribute("title", theme === "light" ? "Dark" : "Light");
     }
   }
-
   function fileProblem(input, file) {
     if (!file) return "No file selected.";
     if (file.size === 0) return "The file is empty.";

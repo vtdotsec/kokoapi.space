@@ -10,7 +10,7 @@ const DATA_DIR = process.env.DATA_DIR || "/data";
 const MAX_BODY = 2048;
 const METRIC_DAYS = 400;
 const ALLOWED_HOSTS = new Set([
-  "tools.kokoapi.space",
+
   "repasses.kokoapi.space",
 ]);
 
@@ -54,6 +54,14 @@ db.exec(`
   DROP TABLE IF EXISTS daily_visitors;
   DROP TABLE IF EXISTS daily_site_visitors;
 `);
+
+// Tools no longer participates in analytics; erase its historic aggregates.
+db.exec("PRAGMA secure_delete = ON");
+const removedTools = db.prepare("DELETE FROM pageviews WHERE site = ?").run("tools.kokoapi.space").changes;
+if (removedTools > 0) {
+  db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+  db.exec("VACUUM");
+}
 
 const incrementPage = db.prepare(`
   INSERT INTO pageviews(day, site, path, source, pageviews)

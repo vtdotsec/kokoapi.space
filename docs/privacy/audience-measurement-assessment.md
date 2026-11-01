@@ -1,6 +1,6 @@
 # Audience measurement assessment
 
-This document records the product rationale and safeguards for first-party audience measurement on Tools and Repasses. It is an operational assessment for the site owner, not a legal opinion.
+This document records the product rationale and safeguards for first-party audience measurement on Repasses only. It is an operational assessment for the site owner, not a legal opinion.
 
 ## Purpose and interest
 
@@ -8,7 +8,7 @@ Understand which tools receive use and whether visitors reach them through organ
 
 ## Data and necessity
 
-The collector receives a page path, a referrer origin reduced by the browser, and a campaign yes/no flag. It stores only date, site, sanitized path, a coarse traffic-source category, and aggregate pageview totals. The collector does not read or persist connection IP or user-agent headers; the reverse proxy does not forward those headers to the collector. Nginx access logs are disabled for the public Tools/Repasses servers and analytics routes.
+The collector receives a page path, a referrer origin reduced by the browser, and a campaign yes/no flag. It stores only date, site, sanitized path, a coarse traffic-source category, and aggregate pageview totals. The collector does not read or persist connection IP or user-agent headers; the reverse proxy does not forward those headers to the collector. Nginx access logs are disabled for the public Repasses servers and analytics routes.
 
 No cookies, browser IDs, fingerprints, account IDs, or unique visitor counts are used. The raw referrer is classified in memory and discarded. Query strings and URL fragments are removed. Secret Sender reader links are excluded. Aggregates expire after 400 days. Traffic providers such as Cloudflare necessarily process connection metadata to deliver requests under their own policies.
 

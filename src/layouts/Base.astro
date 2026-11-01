@@ -41,7 +41,7 @@ const imageUrl = new URL(image, site).toString();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,12 +54,10 @@ const imageUrl = new URL(image, site).toString();
     <link rel="stylesheet" href="/_ui/app.css" />
     <link rel="stylesheet" href="/_ui/fonts.css" />
     <link rel="stylesheet" href="/_ui/tokens.css" />
-    <link rel="stylesheet" href="/analytics/client.css" />
     {styles.map((href) => <link rel="stylesheet" href={href} />)}
     <script is:inline src="/_ui/ui.js" defer></script>
-    <script is:inline src="/analytics/client.js" defer></script>
     {scripts.map((src) => <script is:inline src={src} defer></script>)}
-    <meta name="theme-color" content="#171916" />
+    <meta name="theme-color" content="#f4f0e6" />
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="kokoapi.space" />

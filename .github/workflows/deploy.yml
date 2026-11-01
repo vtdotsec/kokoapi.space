@@ -36,6 +36,9 @@ jobs:
       - name: Validate build
         run: npm run build
 
+      - name: Tools privacy checks
+        run: node scripts/check-tools-privacy.mjs
+
       - name: Type/content check
         run: npm run check
 
