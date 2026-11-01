@@ -42,6 +42,14 @@ jobs:
       - name: Build first-party analytics collector
         run: docker build -t kokoapi-analytics-check ./apps/analytics
 
+      - name: Install Repasses dependencies
+        working-directory: apps/repasses
+        run: npm ci
+
+      - name: Build Repasses
+        working-directory: apps/repasses
+        run: npm run build
+
   deploy:
     name: Deploy to production
     needs: build
