@@ -24,7 +24,7 @@
   }
   function fileProblem(input, file) {
     if (!file) return "No file selected.";
-    if (file.size === 0) return "The file is empty.";
+    if (file.size === 0 && !input.hasAttribute("data-allow-empty")) return "The file is empty.";
     var accept = (input.getAttribute("accept") || "").toLowerCase();
     if (!accept) return null;
     var name = (file.name || "").toLowerCase();

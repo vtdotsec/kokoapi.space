@@ -4,15 +4,15 @@ test('catalog search stays local and exposes the complete tool index', async ({ 
   const remote = [];
   page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:4321/')) remote.push(request.url()); });
   await page.goto('/');
-  await expect(page.locator('[data-catalog-item]')).toHaveCount(28);
-  await expect(page.locator('[data-catalog-item]:visible')).toHaveCount(13);
+  await expect(page.locator('[data-catalog-item]')).toHaveCount(31);
+  await expect(page.locator('[data-catalog-item]:visible')).toHaveCount(16);
   await page.getByRole('searchbox').fill('JSON');
   await expect(page.locator('[data-catalog-item]:visible')).toHaveCount(3);
   await expect(page.getByRole('status')).toHaveText('3 tools found');
   await page.getByRole('searchbox').fill('no-such-tool');
   await expect(page.locator('#catalog-empty')).toBeVisible();
   await page.getByRole('searchbox').fill('');
-  await expect(page.locator('[data-catalog-item]:visible')).toHaveCount(13);
+  await expect(page.locator('[data-catalog-item]:visible')).toHaveCount(16);
   expect(await page.evaluate(() => ({ cookies: document.cookie, storage: localStorage.length }))).toEqual({ cookies: '', storage: 0 });
   expect(remote).toEqual([]);
 });

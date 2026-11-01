@@ -1,0 +1,16 @@
+---
+import UtilityPage from '../../components/UtilityPage.astro';
+---
+<UtilityPage title="Clean up text" description="Trim line edges, remove empty lines and remove exact duplicate lines. Keep the first occurrence in its original order." kind="text">
+  <div class="utility-text-grid">
+    <div><label class="utility-label" for="text-input">Your text</label><textarea id="text-input" rows="12" spellcheck="false" autocomplete="off" placeholder="Paste text here"></textarea></div>
+    <div><label class="utility-label" for="utility-output">Cleaned text</label><textarea id="utility-output" rows="12" readonly spellcheck="false"></textarea></div>
+  </div>
+  <fieldset class="text-options"><legend>Cleanup options</legend>
+    <label><input type="checkbox" id="trim-lines" checked /> Trim spaces at line edges</label>
+    <label><input type="checkbox" id="empty-lines" checked /> Remove empty lines</label>
+    <label><input type="checkbox" id="deduplicate" checked /> Remove duplicate lines (case sensitive)</label>
+  </fieldset>
+  <p class="utility-hint">Line endings become LF. Up to 2 million characters; nothing is sent or saved. Review the result before replacing your original text.</p>
+  <div class="utility-actions"><button class="btn" id="utility-run">Clean text</button><button class="btn ghost" id="utility-copy" disabled>Copy result</button><button class="btn ghost" id="utility-download" disabled>Download .txt</button><button class="btn ghost" id="utility-clear">Clear</button></div>
+</UtilityPage>

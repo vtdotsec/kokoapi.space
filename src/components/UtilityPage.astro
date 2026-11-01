@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+interface Props { title: string; description: string; kind: string; }
+const { title, description, kind } = Astro.props;
+---
+<Base title={title} description={description} scripts={['/_ui/utilities.js']}>
+  <section class="utility-page container" data-utility={kind}>
+    <a class="utility-back" href="/utilities/">← File &amp; text tools</a>
+    <h1>{title}</h1>
+    <p class="utility-intro">{description}</p>
+    <p class="utility-local">On your device. No upload or saved history.</p>
+    <slot />
+    <p class="utility-status" role="status" aria-live="polite" id="utility-status"></p>
+  </section>
+</Base>

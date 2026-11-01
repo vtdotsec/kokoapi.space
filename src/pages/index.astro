@@ -158,6 +158,28 @@ const groups = [
     ]
   },
   {
+    "title": "File & text",
+    "path": "/utilities/",
+    "description": "Check files and tidy up text.",
+    "items": [
+      [
+        "File checksum",
+        "/files/checksum/",
+        "sha256 hash verificar integridade"
+      ],
+      [
+        "File type inspector",
+        "/files/inspect/",
+        "magic bytes assinatura mime tipo"
+      ],
+      [
+        "Clean up text",
+        "/text/clean/",
+        "trim duplicates lines limpar texto duplicadas"
+      ]
+    ]
+  },
+  {
     "title": "Encrypted sharing",
     "path": "/secret/",
     "description": "Share with a one-read or expiring link.",
@@ -175,7 +197,7 @@ const jsonLd = {"@context":"https://schema.org","@type":"ItemList",name:"Free fi
 ---
 <Base title="Free PDF, image and file tools" description="Simple, free tools for PDFs, images and file conversions. Work in your browser, without accounts, ads or analytics." jsonLd={jsonLd} scripts={["/_ui/catalog.js"]}>
   <section class="directory container" aria-labelledby="directory-title">
-    <p class="directory-eyebrow">KOKO TOOLS · FREE & OPEN SOURCE</p>
+    <p class="directory-eyebrow">KOKO TOOLS / PRIVATE FILE UTILITIES</p>
     <h1 id="directory-title">Your files.<br />Fewer steps.</h1>
     <p class="directory-intro">Simple tools for PDFs, images and everyday formats.<br class="desktop-break" /> No account, ads or analytics. Just choose a task.</p>
     <div class="catalog-search">

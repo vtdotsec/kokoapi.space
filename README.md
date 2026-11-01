@@ -12,6 +12,7 @@ A small, free, open-source suite for working with PDFs, images and common file f
 | `/image/` | Image tools | Convert, compress, resize, crop, watermark and filter images; remove EXIF/GPS metadata; generate QR codes. |
 | `/pdf/` | PDF tools | Merge, split, reorder, rotate, add page numbers or watermarks, compress, protect/unlock, extract text and convert images to/from PDF. |
 | `/convert/` | File converter | Convert Markdown/HTML/PDF, images, JSON/CSV/YAML/XML; create and extract ZIP, TAR and GZIP archives. |
+| `/utilities/` | File & text | SHA-256 file checksums, signature-based file inspection and text cleanup; all processing is local. |
 | `/secret/` | Secret Sender | Share a note or file up to 10 MB through an expiring or one-read link. The browser encrypts content with AES-GCM; the server temporarily stores ciphertext. The key stays in the URL fragment. |
 | `https://repasses.kokoapi.space` | Repasses | Calculate consignor commissions and payouts from a CSV; review invalid rows and possible duplicates; export consolidated and per-supplier reports. CSV processing stays in the browser. |
 
@@ -19,7 +20,7 @@ PDF, image, conversion and Repasses work runs locally in the browser; the file c
 
 ## Design and accessibility
 
-The site uses a compact directory with local search across 28 existing operations, shared minimal styling, self-hosted typography, visible keyboard focus, skip links, touch-friendly controls and reduced-motion support. Longer explanations remain available in disclosure sections. It makes no third-party font or analytics requests. Support links are plain GitHub Sponsors links without embedded widgets. See docs/ROADMAP.md for product priorities and boundaries.
+The site uses a compact directory with local search across 31 operations, shared minimal styling, self-hosted typography, visible keyboard focus, skip links, touch-friendly controls and reduced-motion support. Longer explanations remain available in disclosure sections. It makes no third-party font or analytics requests. Support links are plain GitHub Sponsors links without embedded widgets. See docs/ROADMAP.md for product priorities and boundaries.
 
 ## Stack and hosting
 

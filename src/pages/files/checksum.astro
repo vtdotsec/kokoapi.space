@@ -1,0 +1,13 @@
+---
+import UtilityPage from '../../components/UtilityPage.astro';
+---
+<UtilityPage title="File checksum" description="Calculate a file's SHA-256 hash and compare it with an expected value." kind="checksum">
+  <label class="file-drop utility-drop">Choose a file or drop it here<input type="file" id="utility-file" data-allow-empty /></label>
+  <p class="utility-hint">Up to 100 MB. The browser needs to hold the file in memory. A matching hash confirms equality with the supplied hash; it does not certify that a file is safe.</p>
+  <label class="utility-label" for="expected-hash">Expected SHA-256 <span>(optional)</span></label>
+  <input id="expected-hash" type="text" autocomplete="off" spellcheck="false" placeholder="64 hexadecimal characters" />
+  <div class="utility-actions"><button class="btn" id="utility-run">Calculate SHA-256</button><button class="btn ghost" id="utility-clear">Clear</button></div>
+  <label class="utility-label" for="utility-output">SHA-256 result</label>
+  <textarea id="utility-output" rows="3" readonly spellcheck="false"></textarea>
+  <button class="btn ghost" id="utility-copy" disabled>Copy hash</button>
+</UtilityPage>

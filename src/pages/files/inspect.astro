@@ -1,0 +1,15 @@
+---
+import UtilityPage from '../../components/UtilityPage.astro';
+---
+<UtilityPage title="File type inspector" description="Check a file's signature, declared type and size without opening or uploading it." kind="inspect">
+  <label class="file-drop utility-drop">Choose a file or drop it here<input type="file" id="utility-file" data-allow-empty /></label>
+  <p class="utility-hint">Reads only the first 16 bytes. Recognizes common binary formats; a signature is a hint, not a malware scan or a complete format validation. This tool does not inspect EXIF or document metadata.</p>
+  <button class="btn ghost" id="utility-clear">Clear</button>
+  <dl class="file-facts" id="file-facts" hidden>
+    <div><dt>Filename</dt><dd id="fact-name"></dd></div>
+    <div><dt>File size</dt><dd id="fact-size"></dd></div>
+    <div><dt>Declared MIME type</dt><dd id="fact-declared"></dd></div>
+    <div><dt>Detected signature</dt><dd id="fact-detected"></dd></div>
+    <div><dt>First bytes (hex)</dt><dd id="fact-bytes"></dd></div>
+  </dl>
+</UtilityPage>
