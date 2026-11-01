@@ -1,4 +1,4 @@
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
@@ -25,41 +25,41 @@ db.exec(`
     path TEXT NOT NULL,
     source TEXT NOT NULL,
     pageviews INTEGER NOT NULL DEFAULT 0,
-    visitors INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (day, site, path, source)
   );
-  CREATE TABLE IF NOT EXISTS daily_site_visitors (
-    day TEXT NOT NULL,
-    site TEXT NOT NULL,
-    visitors INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (day, site)
-  );
-  CREATE TABLE IF NOT EXISTS daily_visitors (
-    day TEXT NOT NULL,
-    site TEXT NOT NULL,
-    path TEXT NOT NULL,
-    visitor_hash TEXT NOT NULL,
-    seen_at INTEGER NOT NULL,
-    PRIMARY KEY (day, site, path, visitor_hash)
-  );
-  CREATE INDEX IF NOT EXISTS pageviews_day_idx ON pageviews(day);
-  CREATE INDEX IF NOT EXISTS visitors_day_idx ON daily_visitors(day);
 `);
 
-const insertVisitor = db.prepare(`
-  INSERT OR IGNORE INTO daily_visitors(day, site, path, visitor_hash, seen_at)
-  VALUES (?, ?, ?, ?, ?)
+// Migrate the old opt-in schema to aggregate pageviews without browser counters.
+const pageviewColumns = db.prepare("PRAGMA table_info(pageviews)").all().map((column) => column.name);
+if (pageviewColumns.includes("visitors")) {
+  db.exec(`
+    BEGIN IMMEDIATE;
+    CREATE TABLE pageviews_replacement (
+      day TEXT NOT NULL,
+      site TEXT NOT NULL,
+      path TEXT NOT NULL,
+      source TEXT NOT NULL,
+      pageviews INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (day, site, path, source)
+    );
+    INSERT INTO pageviews_replacement(day, site, path, source, pageviews)
+      SELECT day, site, path, source, pageviews FROM pageviews;
+    DROP TABLE pageviews;
+    ALTER TABLE pageviews_replacement RENAME TO pageviews;
+    COMMIT;
+  `);
+}
+db.exec(`
+  CREATE INDEX IF NOT EXISTS pageviews_day_idx ON pageviews(day);
+  DROP TABLE IF EXISTS daily_visitors;
+  DROP TABLE IF EXISTS daily_site_visitors;
 `);
-const incrementSiteVisitors = db.prepare(`
-  INSERT INTO daily_site_visitors(day, site, visitors) VALUES (?, ?, 1)
-  ON CONFLICT(day, site) DO UPDATE SET visitors = visitors + 1
-`);
+
 const incrementPage = db.prepare(`
-  INSERT INTO pageviews(day, site, path, source, pageviews, visitors)
-  VALUES (?, ?, ?, ?, 1, ?)
+  INSERT INTO pageviews(day, site, path, source, pageviews)
+  VALUES (?, ?, ?, ?, 1)
   ON CONFLICT(day, site, path, source) DO UPDATE SET
-    pageviews = pageviews + 1,
-    visitors = visitors + excluded.visitors
+    pageviews = pageviews + 1
 `);
 
 async function loadAdminPassword() {
@@ -130,8 +130,6 @@ function cleanup() {
   const today = new Date();
   const metricsBefore = new Date(today.getTime() - METRIC_DAYS * 86400000).toISOString().slice(0, 10);
   db.prepare("DELETE FROM pageviews WHERE day < ?").run(metricsBefore);
-  db.prepare("DELETE FROM daily_site_visitors WHERE day < ?").run(metricsBefore);
-  db.prepare("DELETE FROM daily_visitors WHERE seen_at < ?").run(today.getTime() - 48 * 3600000);
   db.exec("PRAGMA wal_checkpoint(PASSIVE)");
 }
 
@@ -161,28 +159,21 @@ async function handleCollect(req, res) {
     return json(res, err.message === "payload-too-large" ? 413 : 400, { ok: false });
   }
   const path = normalizedPath(body.path);
-  if (!path || typeof body.visitorId !== "string" || !/^[a-f0-9-]{36}$/i.test(body.visitorId)) {
-    return json(res, 400, { ok: false });
-  }
+  if (!path) return json(res, 400, { ok: false });
   let referrer = "";
   if (typeof body.referrer === "string" && body.referrer.length <= 300) {
     try { referrer = new URL(body.referrer).origin; } catch {}
   }
   const day = new Date().toISOString().slice(0, 10);
   const source = classifySource(referrer, body.campaign === true, siteHost);
-  // The browser ID is random and daily; only its one-way hash is held briefly.
-  const visitorHash = createHash("sha256").update(`${day}:${body.visitorId}`).digest("hex");
-  const seenAt = Date.now();
-  const uniqueSite = insertVisitor.run(day, siteHost, "", visitorHash, seenAt).changes === 1;
-  if (uniqueSite) incrementSiteVisitors.run(day, siteHost);
-  const uniquePath = insertVisitor.run(day, siteHost, path, visitorHash, seenAt).changes === 1;
-  incrementPage.run(day, siteHost, path, source, uniquePath ? 1 : 0);
+  // Count aggregate pageviews only: no browser ID, fingerprint or unique-person claim.
+  incrementPage.run(day, siteHost, path, source);
   return json(res, 202, { ok: true });
 }
 
 function handleStats(res, days) {
   const rows = db.prepare(`
-    SELECT day, site, path, source, pageviews, visitors
+    SELECT day, site, path, source, pageviews
     FROM pageviews WHERE day >= date('now', ?)
     ORDER BY day DESC, site, pageviews DESC
   `).all(`-${days} days`);
@@ -191,18 +182,7 @@ function handleStats(res, days) {
     FROM pageviews WHERE day >= date('now', ?)
     GROUP BY site
   `).all(`-${days} days`);
-  const visitorTotals = db.prepare(`
-    SELECT site, SUM(visitors) AS visitorDays
-    FROM daily_site_visitors WHERE day >= date('now', ?)
-    GROUP BY site
-  `).all(`-${days} days`);
-  const bySite = new Map(pageTotals.map((row) => [row.site, { site: row.site, pageviews: row.pageviews, visitorDays: 0 }]));
-  for (const row of visitorTotals) {
-    const total = bySite.get(row.site) || { site: row.site, pageviews: 0, visitorDays: 0 };
-    total.visitorDays = row.visitorDays;
-    bySite.set(row.site, total);
-  }
-  const totals = [...bySite.values()].sort((a, b) => a.site.localeCompare(b.site));
+  const totals = pageTotals.sort((a, b) => a.site.localeCompare(b.site));
   return json(res, 200, { days, totals, rows });
 }
 
