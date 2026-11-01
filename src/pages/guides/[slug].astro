@@ -1,0 +1,59 @@
+---
+import Base from "../../layouts/Base.astro";
+import { guides } from "../../data/guides";
+
+export function getStaticPaths() {
+  return guides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+const url = `https://tools.kokoapi.space/guides/${guide.slug}/`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      name: guide.title,
+      description: guide.description,
+      url,
+      inLanguage: "en",
+      isPartOf: { "@type": "WebSite", name: "koko tools", url: "https://tools.kokoapi.space/" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://tools.kokoapi.space/" },
+        { "@type": "ListItem", position: 2, name: "Workflows", item: "https://tools.kokoapi.space/workflows/" },
+        { "@type": "ListItem", position: 3, name: guide.title, item: url },
+      ],
+    },
+  ],
+};
+---
+
+<Base title={guide.title} description={guide.description} type="article" jsonLd={jsonLd}>
+  <article class="guide-page container">
+    <nav class="guide-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/workflows/">Workflows</a><span aria-hidden="true">/</span><span aria-current="page">{guide.title}</span></nav>
+    <p class="directory-eyebrow">{guide.eyebrow} · LOCAL PROCESSING</p>
+    <h1>{guide.title}</h1>
+    <p class="guide-intro">{guide.intro}</p>
+
+    <section class="guide-section" aria-labelledby="guide-steps-title">
+      <h2 id="guide-steps-title">How to do it</h2>
+      <ol class="guide-steps">{guide.steps.map((step) => <li>{step}</li>)}</ol>
+      <a class="guide-cta" href={guide.toolPath}>{guide.toolLabel}<span aria-hidden="true"> →</span></a>
+    </section>
+
+    <section class="guide-section" aria-labelledby="guide-details-title">
+      <h2 id="guide-details-title">What to know</h2>
+      <ul class="guide-details">{guide.details.map((detail) => <li>{detail}</li>)}</ul>
+    </section>
+
+    <nav class="guide-related" aria-label="Related tools and guides">
+      <h2>Related</h2>
+      <ul>{guide.related.map((item) => <li><a href={item.path}>{item.label}<span aria-hidden="true"> →</span></a></li>)}</ul>
+    </nav>
+
+    <p class="guide-privacy">Files used by this tool are processed in your browser and are not uploaded. <a href="/privacy/">Read how privacy works across the suite.</a></p>
+  </article>
+</Base>

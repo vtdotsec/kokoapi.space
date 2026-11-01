@@ -1,13 +1,14 @@
 ---
 import Base from "../layouts/Base.astro";
 ---
-<Base title="Privacy" description="Tools has no analytics, tracking cookies or saved visitor preferences.">
+<Base title="Privacy" description="No analytics scripts, tracking cookies or saved browser preferences in koko tools. Cloudflare separately processes network traffic to deliver the site.">
   <section class="container home-block" aria-labelledby="privacy-title">
     <p class="section-index">PRIVACY</p>
     <h1 id="privacy-title">Your files stay with you.</h1>
     <p class="lead">PDF, image, conversion and file/text utility tools process inputs in browser memory. They do not upload your files or save them on our server.</p>
-    <h2>No audience tracking or saved preferences</h2>
-    <p>Tools runs no analytics, advertising pixels, fingerprinting or visitor profiling. It sets no cookies and does not save theme preferences or document contents in localStorage, sessionStorage or IndexedDB. The theme starts light; you can switch it to dark for the current page.</p>
+    <h2>No in-app analytics or saved preferences</h2>
+    <p>The Tools app does not embed analytics scripts or beacons, send pageview events, use advertising pixels, fingerprint visitors or build visitor profiles. It sets no cookies and does not save theme preferences or document contents in localStorage, sessionStorage or IndexedDB. The theme starts light; you can switch it to dark for the current page.</p>
+    <p>Cloudflare proxies the public site and gives the account owner a separate, aggregate network-traffic dashboard. Its approximate unique-visitor metric is based on IP addresses, can include bots, and cannot identify a person or tell which local file operation someone completed. The dashboard does not receive the contents of files processed in the browser. Cloudflare necessarily processes connection details to deliver requests under its own policies.</p>
     <p>On your next visit, the UI removes old Tools theme and analytics keys left by previous releases. Previously collected Tools pageview aggregates are deleted from our analytics database. Repasses is a separate product with its own privacy notice.</p>
     <h2>Downloads and memory</h2>
     <p>Files you explicitly download are saved by your browser to your device. Copy buttons write to your clipboard only when pressed. Working data stays in the current page's memory until it is cleared, closed or reloaded. Your browser may cache public website assets; this is separate from storing your documents.</p>
@@ -15,7 +16,7 @@ import Base from "../layouts/Base.astro";
     <p>Creating a share intentionally uploads encrypted content to our server. It temporarily stores ciphertext, an initialization vector, expiry information and delivery metadata. For files, the filename, MIME type and size are readable by the server. The decryption key stays in the URL fragment and is not sent in HTTP requests.</p>
     <p>Read-once content is removed before delivery. Timed expiry starts on first reveal; periodic cleanup removes expired shares, with a 30-day safety limit for unopened shares. IP-based abuse counters exist only in server memory. Use the local file tools if your requirement is to upload nothing.</p>
     <h2>Network infrastructure</h2>
-    <p>Tools web access logs are disabled, and the former analytics endpoints are blocked. Cloudflare and the VM network still process connection details to deliver the site. We cannot claim that network providers or your browser never process or retain technical data under their own settings.</p>
+    <p>Tools web access logs are disabled, and the former in-app analytics endpoints are blocked. Cloudflare and the VM network still process connection details to deliver the site. We cannot claim that network providers or your browser never process or retain technical data under their own settings.</p>
     <p>The source is <a href="https://github.com/vtdotsec/kokoapi.space">public and open source</a>.</p>
   </section>
 </Base>

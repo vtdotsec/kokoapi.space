@@ -117,13 +117,13 @@
     });
     if (pdfSelect) pdfSelect.value = tool;
     var title = TOOL_TITLES[tool] || "PDF tools";
-    document.title = title + " | kokoapi.space";
+    document.title = title + " | koko tools";
     var heading = document.querySelector("main.wrap > h1");
     if (heading) heading.textContent = title;
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (ogTitle) ogTitle.content = title + " | kokoapi.space";
-    if (twitterTitle) twitterTitle.content = title + " | kokoapi.space";
+    if (ogTitle) ogTitle.content = title + " | koko tools";
+    if (twitterTitle) twitterTitle.content = title + " | koko tools";
     var description = document.querySelector('meta[name="description"]');
     var descriptionText = title + " in your browser. Free PDF processing with no upload.";
     if (description) description.content = descriptionText;

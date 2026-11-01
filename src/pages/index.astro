@@ -193,13 +193,14 @@ const groups = [
     "exception": true
   }
 ];
-const jsonLd = {"@context":"https://schema.org","@type":"ItemList",name:"Free file tools",itemListElement:groups.map((g,i)=>({"@type":"ListItem",position:i+1,name:g.title,url:"https://tools.kokoapi.space"+g.path}))};
+const jsonLd = {"@context":"https://schema.org","@graph":[{"@type":"WebSite",name:"koko tools",alternateName:"kokoapi.space",url:"https://tools.kokoapi.space/",inLanguage:"en"},{"@type":"ItemList",name:"Free file tools",itemListElement:groups.map((g,i)=>({"@type":"ListItem",position:i+1,name:g.title,url:"https://tools.kokoapi.space"+g.path}))}]};
 ---
-<Base title="Free PDF, image and file tools" description="Simple, free tools for PDFs, images and file conversions. Work in your browser, without accounts, ads or analytics." jsonLd={jsonLd} scripts={["/_ui/catalog.js"]}>
+<Base title="Free PDF, image and file tools" description="Simple, free tools for PDFs, images and file conversions. Work in your browser, without accounts, ads or in-app tracking." jsonLd={jsonLd} scripts={["/_ui/catalog.js"]}>
   <section class="directory container" aria-labelledby="directory-title">
     <p class="directory-eyebrow">KOKO TOOLS / PRIVATE FILE UTILITIES</p>
     <h1 id="directory-title">Your files.<br />Fewer steps.</h1>
-    <p class="directory-intro">Simple tools for PDFs, images and everyday formats.<br class="desktop-break" /> No account, ads or analytics. Just choose a task.</p>
+    <p class="directory-intro">Simple tools for PDFs, images and everyday formats.<br class="desktop-break" /> No account, ads or in-app tracking. Just choose a task.</p>
+    <p class="workflow-promo"><a href="/workflows/">See common workflows for photos, PDFs, downloads and data <span aria-hidden="true">→</span></a></p>
     <div class="catalog-search">
       <label for="tool-search">Find a tool</label>
       <input id="tool-search" type="search" placeholder="Try “compress”, “PDF” or “JSON”" autocomplete="off" spellcheck="false" aria-describedby="search-help" />
