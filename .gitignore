@@ -15,11 +15,6 @@ npm-debug.log*
 # environment
 .env
 .env.production
-apps/game/data/
-apps/game/*.sqlite
-apps/game/*.sqlite-shm
-apps/game/*.sqlite-wal
-
 # e2e artifacts
 e2e/.tmp-data/
 test-results/

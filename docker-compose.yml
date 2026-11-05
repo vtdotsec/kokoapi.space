@@ -71,43 +71,6 @@ services:
       retries: 3
       start_period: 5s
 
-  # Private single-player Santa Bruma game. Save data lives in its own SQLite volume.
-  kokoapi-game:
-    build: ./apps/game
-    container_name: kokoapi-game
-
-    expose:
-      - "8789"
-
-    environment:
-      - DATA_DIR=/data
-      - GAME_ACCESS_PASSWORD=${GAME_ACCESS_PASSWORD:?Set GAME_ACCESS_PASSWORD in the deployment environment}
-
-    volumes:
-      - game-data:/data
-
-    mem_limit: 384m
-
-    read_only: true
-
-    tmpfs:
-      - /tmp
-
-    restart: unless-stopped
-
-    security_opt:
-      - no-new-privileges:true
-
-    cap_drop:
-      - ALL
-
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8789/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 8s
-
   # First-party, opt-in traffic metrics. The service stores only daily aggregates
   # and short-lived hashes; its SQLite volume is separate from app data.
   kokoapi-analytics:
@@ -173,6 +136,5 @@ services:
       start_period: 5s
 
 volumes:
-  game-data:
   secret-data:
   analytics-data:
