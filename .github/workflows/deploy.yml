@@ -94,8 +94,6 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || '22' }}
           envs: GAME_ACCESS_PASSWORD
-        env:
-          GAME_ACCESS_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}
           # Fail fast: a dirty or diverged checkout must stop the deploy
           # instead of silently rebuilding and serving stale files.
           script: |
@@ -124,3 +122,5 @@ jobs:
             done
             test "$STATUS" = healthy
             test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: game.kokoapi.space' http://127.0.0.1:8080/)" = 401
+        env:
+          GAME_ACCESS_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}
