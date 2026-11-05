@@ -112,16 +112,20 @@ jobs:
             docker builder prune -f || true
             docker compose --project-name kokoapispace up -d --build --remove-orphans
             docker image prune -f
-            docker exec -u 0 stoat-caddy-1 sh -c 'grep -q "game.kokoapi.space" /etc/caddy/Caddyfile || printf "\\ngame.kokoapi.space {\\n reverse_proxy 127.0.0.1:8080\\n}\\n" >> /etc/caddy/Caddyfile'
+            docker exec -u 0 stoat-caddy-1 sh -c 'sed -i "/^game.kokoapi.space {/,/^}/d" /etc/caddy/Caddyfile'
             docker exec stoat-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
-            docker exec stoat-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+            docker exec stoat-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+            docker run --rm --entrypoint /bin/sh -v /etc/caddy:/host-caddy:rw caddy:latest -c 'grep -Fq "game.kokoapi.space" /host-caddy/Caddyfile || printf "\\ngame.kokoapi.space {\\n reverse_proxy 127.0.0.1:8080\\n}\\n" >> /host-caddy/Caddyfile'
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+            caddy reload --config /etc/caddy/Caddyfile
             for attempt in $(seq 1 30); do
-              STATUS=$(docker inspect --format '{{.State.Health.Status}}' kokoapi-game 2>/dev/null || true)
-              [ "$STATUS" = healthy ] && break
+              HEALTH=$(docker inspect --format '{{.State.Health.Status}}' kokoapi-game 2>/dev/null || true)
+              TLS_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' --resolve game.kokoapi.space:443:127.0.0.1 https://game.kokoapi.space/ 2>/dev/null || true)
+              [ "$HEALTH" = healthy ] && [ "$TLS_STATUS" = 401 ] && break
               sleep 2
             done
-            test "$STATUS" = healthy
-            test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: game.kokoapi.space' http://127.0.0.1:8080/)" = 401
-            test "$(curl -sS -u "player:$GAME_ACCESS_PASSWORD" -o /dev/null -w '%{http_code}' -H 'Host: game.kokoapi.space' http://127.0.0.1:8080/)" = 200
+            test "$HEALTH" = healthy
+            test "$TLS_STATUS" = 401
+            test "$(curl -sS -u "player:$GAME_ACCESS_PASSWORD" -o /dev/null -w '%{http_code}' --resolve game.kokoapi.space:443:127.0.0.1 https://game.kokoapi.space/)" = 200
         env:
           GAME_ACCESS_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}
