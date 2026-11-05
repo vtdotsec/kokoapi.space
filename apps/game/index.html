@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101311" />
+    <meta name="description" content="Santa Bruma — um pequeno survival horror 3D com câmera fixa e visual low-poly da era PS2." />
+    <title>Santa Bruma · Plantão Zero</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main id="game-shell" aria-label="Santa Bruma — jogo de survival horror">
+      <canvas id="scene" aria-label="Cena 3D do jogo"></canvas>
+      <div class="scanlines" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <section id="title-screen" class="screen title-screen">
+        <div class="title-copy">
+          <p class="eyebrow">KOKO GAMES · EXPERIÊNCIA SINGLE-PLAYER</p>
+          <h1>SANTA<br /><span>BRUMA</span></h1>
+          <p class="subtitle">PLANTÃO ZERO</p>
+          <p class="story">A cidade apagou. A clínica ainda tem luz.<br />Encontre um fusível. Saia antes do amanhecer.</p>
+          <div class="menu-actions">
+            <button id="new-game" class="menu-button primary">Novo jogo</button>
+            <button id="continue-game" class="menu-button" hidden>Continuar</button>
+            <button id="show-controls" class="text-button">Controles</button>
+          </div>
+        </div>
+        <div class="title-meta"><span>EPISÓDIO 01</span><span>1998 · SERRA DO MAR</span></div>
+      </section>
+
+      <section id="controls-screen" class="screen modal-screen" hidden>
+        <div class="modal-card">
+          <p class="eyebrow">CONTROLES</p>
+          <h2>Sobreviva ao plantão.</h2>
+          <dl class="control-list">
+            <div><dt>W A S D</dt><dd>Movimentar</dd></div>
+            <div><dt>ESPAÇO</dt><dd>Mirar no infectado mais próximo</dd></div>
+            <div><dt>F</dt><dd>Disparar</dd></div>
+            <div><dt>E</dt><dd>Examinar, pegar itens e usar portas</dd></div>
+            <div><dt>R</dt><dd>Recarregar</dd></div>
+            <div><dt>ESC</dt><dd>Pausar</dd></div>
+          </dl>
+          <button id="close-controls" class="menu-button primary">Entendi</button>
+        </div>
+      </section>
+
+      <section id="pause-screen" class="screen modal-screen" hidden>
+        <div class="modal-card pause-card">
+          <p class="eyebrow">SANTA BRUMA · 00:47</p>
+          <h2>Respire.</h2>
+          <p>O progresso é salvo no banco privado do jogo.</p>
+          <button id="resume-game" class="menu-button primary">Continuar</button>
+          <button id="save-game" class="menu-button">Salvar no arquivo</button>
+          <button id="return-title" class="text-button">Voltar ao título</button>
+        </div>
+      </section>
+
+      <section id="ending-screen" class="screen modal-screen" hidden>
+        <div class="modal-card ending-card">
+          <p class="eyebrow">FIM DO EPISÓDIO 01</p>
+          <h2 id="ending-title">A porta abriu.</h2>
+          <p id="ending-copy">O rádio chia. Alguém responde do outro lado.</p>
+          <button id="ending-restart" class="menu-button primary">Jogar novamente</button>
+        </div>
+      </section>
+
+      <div id="hud" class="hud" hidden>
+        <header class="hud-top">
+          <div class="hud-brand"><span class="hud-dot"></span><span id="room-name">CORREDOR OESTE</span></div>
+          <div class="hud-time">00:<span id="game-minute">47</span></div>
+          <button id="pause-button" class="pause-button" aria-label="Pausar">Ⅱ</button>
+        </header>
+        <div class="hud-objective"><span>OBJETIVO</span><strong id="objective-text">Encontre um fusível e um cartão de acesso.</strong></div>
+        <footer class="hud-bottom">
+          <div class="status-panel">
+            <div class="health-readout"><span>ESTADO</span><strong id="health-label">FIRME</strong></div>
+            <div class="health-track"><span id="health-bar"></span></div>
+            <div class="inventory-readout"><span>INVENTÁRIO</span><strong id="inventory-text">VAZIO</strong></div>
+          </div>
+          <div class="ammo-panel"><span>9MM · RESERVA <b id="ammo-reserve">18</b></span><strong><b id="ammo-count">06</b><small>/ 06</small></strong><button id="reload-button" aria-label="Recarregar">R</button></div>
+        </footer>
+        <div id="interaction-hint" class="interaction-hint" aria-live="polite" hidden><kbd>E</kbd><span id="interaction-text">Examinar</span></div>
+        <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+        <div id="aim-reticle" class="aim-reticle" hidden><i></i><i></i><i></i><i></i><b></b></div>
+        <div class="mobile-controls" aria-label="Controles de toque">
+          <div class="dpad"><button data-move="up" aria-label="Frente">▲</button><div><button data-move="left" aria-label="Esquerda">◀</button><button data-move="down" aria-label="Ré">▼</button><button data-move="right" aria-label="Direita">▶</button></div></div>
+          <div class="mobile-actions"><button id="touch-aim">MIRAR</button><button id="touch-fire">ATIRAR</button><button id="touch-use">USAR</button></div>
+        </div>
+      </div>
+      <div id="loading-screen" class="loading-screen"><span class="loading-mark">SB</span><span>CARREGANDO A CLÍNICA…</span></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

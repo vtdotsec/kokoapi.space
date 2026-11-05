@@ -58,6 +58,12 @@ jobs:
         working-directory: apps/repasses
         run: npm run build
 
+      - name: Build Santa Bruma
+        working-directory: apps/game
+        run: |
+          npm ci
+          npm run build
+
   deploy:
     name: Deploy to production
     needs: build
@@ -72,10 +78,12 @@ jobs:
           HOST: ${{ secrets.DEPLOY_HOST }}
           USER: ${{ secrets.DEPLOY_USER }}
           KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          GAME_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}
         run: |
           test -n "$HOST" || { echo "Missing secret: DEPLOY_HOST"; exit 1; }
           test -n "$USER" || { echo "Missing secret: DEPLOY_USER"; exit 1; }
           test -n "$KEY" || { echo "Missing secret: DEPLOY_SSH_KEY"; exit 1; }
+          test -n "$GAME_PASSWORD" || { echo "Missing secret: GAME_ACCESS_PASSWORD"; exit 1; }
           echo "Deploy secrets are configured."
 
       - name: Deploy via SSH
@@ -85,6 +93,9 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || '22' }}
+          envs: GAME_ACCESS_PASSWORD
+        env:
+          GAME_ACCESS_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}
           # Fail fast: a dirty or diverged checkout must stop the deploy
           # instead of silently rebuilding and serving stale files.
           script: |
@@ -94,7 +105,15 @@ jobs:
             git fetch origin main
             git pull --ff-only origin main
             git rev-parse --short HEAD
+            umask 077
+            touch .env
+            sed -i '/^GAME_ACCESS_PASSWORD=/d' .env
+            printf 'GAME_ACCESS_PASSWORD=%s\n' "$GAME_ACCESS_PASSWORD" >> .env
+            chmod 600 .env
             docker compose down --remove-orphans
             docker builder prune -f || true
             docker compose up -d --build --remove-orphans
             docker image prune -f
+            docker exec -u 0 stoat-caddy-1 sh -c 'grep -q "game.kokoapi.space" /etc/caddy/Caddyfile || printf "\\ngame.kokoapi.space {\\n reverse_proxy 127.0.0.1:8080\\n}\\n" >> /etc/caddy/Caddyfile'
+            docker exec stoat-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+            docker exec stoat-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
