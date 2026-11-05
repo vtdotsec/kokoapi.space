@@ -100,7 +100,8 @@ export class SantaBrumaWorld {
       }
       this.addBox(this.scene, xCenter, 1.5, -4.05, 8, 3, 0.22, m.wall);
       this.addBox(this.scene, xCenter, 1.5, 4.05, 8, 3, 0.22, m.wall);
-      this.addBox(this.scene, xCenter, 3.08, 0, 8, 0.16, 8, m.wallDark, false);
+      // The fixed camera looks down into the rooms; a solid ceiling here hid
+      // the entire playable scene from that camera.
       const light = new THREE.PointLight(room === 1 ? "#c9b68b" : "#9fae9b", room === 1 ? 20 : 14, 10, 2);
       light.position.set(xCenter, 2.75, 0);
       this.scene.add(light);
