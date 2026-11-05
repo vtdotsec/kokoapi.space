@@ -112,7 +112,7 @@ jobs:
             docker builder prune -f || true
             docker compose --project-name kokoapispace up -d --build --remove-orphans
             docker image prune -f
-            docker exec -u 0 stoat-caddy-1 sh -c 'sed -i "/^game.kokoapi.space {/,/^}/d" /etc/caddy/Caddyfile'
+            docker exec -u 0 stoat-caddy-1 sh -c 'sed "/^game.kokoapi.space {/,/^}/d" /etc/caddy/Caddyfile > /config/Caddyfile.new && cat /config/Caddyfile.new > /etc/caddy/Caddyfile && rm /config/Caddyfile.new'
             docker exec stoat-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
             docker exec stoat-caddy-1 caddy reload --config /etc/caddy/Caddyfile
             docker run --rm --entrypoint /bin/sh -v /etc/caddy:/host-caddy:rw caddy:latest -c 'grep -Fq "game.kokoapi.space" /host-caddy/Caddyfile || printf "\\ngame.kokoapi.space {\\n reverse_proxy 127.0.0.1:8080\\n}\\n" >> /host-caddy/Caddyfile'
