@@ -122,5 +122,6 @@ jobs:
             done
             test "$STATUS" = healthy
             test "$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: game.kokoapi.space' http://127.0.0.1:8080/)" = 401
+            test "$(curl -sS -u "player:$GAME_ACCESS_PASSWORD" -o /dev/null -w '%{http_code}' -H 'Host: game.kokoapi.space' http://127.0.0.1:8080/)" = 200
         env:
           GAME_ACCESS_PASSWORD: ${{ secrets.GAME_ACCESS_PASSWORD }}

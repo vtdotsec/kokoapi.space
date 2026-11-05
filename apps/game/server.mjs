@@ -113,7 +113,7 @@ const server = http.createServer(async (req, res) => {
   if (!authorized(req)) {
     res.writeHead(401, {
       ...baseHeaders,
-      "WWW-Authenticate": 'Basic realm="Santa Bruma — Plantão Zero", charset="UTF-8"',
+      "WWW-Authenticate": 'Basic realm="Santa Bruma - Plantao Zero", charset="UTF-8"',
       "Cache-Control": "no-store",
       "Content-Length": "0",
     });
